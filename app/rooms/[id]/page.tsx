@@ -224,7 +224,7 @@ export default function PropertyDetails() {
                             </Button>
                         </Link>
 
-                        <Link href={`/chat?userId=${property.agentId}`}>
+                        <Link href={`/chat?userId=${property.agent?.id || property.agentId}`}>
                             <Button className="w-full mb-4" size="lg" variant="outline">
                                 Chat with Agent
                             </Button>

@@ -7,9 +7,19 @@ export interface Property {
     description: string;
     price: number;
     location: string;
+    address?: string;
     images: string[];
+    category?: string;
+    bedrooms?: number;
+    bathrooms?: number;
+    rooms?: number;
     roommatesAllowed: boolean;
-    agent: {
+    isAvailable?: boolean;
+    status?: string;
+    agentId?: string;
+    universityId?: string;
+    createdAt?: string;
+    agent?: {
         id: string;
         fullName: string;
         avatar?: string;
