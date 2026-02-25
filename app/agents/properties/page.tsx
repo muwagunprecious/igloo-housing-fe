@@ -70,8 +70,8 @@ export default function AgentPropertiesPage() {
                                             className="object-cover"
                                         />
                                         <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${property.status === "Available"
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-blue-500 text-white'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-blue-500 text-white'
                                             }`}>
                                             {property.status}
                                         </div>
@@ -79,7 +79,7 @@ export default function AgentPropertiesPage() {
 
                                     <div className="p-5">
                                         <h3 className="font-semibold text-lg mb-2 line-clamp-1">{property.title}</h3>
-                                        <p className="text-sm text-gray-500 mb-3 line-clamp-1">{property.address}</p>
+                                        <p className="text-sm text-gray-500 mb-3 line-clamp-1">{property.address || property.location}</p>
 
                                         <div className="flex items-center justify-between mb-4">
                                             <div>
@@ -88,19 +88,19 @@ export default function AgentPropertiesPage() {
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-xs text-gray-500">Type</p>
-                                                <p className="text-sm font-semibold">{property.type}</p>
+                                                <p className="text-sm font-semibold">{property.category}</p>
                                             </div>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 mb-4">
-                                            {property.amenities.slice(0, 3).map((amenity) => (
+                                            {(property.amenities || []).slice(0, 3).map((amenity) => (
                                                 <span key={amenity} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                                                     {amenity}
                                                 </span>
                                             ))}
-                                            {property.amenities.length > 3 && (
+                                            {(property.amenities || []).length > 3 && (
                                                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                                                    +{property.amenities.length - 3} more
+                                                    +{(property.amenities || []).length - 3} more
                                                 </span>
                                             )}
                                         </div>

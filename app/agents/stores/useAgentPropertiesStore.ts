@@ -7,12 +7,16 @@ interface Property {
     description: string;
     price: number;
     location: string;
+    address?: string; // Fallback for location
     category: string;
     bedrooms: number;
     bathrooms: number;
     rooms: number;
     roommatesAllowed: boolean;
+    isAvailable: boolean;
+    status: string; // PENDING, APPROVED, REJECTED or Available, Booked
     images: string[];
+    amenities: string[];
     agentId: string;
     universityId: string;
     createdAt: string;
