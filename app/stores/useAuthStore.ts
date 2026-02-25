@@ -8,6 +8,7 @@ interface User {
     name: string; // Mapped from fullName in backend
     role: "student" | "agent" | "admin";
     avatar?: string;
+    bio?: string;
     universityId?: string;
     isVerified?: boolean;
     token?: string;
@@ -112,6 +113,7 @@ export const useAuthStore = create<AuthStore>()(
                         name: userData.fullName,
                         role: userData.role.toLowerCase(), // Ensure lowercase for frontend
                         avatar: userData.avatar,
+                        bio: userData.bio,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         // Token is presumed to be in storage if this succeeds, or we could store it separately
