@@ -148,12 +148,25 @@ export default function Dashboard() {
                                         {req.property && (
                                             <div className="mb-4 p-3 bg-gray-50 rounded-xl flex items-center gap-3">
                                                 <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                                                    <Image
-                                                        src={getImageUrl(JSON.parse(req.property.images)[0])}
-                                                        alt={req.property.title}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
+                                                    {(() => {
+                                                        try {
+                                                            const images = typeof req.property.images === 'string'
+                                                                ? JSON.parse(req.property.images)
+                                                                : (req.property.images || []);
+                                                            const firstImage = Array.isArray(images) ? images[0] : null;
+
+                                                            return (
+                                                                <Image
+                                                                    src={getImageUrl(firstImage || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267")}
+                                                                    alt={req.property.title}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                />
+                                                            );
+                                                        } catch (e) {
+                                                            return <div className="w-full h-full bg-gray-200" />;
+                                                        }
+                                                    })()}
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-xs font-bold truncate">{req.property.title}</p>
