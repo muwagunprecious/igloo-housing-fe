@@ -45,6 +45,7 @@ export const useAuthStore = create<AuthStore>()(
                         name: userData.fullName,
                         role: userData.role.toLowerCase(), // Ensure lowercase
                         avatar: userData.avatar,
+                        bio: userData.bio,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         token: token
