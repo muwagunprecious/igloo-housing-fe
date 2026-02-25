@@ -52,10 +52,16 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             const url = agentId ? `/properties?agentId=${agentId}` : '/properties';
             const response = await api.get(url);
 
-            const validProperties = response.data.data.map((p: any) => ({
-                ...p,
-                images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images
-            }));
+            // Safe parse images
+            const validProperties = response.data.data.map((p: any) => {
+                let images = [];
+                try {
+                    images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []);
+                } catch (e) {
+                    console.error("Failed to parse agent property images", e);
+                }
+                return { ...p, images };
+            });
 
             set({ properties: validProperties, isLoading: false });
         } catch (error: any) {
@@ -68,7 +74,12 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
         try {
             const response = await api.get(`/properties/${id}`);
             const property = response.data.data;
-            property.images = typeof property.images === 'string' ? JSON.parse(property.images) : property.images;
+            try {
+                property.images = typeof property.images === 'string' ? JSON.parse(property.images) : (property.images || []);
+            } catch (e) {
+                console.error("Failed to parse agent property images detail", e);
+                property.images = [];
+            }
             set({ currentProperty: property, isLoading: false });
         } catch (error: any) {
             set({ error: error.response?.data?.message || error.message, isLoading: false });

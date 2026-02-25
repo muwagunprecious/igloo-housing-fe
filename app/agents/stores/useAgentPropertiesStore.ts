@@ -42,7 +42,20 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
         set({ isLoading: true, error: null });
         try {
             const response = await api.get('/properties?agent=me');
-            set({ properties: response.data.data || response.data, isLoading: false });
+            const data = response.data.data || response.data;
+
+            // Safe parse images
+            const validProperties = Array.isArray(data) ? data.map((p: any) => {
+                let images = [];
+                try {
+                    images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []);
+                } catch (e) {
+                    console.error("Failed to parse agent property images", e);
+                }
+                return { ...p, images };
+            }) : [];
+
+            set({ properties: validProperties, isLoading: false });
         } catch (error: any) {
             set({ error: error.message, isLoading: false });
         }
