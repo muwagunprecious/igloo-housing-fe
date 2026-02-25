@@ -30,7 +30,7 @@ export default function SearchPage() {
 
     // Filter properties based on room type (Client side for now)
     const filteredProperties = roomTypes.length > 0
-        ? properties.filter((p) => roomTypes.includes(p.category)) // Note: Property interface has 'category', Mock had 'type'
+        ? properties.filter((p) => roomTypes.includes(p.category || "")) // Note: Property interface has 'category', Mock had 'type'
         : properties;
 
     return (
