@@ -42,13 +42,11 @@ export default function PropertyDetails() {
     };
 
     const submitRoommateRequest = async () => {
-        setIsRequesting(true);
         const success = await createRequest({
             propertyId: id,
             budget: modalData.budget || currentProperty?.price,
             bio: modalData.bio || `I am interested in sharing ${currentProperty?.title}`
         });
-        setIsRequesting(false);
 
         if (success) {
             setRequestSent(true);
