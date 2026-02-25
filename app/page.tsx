@@ -6,6 +6,8 @@ import UniversitySearch from "./components/features/UniversitySearch";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
 import { Map } from "lucide-react";
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function Home() {
@@ -21,24 +23,45 @@ export default function Home() {
 
   return (
     <div className="relative pt-[80px]">
-      {/* University Search Section */}
-      <div className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-200">
-        <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 py-8">
-          <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold mb-2">Find Your Perfect Student Home</h1>
-            <p className="text-gray-600">Search by university or location</p>
-          </div>
-          <div className="flex justify-center">
-            <UniversitySearch
-              selectedUniversity={selectedUniversity}
-              onSelect={setSelectedUniversity}
-            />
-          </div>
+      {/* Immersive Hero Section */}
+      <div className="relative h-[400px] md:h-[500px] flex items-center justify-center z-40">
+        {/* Background Overlay - Clip scale overflow here instead of parent */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"
+            alt="Student Housing"
+            fill
+            className="object-cover brightness-[0.7] scale-105"
+            priority
+          />
+        </div>
+
+        <div className="relative z-10 w-full max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-3xl mx-auto"
+          >
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight drop-shadow-lg">
+              Find Your Perfect <span className="text-primary italic">Student Home</span>
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 mb-8 font-medium drop-shadow-md">
+              Secure, verified, and close to your campus. Join thousands of students finding their next stay.
+            </p>
+
+            <div className="bg-white/10 backdrop-blur-xl p-2 rounded-full border border-white/20 shadow-2xl">
+              <UniversitySearch
+                selectedUniversity={selectedUniversity}
+                onSelect={setSelectedUniversity}
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="sticky top-[80px] bg-white z-40 border-b border-gray-200">
+      {/* Sticky Filter Bar with Glass Effect - Adjusted z-index for dropdown overlap */}
+      <div className="sticky top-[80px] glass z-30 border-b border-gray-100 transition-all duration-300">
         <FilterBar />
       </div>
 

@@ -11,7 +11,7 @@ export default function FavoritesPage() {
     const favoriteProperties = properties.filter((p) => favorites.includes(p.id));
 
     return (
-        <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-10 pb-20">
+        <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-28 pb-20">
             <h1 className="text-3xl font-bold mb-8">Wishlists</h1>
 
             {favoriteProperties.length > 0 ? (

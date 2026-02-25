@@ -3,6 +3,7 @@
 import { universities } from "@/app/data/universities";
 import { MapPin, Search } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface UniversitySearchProps {
     onSelect: (universityId: string | null) => void;
@@ -46,10 +47,10 @@ export default function UniversitySearch({ onSelect, selectedUniversity }: Unive
     };
 
     return (
-        <div className="relative w-full max-w-2xl" ref={dropdownRef}>
-            <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                    <MapPin size={20} />
+        <div className="relative w-full max-w-2xl mx-auto" ref={dropdownRef}>
+            <div className="relative group transition-premium">
+                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+                    <MapPin size={22} />
                 </div>
                 <input
                     type="text"
@@ -61,48 +62,59 @@ export default function UniversitySearch({ onSelect, selectedUniversity }: Unive
                     }}
                     onFocus={() => setShowDropdown(true)}
                     placeholder="Search by university or location..."
-                    className="w-full pl-12 pr-24 py-4 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm hover:shadow-md transition"
+                    className="w-full pl-14 pr-28 py-5 border border-gray-200 rounded-full text-base focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
                 />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-3">
                     {selectedUniversity && (
                         <button
                             onClick={handleClear}
-                            className="text-sm text-gray-500 hover:text-black px-3 py-1 rounded-full hover:bg-gray-100 transition"
+                            className="text-sm font-semibold text-gray-500 hover:text-black px-4 py-2 rounded-full hover:bg-gray-100 transition"
                         >
                             Clear
                         </button>
                     )}
-                    <button className="p-3 bg-primary text-white rounded-full hover:bg-primary/90 transition">
-                        <Search size={16} strokeWidth={3} />
+                    <button className="p-4 bg-primary text-white rounded-full hover:bg-primary-hover shadow-md hover:shadow-lg transition-premium">
+                        <Search size={20} strokeWidth={3} />
                     </button>
                 </div>
             </div>
 
-            {showDropdown && filteredUniversities.length > 0 && (
-                <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-2xl shadow-floating max-h-96 overflow-y-auto z-50">
-                    {filteredUniversities.map((uni) => (
-                        <button
-                            key={uni.id}
-                            onClick={() => handleSelect(uni)}
-                            className="w-full px-6 py-4 hover:bg-gray-50 transition text-left border-b border-gray-100 last:border-b-0"
-                        >
-                            <div className="flex items-start gap-3">
-                                <MapPin size={18} className="text-primary mt-1 flex-shrink-0" />
-                                <div>
-                                    <p className="font-semibold text-sm">{uni.name}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{uni.location}</p>
+            <AnimatePresence>
+                {showDropdown && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full mt-3 w-full bg-white border border-gray-100 rounded-[2rem] shadow-2xl max-h-[400px] overflow-y-auto z-[60] py-2 hide-scrollbar"
+                    >
+                        {filteredUniversities.length > 0 ? (
+                            filteredUniversities.map((uni) => (
+                                <button
+                                    key={uni.id}
+                                    onClick={() => handleSelect(uni)}
+                                    className="w-full px-8 py-5 hover:bg-gray-50 transition-colors text-left flex items-start gap-4 active:bg-gray-100"
+                                >
+                                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <MapPin size={20} className="text-primary" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-gray-900">{uni.name}</p>
+                                        <p className="text-sm text-gray-500 mt-0.5">{uni.location}</p>
+                                    </div>
+                                </button>
+                            ))
+                        ) : query && (
+                            <div className="px-8 py-10 text-center">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Search size={32} className="text-gray-300" />
                                 </div>
+                                <p className="text-gray-500 font-medium">No universities found matching "{query}"</p>
                             </div>
-                        </button>
-                    ))}
-                </div>
-            )}
-
-            {showDropdown && query && filteredUniversities.length === 0 && (
-                <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-2xl shadow-floating p-6 text-center z-50">
-                    <p className="text-gray-500 text-sm">No universities found</p>
-                </div>
-            )}
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

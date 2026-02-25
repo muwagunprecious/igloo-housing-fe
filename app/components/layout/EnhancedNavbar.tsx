@@ -34,7 +34,7 @@ export default function EnhancedNavbar() {
     };
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-white border-b border-gray-200">
+        <header className="fixed top-0 w-full z-50 glass border-b border-gray-200">
             <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
                 <div className="flex flex-row items-center justify-between gap-3 md:gap-0 py-4">
                     {/* Logo */}

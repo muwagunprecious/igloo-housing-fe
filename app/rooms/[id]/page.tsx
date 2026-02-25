@@ -106,7 +106,7 @@ export default function PropertyDetails() {
     }
 
     return (
-        <div className="max-w-[1120px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-6">
+        <div className="max-w-[1120px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-28">
             <BackButton />
             {/* Header */}
             <div className="mb-6 mt-4">

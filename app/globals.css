@@ -21,8 +21,23 @@
 
   --shadow-floating: 0 6px 16px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.08);
-  --shadow-card-hover: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border-b border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-md border-b border-black/10;
+  }
+
+  .transition-premium {
+    @apply transition-all duration-300 ease-in-out;
+  }
+}
+
 
 :root {
   --font-inter: 'Inter', sans-serif;

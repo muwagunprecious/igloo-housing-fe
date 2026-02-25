@@ -82,7 +82,7 @@ function ChatContent() {
 
     return (
         <AuthGuard>
-            <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 h-[calc(100vh-160px)] pt-6 pb-6">
+            <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 h-[calc(100vh-112px)] pt-28 pb-8">
                 <div className="flex h-full border border-gray-200 rounded-2xl overflow-hidden shadow-sm bg-white">
                     {/* Sidebar - Conversation List */}
                     <div className={`w-full md:w-[350px] lg:w-[400px] border-r border-gray-200 flex flex-col ${selectedChatUserId ? 'hidden md:flex' : 'flex'}`}>
