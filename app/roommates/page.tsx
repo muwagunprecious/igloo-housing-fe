@@ -243,27 +243,37 @@ export default function RoommatesPage() {
                                 </div>
                             )}
 
-                            {request.media && JSON.parse(request.media).length > 0 && (
-                                <div className="grid grid-cols-2 gap-2 mb-4">
-                                    {JSON.parse(request.media).slice(0, 4).map((m: string, idx: number) => {
-                                        const isVideo = m.match(/\.(mp4|webm|ogg)$/i);
-                                        return (
-                                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-100 shadow-sm">
-                                                {isVideo ? (
-                                                    <video src={getImageUrl(m)} className="object-cover w-full h-full" />
-                                                ) : (
-                                                    <Image src={getImageUrl(m)} alt="Roommate Media" fill className="object-cover" />
-                                                )}
-                                                {idx === 3 && JSON.parse(request.media).length > 4 && (
-                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-sm">
-                                                        +{JSON.parse(request.media).length - 4}
+                            {(() => {
+                                try {
+                                    const mediaItems = request.media ? JSON.parse(request.media) : [];
+                                    if (mediaItems.length === 0) return null;
+
+                                    return (
+                                        <div className="grid grid-cols-2 gap-2 mb-4">
+                                            {mediaItems.slice(0, 4).map((m: string, idx: number) => {
+                                                const isVideo = m.match(/\.(mp4|webm|ogg)$/i);
+                                                return (
+                                                    <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                                                        {isVideo ? (
+                                                            <video src={getImageUrl(m)} className="object-cover w-full h-full" />
+                                                        ) : (
+                                                            <Image src={getImageUrl(m)} alt="Roommate Media" fill className="object-cover" />
+                                                        )}
+                                                        {idx === 3 && mediaItems.length > 4 && (
+                                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-sm">
+                                                                +{mediaItems.length - 4}
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                } catch (e) {
+                                    console.error("Failed to parse media", e);
+                                    return null;
+                                }
+                            })()}
 
                             {request.property && (
                                 <Link href={`/rooms/${request.property.id}`} className="mb-4 block group/prop">
