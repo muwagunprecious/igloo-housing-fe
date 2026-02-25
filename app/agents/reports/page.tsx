@@ -9,7 +9,10 @@ export default function AgentReportsPage() {
     const properties = useAgentPropertiesStore((state) => state.properties);
     const totalBookings = agentBookings.length;
     const paidBookings = agentBookings.filter((b) => b.status === "Paid").length;
-    const occupancyRate = ((properties.filter((p) => p.status === "Booked").length / properties.length) * 100).toFixed(0);
+    const propertiesCount = properties.length;
+    const occupancyRate = propertiesCount > 0
+        ? ((properties.filter((p) => (p.status || "").toLowerCase() === "booked").length / propertiesCount) * 100).toFixed(0)
+        : "0";
 
     return (
         <div className="max-w-[1920px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-[100px] pb-20">
