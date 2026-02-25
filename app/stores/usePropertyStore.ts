@@ -48,11 +48,16 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
             const params = new URLSearchParams(filters).toString();
             const response = await api.get(`/properties?${params}`);
 
-            // Parse images from JSON string if needed
-            const validProperties = response.data.data.map((p: any) => ({
-                ...p,
-                images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images
-            }));
+            // Safe parse images
+            const validProperties = response.data.data.map((p: any) => {
+                let images = [];
+                try {
+                    images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []);
+                } catch (e) {
+                    console.error("Failed to parse property images", e);
+                }
+                return { ...p, images };
+            });
 
             set({ properties: validProperties, isLoading: false });
         } catch (error: any) {

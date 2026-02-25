@@ -47,7 +47,15 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                     bathrooms: prop.bathrooms,
                     roommatesAllowed: prop.roommatesAllowed
                 });
-                setExistingImages(JSON.parse(prop.images || '[]'));
+                let imageList = [];
+                try {
+                    imageList = typeof prop.images === 'string'
+                        ? JSON.parse(prop.images || '[]')
+                        : (prop.images || []);
+                } catch (e) {
+                    console.error("Failed to parse images", e);
+                }
+                setExistingImages(imageList);
             }
         } catch (err) {
             console.error("Failed to fetch property", err);

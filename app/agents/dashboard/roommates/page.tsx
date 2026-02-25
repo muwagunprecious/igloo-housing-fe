@@ -83,12 +83,25 @@ export default function AgentRoommatesPage() {
                                 {request.property && (
                                     <>
                                         <div className="relative h-32 rounded-lg overflow-hidden mb-4 shadow-sm">
-                                            <Image
-                                                src={getImageUrl(JSON.parse(request.property.images)[0])}
-                                                alt={request.property.title}
-                                                fill
-                                                className="object-cover"
-                                            />
+                                            {(() => {
+                                                try {
+                                                    const images = typeof request.property.images === 'string'
+                                                        ? JSON.parse(request.property.images)
+                                                        : (request.property.images || []);
+                                                    const firstImage = Array.isArray(images) ? images[0] : null;
+
+                                                    return (
+                                                        <Image
+                                                            src={getImageUrl(firstImage || "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267")}
+                                                            alt={request.property.title}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    );
+                                                } catch (e) {
+                                                    return <div className="w-full h-full bg-gray-200" />;
+                                                }
+                                            })()}
                                         </div>
                                         <h3 className="font-bold text-gray-900 text-sm mb-1 leading-tight">{request.property.title}</h3>
                                         <div className="flex items-center gap-1 text-gray-500 text-[10px] mb-4 uppercase tracking-wider font-bold">
@@ -128,8 +141,8 @@ export default function AgentRoommatesPage() {
 
                                     <div className="flex items-center gap-2">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${request.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' :
-                                                request.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                                                    'bg-yellow-100 text-yellow-700'
+                                            request.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                                                'bg-yellow-100 text-yellow-700'
                                             }`}>
                                             {request.status}
                                         </span>

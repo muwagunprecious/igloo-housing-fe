@@ -74,8 +74,15 @@ export default function MyListingsPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {properties.map((property) => {
-                        const images = JSON.parse(property.images || '[]');
-                        const mainImage = images[0] || "/placeholder-house.jpg";
+                        let images = [];
+                        try {
+                            images = typeof property.images === 'string'
+                                ? JSON.parse(property.images || '[]')
+                                : (property.images || []);
+                        } catch (e) {
+                            console.error("Failed to parse images", e);
+                        }
+                        const mainImage = Array.isArray(images) && images.length > 0 ? images[0] : "/placeholder-house.jpg";
 
                         return (
                             <div key={property.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
