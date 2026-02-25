@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { getImageUrl } from "@/app/lib/imageUrl";
 import api from "@/app/lib/axios";
 
-export default function ChatPage() {
+function ChatContent() {
     const searchParams = useSearchParams();
     const queryUserId = searchParams.get("userId");
 
@@ -79,9 +79,6 @@ export default function ChatPage() {
     }, [messages]);
 
     const currentChatUser = conversations.find(c => c.id === selectedChatUserId);
-    // If not in conversations list, we might need to fetch their details or just show "Loading/New Chat"
-    // Ideally fetchUser(selectedChatUserId) to get name/avatar if not in conversation list.
-    // For now, if we don't have them, we can show a placeholder or "New Chat".
 
     return (
         <AuthGuard>
@@ -228,5 +225,19 @@ export default function ChatPage() {
                 </div>
             </div>
         </AuthGuard>
+    );
+}
+
+import { Suspense } from "react";
+
+export default function ChatPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        }>
+            <ChatContent />
+        </Suspense>
     );
 }
