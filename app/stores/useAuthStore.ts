@@ -11,6 +11,7 @@ interface User {
     bio?: string;
     universityId?: string;
     isVerified?: boolean;
+    whatsapp?: string;
     token?: string;
 }
 
@@ -46,6 +47,7 @@ export const useAuthStore = create<AuthStore>()(
                         role: userData.role.toLowerCase(), // Ensure lowercase
                         avatar: userData.avatar,
                         bio: userData.bio,
+                        whatsapp: userData.whatsapp,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         token: token
@@ -78,7 +80,8 @@ export const useAuthStore = create<AuthStore>()(
                         email: userData.email,
                         name: userData.fullName,
                         role: userData.role.toLowerCase(), // Ensure lowercase
-                        avatar: userData.avatar,
+                        bio: userData.bio,
+                        whatsapp: userData.whatsapp,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         token: token
@@ -115,6 +118,7 @@ export const useAuthStore = create<AuthStore>()(
                         role: userData.role.toLowerCase(), // Ensure lowercase for frontend
                         avatar: userData.avatar,
                         bio: userData.bio,
+                        whatsapp: userData.whatsapp,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         // Token is presumed to be in storage if this succeeds, or we could store it separately

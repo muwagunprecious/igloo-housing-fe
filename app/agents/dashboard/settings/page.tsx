@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/app/stores/useAuthStore";
-import { User, Shield, CheckCircle, AlertCircle, Building, Mail } from "lucide-react";
+import { User, Shield, CheckCircle, AlertCircle, Building, Mail, Phone, MessageSquare } from "lucide-react";
 import api from "@/app/lib/axios";
 
 export default function AgentSettingsPage() {
@@ -11,7 +11,8 @@ export default function AgentSettingsPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         fullName: user?.name || "",
-        bio: "", // We might need to fetch full profile if bio isn't in store
+        bio: user?.bio || "",
+        whatsapp: user?.whatsapp || "",
     });
 
     // In a real app, we should fetch the full profile on mount to get 'bio' if it's not in the basic user object
@@ -20,14 +21,20 @@ export default function AgentSettingsPage() {
     const handleSave = async () => {
         setIsLoading(true);
         try {
-            // endpoint to update profile
-            // await api.put('/users/profile', formData);
-            // updateUser({ name: formData.fullName });
-            // setIsEditing(false);
-            alert("Profile update simulation - Endpoint needed in backend");
-            setIsEditing(false);
-        } catch (error) {
+            const response = await api.put('/auth/profile', formData);
+            if (response.data.success) {
+                const updatedUser = response.data.data;
+                updateUser({
+                    name: updatedUser.fullName,
+                    bio: updatedUser.bio,
+                    whatsapp: updatedUser.whatsapp
+                });
+                setIsEditing(false);
+                alert("Profile updated successfully!");
+            }
+        } catch (error: any) {
             console.error("Failed to update profile", error);
+            alert(error.response?.data?.message || "Failed to update profile");
         } finally {
             setIsLoading(false);
         }
@@ -120,6 +127,45 @@ export default function AgentSettingsPage() {
                                 <Mail size={16} className="text-gray-400" />
                                 {user.email}
                             </div>
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                            {isEditing ? (
+                                <div className="relative">
+                                    <Phone size={16} className="absolute left-3 top-3 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        value={formData.whatsapp}
+                                        onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
+                                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                        placeholder="e.g. +234 812 345 6789"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2 text-gray-900 py-2">
+                                    <Phone size={16} className="text-gray-400" />
+                                    {user.whatsapp || "Not set"}
+                                </div>
+                            )}
+                            <p className="text-xs text-gray-500 mt-1">This number will be used for the "Contact Agent" button on your listings.</p>
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">About Me / Bio</label>
+                            {isEditing ? (
+                                <textarea
+                                    value={formData.bio}
+                                    onChange={e => setFormData({ ...formData, bio: e.target.value })}
+                                    rows={3}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                    placeholder="Tell students about yourself or your agency..."
+                                />
+                            ) : (
+                                <div className="text-gray-900 py-2 text-sm italic">
+                                    {user.bio || "No bio added yet."}
+                                </div>
+                            )}
                         </div>
 
                         <div className="col-span-2">

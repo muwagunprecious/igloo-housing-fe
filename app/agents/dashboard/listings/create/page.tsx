@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/lib/axios";
-import { Upload, X, Loader2, Home, AlertCircle } from "lucide-react";
+import { Upload, X, Loader2, Home, AlertCircle, Video, Play, Trash2 } from "lucide-react";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { categories as categoryData } from "@/app/data/categories";
 
@@ -18,6 +18,8 @@ export default function CreateListingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [images, setImages] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [video, setVideo] = useState<File | null>(null);
+    const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -50,6 +52,30 @@ export default function CreateListingPage() {
             URL.revokeObjectURL(prev[index]);
             return prev.filter((_, i) => i !== index);
         });
+    };
+
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+
+            // Limit check: 30MB
+            if (file.size > 30 * 1024 * 1024) {
+                alert("Video size must be less than 30MB");
+                return;
+            }
+
+            setVideo(file);
+            const url = URL.createObjectURL(file);
+            setVideoPreviewUrl(url);
+        }
+    };
+
+    const removeVideo = () => {
+        if (videoPreviewUrl) {
+            URL.revokeObjectURL(videoPreviewUrl);
+        }
+        setVideo(null);
+        setVideoPreviewUrl(null);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -88,9 +114,19 @@ export default function CreateListingPage() {
             // Schema has them. 
             // I MUST UPDATE BACKEND CONTROLLER TOO.
 
+            if (video && images.length === 0) {
+                alert("You must upload at least one picture before adding a video");
+                setIsLoading(false);
+                return;
+            }
+
             images.forEach(image => {
                 data.append("images", image);
             });
+
+            if (video) {
+                data.append("video", video);
+            }
 
             await api.post("/properties", data, {
                 headers: { "Content-Type": "multipart/form-data" }
@@ -128,27 +164,69 @@ export default function CreateListingPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                {/* Image Upload */}
-                <div className="space-y-4">
-                    <h2 className="text-lg font-semibold text-gray-900">Property Images</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {previewUrls.map((url, index) => (
-                            <div key={index} className="relative aspect-square rounded-lg overflow-hidden group">
-                                <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                {/* Media Upload */}
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-gray-900">Property Images</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {previewUrls.map((url, index) => (
+                                <div key={index} className="relative aspect-square rounded-lg overflow-hidden group border border-gray-100 shadow-sm">
+                                    <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            ))}
+                            <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors aspect-square">
+                                <Upload className="text-gray-400 mb-2" />
+                                <span className="text-sm text-gray-500 font-medium">Add Images</span>
+                                <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-semibold text-gray-900">Property Video (Optional)</h2>
+                            <span className="text-xs text-gray-500 font-normal italic">Max size: 30MB</span>
+                        </div>
+
+                        {videoPreviewUrl ? (
+                            <div className="relative rounded-xl overflow-hidden bg-black aspect-video max-w-md border border-gray-200 shadow-lg group">
+                                <video
+                                    src={videoPreviewUrl}
+                                    controls
+                                    className="w-full h-full"
+                                />
                                 <button
                                     type="button"
-                                    onClick={() => removeImage(index)}
-                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={removeVideo}
+                                    className="absolute top-4 right-4 bg-red-500/90 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
                                 >
-                                    <X size={14} />
+                                    <Trash2 size={18} />
                                 </button>
                             </div>
-                        ))}
-                        <label className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors aspect-square">
-                            <Upload className="text-gray-400 mb-2" />
-                            <span className="text-sm text-gray-500 font-medium">Add Images</span>
-                            <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
-                        </label>
+                        ) : (
+                            <label className="border-2 border-dashed border-gray-300 rounded-xl py-12 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group max-w-md">
+                                <div className="bg-blue-50 p-3 rounded-full mb-3 group-hover:bg-blue-100 transition-colors">
+                                    <Video className="text-blue-500" />
+                                </div>
+                                <span className="text-sm text-gray-700 font-semibold mb-1">Upload a virtual tour video</span>
+                                <span className="text-xs text-gray-500">MP4, WebM, OGG (Max 30MB)</span>
+                                <input type="file" accept="video/*" onChange={handleVideoChange} className="hidden" />
+                            </label>
+                        )}
+
+                        {!video && (
+                            <div className="flex items-center gap-2 text-xs text-blue-600 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                <Play size={14} />
+                                <p>A video tour significantly increases student interest in your property!</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

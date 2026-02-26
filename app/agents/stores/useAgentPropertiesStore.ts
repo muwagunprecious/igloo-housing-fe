@@ -16,6 +16,7 @@ interface Property {
     isAvailable: boolean;
     status: string; // PENDING, APPROVED, REJECTED or Available, Booked
     images: string[];
+    video?: string;
     amenities: string[];
     agentId: string;
     universityId: string;

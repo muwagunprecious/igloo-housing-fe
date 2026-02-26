@@ -9,6 +9,7 @@ export interface Property {
     location: string;
     address?: string;
     images: string[];
+    video?: string;
     category?: string;
     bedrooms?: number;
     bathrooms?: number;

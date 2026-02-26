@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Share, Heart, MapPin, Wifi, Shield, Zap, Car, User, Camera, Users, X } from "lucide-react";
+import { Star, Share, Heart, MapPin, Wifi, Shield, Zap, Car, User, Camera, Users, X, Video, Phone } from "lucide-react";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import BackButton from "@/app/components/common/BackButton";
@@ -54,6 +54,30 @@ export default function PropertyDetails() {
             toast.success("Roommate request sent!");
         } else {
             toast.error("Failed to send request or request already exists");
+        }
+    };
+
+    const handleShare = async () => {
+        const shareData = {
+            title: property.title,
+            text: `Check out this property on Igloo Estate: ${property.title}`,
+            url: window.location.href,
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.error("Error sharing:", err);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard!");
+            } catch (err) {
+                console.error("Failed to copy link:", err);
+                toast.error("Failed to copy link");
+            }
         }
     };
 
@@ -121,7 +145,10 @@ export default function PropertyDetails() {
                         <span>{property.location}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition underline font-medium">
+                        <button
+                            onClick={handleShare}
+                            className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition underline font-medium"
+                        >
                             <Share size={16} />
                             Share
                         </button>
@@ -177,6 +204,27 @@ export default function PropertyDetails() {
                         </p>
                     </div>
 
+                    {property.video && (
+                        <div className="border-b border-gray-200 pb-8 mb-8">
+                            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                                <Video className="text-blue-600" size={24} />
+                                Virtual Tour
+                            </h3>
+                            <div className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl group border border-gray-100">
+                                <video
+                                    src={getImageUrl(property.video)}
+                                    controls
+                                    className="w-full h-full"
+                                    poster={images[0]}
+                                />
+                                <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-white text-xs font-bold tracking-widest uppercase flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                    Property Highlight
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="border-b border-gray-200 pb-6 mb-6">
                         <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
                         <div className="grid grid-cols-2 gap-4">
@@ -218,18 +266,29 @@ export default function PropertyDetails() {
                             </div>
                         </div>
 
-                        <Link href={`/rooms/${property.id}/book`}>
-                            <Button className="w-full mb-4" size="lg">
-                                Book Now
-                            </Button>
-                        </Link>
+                        {property.agent?.whatsapp ? (
+                            <a
+                                href={`https://wa.me/${property.agent.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello, I'm interested in your property: ${property.title}`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block w-full"
+                            >
+                                <Button className="w-full mb-4 bg-[#25D366] hover:bg-[#128C7E] text-white border-none" size="lg">
+                                    <Phone size={18} className="mr-2" />
+                                    Contact Agent
+                                </Button>
+                            </a>
+                        ) : (
+                            <Link href={`/chat?userId=${property.agent?.id || property.agentId}`} className="block w-full">
+                                <Button className="w-full mb-4" size="lg">
+                                    Contact Agent
+                                </Button>
+                            </Link>
+                        )}
 
-                        <Link href={`/chat?userId=${property.agent?.id || property.agentId}`}>
-                            <Button className="w-full mb-4" size="lg" variant="outline">
-                                Chat with Agent
-                            </Button>
-                        </Link>
-
+                        <div className="text-center text-sm text-gray-500 mb-4 px-2">
+                            Secure your stay by chatting directly with the verified agent.
+                        </div>
                         {property.roommatesAllowed && (
                             <Button
                                 onClick={handleRoommateRequest}
