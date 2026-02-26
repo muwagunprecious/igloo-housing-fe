@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/lib/axios";
 import { Upload, X, Home, MapPin, DollarSign, List, Bed, Bath, Video, Trash2, Play } from "lucide-react";
@@ -10,7 +10,8 @@ import { categories } from "@/app/data/categories";
 
 const PROPERTY_CATEGORIES = categories.filter(c => c.label !== "All").map(c => c.label);
 
-export default function EditListingPage({ params }: { params: { id: string } }) {
+export default function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
@@ -37,7 +38,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
 
     const fetchProperty = async () => {
         try {
-            const response = await api.get(`/properties/${params.id}`);
+            const response = await api.get(`/properties/${id}`);
             if (response.data.success) {
                 const prop = response.data.data;
                 setFormData({
@@ -143,7 +144,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                 data.append('video', '');
             }
 
-            const response = await api.put(`/properties/${params.id}`, data, {
+            const response = await api.put(`/properties/${id}`, data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
