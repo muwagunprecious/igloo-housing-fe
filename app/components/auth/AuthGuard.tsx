@@ -24,7 +24,10 @@ export default function AuthGuard({
 
     useEffect(() => {
         // Wait for store to hydrate from localStorage
-        setIsLoading(false);
+        const handle = requestAnimationFrame(() => {
+            setIsLoading(false);
+        });
+        return () => cancelAnimationFrame(handle);
     }, []);
 
     useEffect(() => {

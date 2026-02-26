@@ -63,7 +63,7 @@ interface AdminStore {
     approveProperty: (id: string) => Promise<boolean>;
     rejectProperty: (id: string, reason: string) => Promise<boolean>;
     fetchStats: () => Promise<void>;
-    fetchUsers: (filters?: any) => Promise<void>;
+    fetchUsers: (filters?: any) => Promise<void>; // eslint-disable-line @typescript-eslint/no-explicit-any
     blockUser: (id: string, reason: string) => Promise<boolean>;
     unblockUser: (id: string) => Promise<boolean>;
     verifyAgent: (id: string) => Promise<boolean>;
@@ -81,12 +81,12 @@ export const useAdminStore = create<AdminStore>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await api.get(`/properties?status=${status}`);
-            const validProperties = response.data.data.map((p: any) => ({
+            const validProperties = response.data.data.map((p: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
                 ...p,
                 images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images
             }));
             set({ properties: validProperties, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -100,7 +100,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -126,7 +126,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
         try {
             const response = await api.get('/admin/stats');
             set({ stats: response.data.data, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -137,7 +137,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
             const params = new URLSearchParams(filters).toString();
             const response = await api.get(`/admin/users?${params}`);
             set({ users: response.data.data, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -151,7 +151,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -166,7 +166,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -181,7 +181,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -196,7 +196,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }

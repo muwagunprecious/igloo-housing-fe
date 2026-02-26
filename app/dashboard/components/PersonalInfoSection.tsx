@@ -64,7 +64,7 @@ export default function PersonalInfoSection() {
                     universityId: response.data.data.universityId,
                 });
             }
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             setError(err.response?.data?.message || "Failed to update profile");
         } finally {
             setIsLoading(false);

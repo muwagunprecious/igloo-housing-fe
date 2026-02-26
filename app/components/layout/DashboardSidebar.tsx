@@ -12,10 +12,16 @@ export default function DashboardSidebar() {
     const [currentHash, setCurrentHash] = useState("");
 
     useEffect(() => {
-        setCurrentHash(window.location.hash);
+        const handle = requestAnimationFrame(() => {
+            setCurrentHash(window.location.hash);
+        });
+
         const handleHashChange = () => setCurrentHash(window.location.hash);
         window.addEventListener("hashchange", handleHashChange);
-        return () => window.removeEventListener("hashchange", handleHashChange);
+        return () => {
+            cancelAnimationFrame(handle);
+            window.removeEventListener("hashchange", handleHashChange);
+        };
     }, []);
 
     const mainLinks = [

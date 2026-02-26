@@ -35,7 +35,7 @@ export default function BookingPage() {
                     <BackButton />
                     <div className="text-center mt-20">
                         <h1 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h1>
-                        <p className="text-gray-600 mb-6">The property you're looking for doesn't exist or is no longer available.</p>
+                        <p className="text-gray-600 mb-6">The property you&apos;re looking for doesn&apos;t exist or is no longer available.</p>
                         <Button onClick={() => router.push("/search")} size="lg">
                             Browse Properties
                         </Button>

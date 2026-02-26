@@ -42,7 +42,7 @@ export default function SecuritySection() {
                 newPassword: "",
                 confirmPassword: ""
             });
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             setError(err.response?.data?.message || "Failed to update password");
         } finally {
             setIsLoading(false);

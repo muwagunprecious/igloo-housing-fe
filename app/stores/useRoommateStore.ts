@@ -33,9 +33,9 @@ interface RoommateStore {
     isLoading: boolean;
     error: string | null;
     fetchMyRequests: () => Promise<void>;
-    fetchFeed: (filters?: any) => Promise<void>;
+    fetchFeed: (filters?: any) => Promise<void>; // eslint-disable-line @typescript-eslint/no-explicit-any
     fetchAgentRequests: () => Promise<void>;
-    createRequest: (data: any) => Promise<boolean>;
+    createRequest: (data: any) => Promise<boolean>; // eslint-disable-line @typescript-eslint/no-explicit-any
     deleteRequest: (id: string) => Promise<boolean>;
 }
 
@@ -51,7 +51,7 @@ export const useRoommateStore = create<RoommateStore>((set) => ({
         try {
             const response = await api.get('/roommate/my-requests');
             set({ requests: response.data.data, isLoading: false }); // Backend uses Response wrapper
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -62,7 +62,7 @@ export const useRoommateStore = create<RoommateStore>((set) => ({
             const params = new URLSearchParams(filters).toString();
             const response = await api.get(`/roommate/feed?${params}`);
             set({ feed: response.data.data, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -72,18 +72,18 @@ export const useRoommateStore = create<RoommateStore>((set) => ({
         try {
             const response = await api.get('/roommate/agent/requests');
             set({ agentRequests: response.data.data, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
 
-    createRequest: async (data: any) => {
+    createRequest: async (data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         set({ isLoading: true, error: null });
         try {
             await api.post('/roommate/request', data);
             set({ isLoading: false });
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -99,7 +99,7 @@ export const useRoommateStore = create<RoommateStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
             return false;
         }

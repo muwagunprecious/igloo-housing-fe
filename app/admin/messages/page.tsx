@@ -134,7 +134,7 @@ export default function AdminMessagesPage() {
                             {/* Message Content */}
                             <div className="flex-1 overflow-hidden">
                                 <p className="text-gray-600 font-bold leading-relaxed bg-gray-50/50 p-6 rounded-3xl border border-gray-50 group-hover:bg-white group-hover:border-black/5 group-hover:text-black transition-all text-sm italic">
-                                    "{msg.message}"
+                                    &quot;{msg.message}&quot;
                                 </p>
                             </div>
 

@@ -53,7 +53,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             const response = await api.get(url);
 
             // Safe parse images
-            const validProperties = response.data.data.map((p: any) => {
+            const validProperties = response.data.data.map((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 let images = [];
                 try {
                     images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []);
@@ -64,7 +64,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             });
 
             set({ properties: validProperties, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
         }
     },
@@ -81,7 +81,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
                 property.images = [];
             }
             set({ currentProperty: property, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
         }
     },
@@ -94,7 +94,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             });
             set({ isLoading: false });
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -108,7 +108,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             });
             set({ isLoading: false });
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -123,7 +123,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }

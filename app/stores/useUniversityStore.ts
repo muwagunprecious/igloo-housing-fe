@@ -30,7 +30,7 @@ export const useUniversityStore = create<UniversityStore>((set, get) => ({
         try {
             const response = await api.get('/university');
             set({ universities: response.data, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -44,7 +44,7 @@ export const useUniversityStore = create<UniversityStore>((set, get) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -59,7 +59,7 @@ export const useUniversityStore = create<UniversityStore>((set, get) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -74,7 +74,7 @@ export const useUniversityStore = create<UniversityStore>((set, get) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }

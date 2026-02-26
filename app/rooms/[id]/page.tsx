@@ -241,7 +241,7 @@ export default function PropertyDetails() {
                     </div>
 
                     <div className="mb-6">
-                        <h3 className="text-xl font-semibold mb-4">Where you'll be</h3>
+                        <h3 className="text-xl font-semibold mb-4">Where you&apos;ll be</h3>
                         <div className="h-[400px] w-full">
                             <MapPlaceholder />
                         </div>
@@ -303,7 +303,7 @@ export default function PropertyDetails() {
                         )}
 
                         <div className="text-center text-sm text-gray-500 mb-4">
-                            You won't be charged yet
+                            You won&apos;t be charged yet
                         </div>
 
                         <div className="flex justify-between text-gray-600 mb-2">

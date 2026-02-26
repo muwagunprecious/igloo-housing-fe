@@ -34,7 +34,7 @@ interface PropertyStore {
     currentProperty: Property | null;
     isLoading: boolean;
     error: string | null;
-    fetchProperties: (filters?: any) => Promise<void>;
+    fetchProperties: (filters?: any) => Promise<void>; // eslint-disable-line @typescript-eslint/no-explicit-any
     fetchProperty: (id: string) => Promise<void>;
 }
 
@@ -51,7 +51,7 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
             const response = await api.get(`/properties?${params}`);
 
             // Safe parse images
-            const validProperties = response.data.data.map((p: any) => {
+            const validProperties = response.data.data.map((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 let images = [];
                 try {
                     images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []);
@@ -62,7 +62,7 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
             });
 
             set({ properties: validProperties, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -72,7 +72,7 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
         try {
             const response = await api.get(`/properties/${id}`);
             set({ currentProperty: response.data.data, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     }

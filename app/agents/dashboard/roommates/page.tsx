@@ -151,7 +151,7 @@ export default function AgentRoommatesPage() {
 
                                 <div className="bg-gray-50 p-4 rounded-xl mb-6 relative">
                                     <div className="absolute top-0 left-4 -translate-y-1/2 bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Student Note</div>
-                                    <p className="text-gray-700 text-sm italic">"{request.bio || "No specific note provided."}"</p>
+                                    <p className="text-gray-700 text-sm italic">&quot;{request.bio || "No specific note provided."}&quot;</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">

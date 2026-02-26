@@ -109,7 +109,7 @@ export default function UniversitySearch({ onSelect, selectedUniversity }: Unive
                                 <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Search size={32} className="text-gray-300" />
                                 </div>
-                                <p className="text-gray-500 font-medium">No universities found matching "{query}"</p>
+                                <p className="text-gray-500 font-medium">No universities found matching &quot;{query}&quot;</p>
                             </div>
                         )}
                     </motion.div>

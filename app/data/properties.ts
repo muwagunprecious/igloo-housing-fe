@@ -1,1 +1,1 @@
-export const properties: any[] = [];
+export const properties: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any

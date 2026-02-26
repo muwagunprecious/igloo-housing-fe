@@ -102,8 +102,8 @@ export default function AdminReportsPage() {
                             key={status}
                             onClick={() => setFilterStatus(status)}
                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filterStatus === status
-                                    ? "bg-black text-white shadow-lg"
-                                    : "text-gray-400 hover:text-black"
+                                ? "bg-black text-white shadow-lg"
+                                : "text-gray-400 hover:text-black"
                                 }`}
                         >
                             {status.replace('_', ' ')}
@@ -138,7 +138,7 @@ export default function AdminReportsPage() {
                                     </p>
                                     <div className="flex items-center gap-2 mt-4 p-3 bg-red-50 text-red-700 rounded-xl text-sm italic font-medium">
                                         <AlertTriangle size={16} />
-                                        "{report.reason}"
+                                        &quot;{report.reason}&quot;
                                     </div>
                                 </div>
                             </div>

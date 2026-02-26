@@ -65,7 +65,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             console.log("Messages read by", data.userId);
         });
 
-        socket.on("notification:receive", (notification: any) => {
+        socket.on("notification:receive", (notification: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.log("🔔 Real-time notification:", notification);
             // This could trigger a toast or update a notification badge
         });
@@ -124,7 +124,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             const response = await api.get('/chat/conversations');
             const conversationsData = response.data.data;
             // Backend returns {user, lastMessage, unreadCount} - reshape for frontend
-            const formattedConversations = conversationsData.map((conv: any) => ({
+            const formattedConversations = conversationsData.map((conv: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
                 id: conv.user.id,
                 fullName: conv.user.fullName,
                 avatar: conv.user.avatar,

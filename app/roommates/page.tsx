@@ -226,7 +226,7 @@ export default function RoommatesPage() {
                             </div>
 
                             <div className="bg-gray-50 rounded-xl p-4 mb-4 flex-1 italic text-gray-600 text-sm border-l-2 border-primary/30">
-                                "{request.bio || "Looking for a compatible roommate!"}"
+                                &quot;{request.bio || "Looking for a compatible roommate!"}&quot;
                             </div>
 
                             {request.houseLink && (

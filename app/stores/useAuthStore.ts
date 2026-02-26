@@ -60,7 +60,7 @@ export const useAuthStore = create<AuthStore>()(
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
 
                     return { success: true, redirectTo };
-                } catch (error: any) {
+                } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
                     console.error("Login error:", error);
                     set({ isLoading: false });
                     const message = error.response?.data?.message || error.message || "Login failed";
@@ -94,7 +94,7 @@ export const useAuthStore = create<AuthStore>()(
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
 
                     return { success: true, redirectTo };
-                } catch (error: any) {
+                } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
                     console.error("Registration error:", error);
                     set({ isLoading: false });
                     const message = error.response?.data?.message || error.message || "Registration failed";

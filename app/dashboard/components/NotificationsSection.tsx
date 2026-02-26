@@ -114,7 +114,7 @@ export default function NotificationsSection() {
                             <Bell size={32} />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">All caught up!</h3>
-                        <p className="text-gray-500">You don't have any notifications right now.</p>
+                        <p className="text-gray-500">You don&apos;t have any notifications right now.</p>
                     </div>
                 ) : (
                     notifications.map((notification) => (

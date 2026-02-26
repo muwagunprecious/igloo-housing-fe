@@ -58,6 +58,18 @@ export default function Dashboard() {
         return () => window.removeEventListener("hashchange", handleHashChange);
     }, []);
 
+    const { requests, agentRequests, fetchMyRequests, fetchAgentRequests, isLoading: roommatesLoading } = useRoommateStore();
+
+    useEffect(() => {
+        if (currentHash === "#roommates") {
+            if (user?.role === 'agent') {
+                fetchAgentRequests();
+            } else {
+                fetchMyRequests();
+            }
+        }
+    }, [user?.role, currentHash, fetchAgentRequests, fetchMyRequests]);
+
     const renderContent = () => {
         switch (currentHash) {
             case "#security":
@@ -99,16 +111,6 @@ export default function Dashboard() {
                     </section>
                 );
             case "#roommates":
-                const { requests, agentRequests, fetchMyRequests, fetchAgentRequests, isLoading: roommatesLoading } = useRoommateStore();
-
-                useEffect(() => {
-                    if (user?.role === 'agent') {
-                        fetchAgentRequests();
-                    } else {
-                        fetchMyRequests();
-                    }
-                }, [user?.role]);
-
                 const displayRequests = user?.role === 'agent' ? agentRequests : requests;
 
                 return (
@@ -188,7 +190,7 @@ export default function Dashboard() {
                             <div className="text-center py-20 bg-white border border-dashed border-gray-300 rounded-2xl">
                                 <Users className="mx-auto mb-4 text-gray-400" size={48} />
                                 <h3 className="text-lg font-bold">No roommate requests</h3>
-                                <p className="text-gray-500 mb-6">You haven't posted any roommate requests yet.</p>
+                                <p className="text-gray-500 mb-6">You haven&apos;t posted any roommate requests yet.</p>
                                 <Link href="/roommates">
                                     <Button>Post a Request</Button>
                                 </Link>

@@ -148,7 +148,7 @@ export default function AgentSettingsPage() {
                                     {user.whatsapp || "Not set"}
                                 </div>
                             )}
-                            <p className="text-xs text-gray-500 mt-1">This number will be used for the "Contact Agent" button on your listings.</p>
+                            <p className="text-xs text-gray-500 mt-1">This number will be used for the &quot;Contact Agent&quot; button on your listings.</p>
                         </div>
 
                         <div className="col-span-2">
