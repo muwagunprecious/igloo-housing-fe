@@ -25,6 +25,7 @@ export interface Property {
         fullName: string;
         avatar?: string;
         email: string;
+        whatsapp?: string;
     };
 }
 
