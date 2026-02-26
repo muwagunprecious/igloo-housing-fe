@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/lib/axios";
 import { Upload, X, Loader2, Home, AlertCircle, Video, Play, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { categories as categoryData } from "@/app/data/categories";
 
@@ -134,14 +135,8 @@ export default function CreateListingPage() {
 
             alert("Property uploaded successfully! It is now pending approval.");
             router.push("/agents/dashboard/listings");
-        } catch (error: any) {
-            console.error("=== PROPERTY CREATION ERROR ===");
-            console.error("Error:", error);
-            console.error("Response:", error.response?.data);
-            console.error("Status:", error.response?.status);
-            console.error("================================");
-
-            const errorMessage = error.response?.data?.message || "Failed to create property. Please try again.";
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            const errorMessage = err.response?.data?.message || "Failed to create property. Please try again.";
             alert(errorMessage);
         } finally {
             setIsLoading(false);
@@ -171,7 +166,7 @@ export default function CreateListingPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {previewUrls.map((url, index) => (
                                 <div key={index} className="relative aspect-square rounded-lg overflow-hidden group border border-gray-100 shadow-sm">
-                                    <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                    <Image src={url} alt={`Preview ${index}`} fill className="object-cover" />
                                     <button
                                         type="button"
                                         onClick={() => removeImage(index)}

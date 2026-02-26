@@ -6,6 +6,7 @@ import { useAdminStore } from "@/app/stores/useAdminStore";
 import { useAgentPropertiesStore } from "@/app/stores/useAgentPropertiesStore";
 import { ArrowLeft, AlertCircle, User, Building2, Search } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import ImageUploadField from "@/app/components/common/ImageUploadField";
 import { categories } from "@/app/data/categories";
@@ -213,7 +214,7 @@ export default function AdminAddPropertyPage() {
                                             }`}
                                     >
                                         <div className={`w-12 h-12 rounded-xl relative overflow-hidden flex-shrink-0 shadow-lg ${formData.agentId === agent.id ? "bg-black/10" : "bg-white/10"}`}>
-                                            {agent.avatar ? <img src={agent.avatar} className="object-cover w-full h-full" /> : <div className="w-full h-full flex items-center justify-center"><User size={20} /></div>}
+                                            {agent.avatar ? <Image src={agent.avatar} alt={agent.fullName} fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center"><User size={20} /></div>}
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-black truncate tracking-tight">{agent.fullName}</p>

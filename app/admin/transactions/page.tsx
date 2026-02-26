@@ -5,7 +5,6 @@ import api from "@/app/lib/axios";
 import {
     Wallet,
     Search,
-    ArrowUpRight,
     ArrowDownLeft,
     Clock,
     User,

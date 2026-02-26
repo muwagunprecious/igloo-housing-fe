@@ -7,9 +7,7 @@ import {
     Bell,
     ShieldCheck,
     Database,
-    CheckCircle2,
     Info,
-    Moon,
     Smartphone,
     Languages
 } from "lucide-react";
@@ -79,7 +77,7 @@ export default function AdminSettingsPage() {
                                         <p className="text-gray-400 text-xs font-medium">{item.desc}</p>
                                     </div>
                                     <button
-                                        onClick={() => handleToggle(item.id as any)}
+                                        onClick={() => handleToggle(item.id as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
                                         className={`w-14 h-8 rounded-full transition-all relative ${toggles[item.id as keyof typeof toggles] ? 'bg-primary' : 'bg-gray-200'}`}
                                     >
                                         <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all shadow-sm ${toggles[item.id as keyof typeof toggles] ? 'right-1' : 'left-1'}`} />

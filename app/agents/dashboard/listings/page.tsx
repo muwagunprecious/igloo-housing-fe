@@ -8,7 +8,7 @@ import Image from "next/image";
 import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function MyListingsPage() {
-    const [properties, setProperties] = useState<any[]>([]);
+    const [properties, setProperties] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {

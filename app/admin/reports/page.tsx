@@ -2,14 +2,11 @@
 
 import { useState } from "react";
 import {
-    FileWarning,
     AlertTriangle,
     CheckCircle,
     Trash2,
     UserX,
     Eye,
-    Search,
-    Filter,
     ShieldAlert
 } from "lucide-react";
 

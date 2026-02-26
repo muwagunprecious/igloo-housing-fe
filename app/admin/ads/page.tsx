@@ -4,14 +4,13 @@ import { useState } from "react";
 import {
     Megaphone,
     Plus,
-    Image as ImageIcon,
     Calendar,
     Power,
     Trash2,
     ArrowUp,
-    ArrowDown,
     Layout
 } from "lucide-react";
+import Image from "next/image";
 import Button from "@/app/components/common/Button";
 
 // Mock Data for Ads
@@ -77,7 +76,7 @@ export default function AdminAdsPage() {
                 {ads.map((ad) => (
                     <div key={ad.id} className="bg-white border border-gray-100 rounded-[40px] overflow-hidden shadow-sm hover:shadow-card-hover transition-all group flex flex-col">
                         <div className="relative h-48 overflow-hidden">
-                            <img src={ad.image} alt={ad.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <Image src={ad.image} alt={ad.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                             <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${ad.active ? 'bg-green-500 text-white' : 'bg-gray-400 text-white'}`}>
                                 {ad.active ? 'Active' : 'Inactive'}
                             </div>

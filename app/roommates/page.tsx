@@ -76,7 +76,7 @@ export default function RoommatesPage() {
                 fetchFeed({ genderPref: filterGender || undefined });
                 fetchMyRequests();
             }
-        } catch (error) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.error(error);
             toast.error("Failed to post request");
         } finally {

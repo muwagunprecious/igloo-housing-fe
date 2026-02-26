@@ -151,7 +151,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
             if (response.data.success) {
                 router.push('/agents/dashboard/listings');
             }
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.error("Update failed", err);
             setError(err.response?.data?.message || "Failed to update listing");
         } finally {

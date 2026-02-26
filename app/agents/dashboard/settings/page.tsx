@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { User, Shield, CheckCircle, AlertCircle, Building, Mail, Phone, MessageSquare } from "lucide-react";
 import api from "@/app/lib/axios";
+import Image from "next/image";
 
 export default function AgentSettingsPage() {
     const { user, updateUser } = useAuthStore();
@@ -32,7 +33,7 @@ export default function AgentSettingsPage() {
                 setIsEditing(false);
                 alert("Profile updated successfully!");
             }
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.error("Failed to update profile", error);
             alert(error.response?.data?.message || "Failed to update profile");
         } finally {
@@ -89,9 +90,9 @@ export default function AgentSettingsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="col-span-2 flex items-center gap-4 mb-4">
-                            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 overflow-hidden">
+                            <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 overflow-hidden relative">
                                 {user.avatar ? (
-                                    <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                                    <Image src={user.avatar} alt="Profile" fill className="object-cover" />
                                 ) : (
                                     <User size={32} />
                                 )}

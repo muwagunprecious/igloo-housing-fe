@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useAdminStore } from "@/app/stores/useAdminStore";
-import { Check, X, MapPin, User, Building2, AlertCircle, Clock, Trash2, CheckCircle2 } from "lucide-react";
-import Button from "@/app/components/common/Button";
+import { MapPin, User, Building2, Clock, Trash2, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 export default function AdminPropertiesPage() {
     const { properties, isLoading, fetchProperties, approveProperty, rejectProperty } = useAdminStore();
@@ -47,8 +47,8 @@ export default function AdminPropertiesPage() {
                             key={status}
                             onClick={() => setFilterStatus(status)}
                             className={`px-6 py-3.5 rounded-[22px] font-black text-[10px] uppercase tracking-widest transition-all duration-500 ${filterStatus === status
-                                    ? "bg-black text-white shadow-2xl shadow-black/20 scale-[1.05] z-10"
-                                    : "text-gray-400 hover:text-black"
+                                ? "bg-black text-white shadow-2xl shadow-black/20 scale-[1.05] z-10"
+                                : "text-gray-400 hover:text-black"
                                 }`}
                         >
                             {status}
@@ -77,9 +77,10 @@ export default function AdminPropertiesPage() {
                             {/* Visual Asset */}
                             <div className="w-full lg:w-96 h-72 lg:h-auto bg-gray-50 lg:shrink-0 relative overflow-hidden">
                                 {Array.isArray(property.images) && property.images.length > 0 ? (
-                                    <img
+                                    <Image
                                         src={property.images[0]}
                                         alt={property.title}
+                                        fill
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                     />
                                 ) : (
@@ -89,8 +90,8 @@ export default function AdminPropertiesPage() {
                                 )}
                                 <div className="absolute top-6 left-6">
                                     <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl backdrop-blur-md ${property.status === 'APPROVED' ? 'bg-green-500/90 text-white' :
-                                            property.status === 'REJECTED' ? 'bg-red-500/90 text-white' :
-                                                'bg-black/80 text-white'
+                                        property.status === 'REJECTED' ? 'bg-red-500/90 text-white' :
+                                            'bg-black/80 text-white'
                                         }`}>
                                         {property.status}
                                     </span>
@@ -129,8 +130,8 @@ export default function AdminPropertiesPage() {
                                             </div>
                                         </div>
                                         <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 flex items-center gap-4 group/item hover:bg-white transition-all">
-                                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-300 group-hover/item:text-primary shadow-sm transition-colors overflow-hidden">
-                                                {property.agent.avatar ? <img src={property.agent.avatar} className="w-full h-full object-cover" /> : <User size={20} />}
+                                            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-300 group-hover/item:text-primary shadow-sm transition-colors overflow-hidden relative">
+                                                {property.agent.avatar ? <Image src={property.agent.avatar} alt={property.agent.fullName} fill className="object-cover" /> : <User size={20} />}
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-gray-300 mb-0.5">Asset Custodian</p>

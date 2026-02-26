@@ -50,12 +50,17 @@ export default function Dashboard() {
         };
 
         // Set initial hash
-        const initialHash = window.location.hash;
-        console.log('--- INITIAL HASH ---', initialHash);
-        setCurrentHash(initialHash);
+        const initialHandle = requestAnimationFrame(() => {
+            const initialHash = window.location.hash;
+            console.log('--- INITIAL HASH ---', initialHash);
+            setCurrentHash(initialHash);
+        });
 
         window.addEventListener("hashchange", handleHashChange);
-        return () => window.removeEventListener("hashchange", handleHashChange);
+        return () => {
+            cancelAnimationFrame(initialHandle);
+            window.removeEventListener("hashchange", handleHashChange);
+        };
     }, []);
 
     const { requests, agentRequests, fetchMyRequests, fetchAgentRequests, isLoading: roommatesLoading } = useRoommateStore();
@@ -176,7 +181,7 @@ export default function Dashboard() {
                                                 </div>
                                             </div>
                                         )}
-                                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 italic">"{req.bio}"</p>
+                                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 italic">&quot;{req.bio}&quot;</p>
                                         <div className="flex justify-between items-center pt-4 border-t border-gray-100 text-sm">
                                             <span className="font-bold text-primary">Budget: ₦{req.budget?.toLocaleString()}</span>
                                             <Link href={`/chat?userId=${req.userId}`}>

@@ -69,7 +69,7 @@ export default function AdminCreateUserPage() {
                 });
                 setTimeout(() => router.push("/admin/users"), 2000);
             }
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             setError(err.response?.data?.message || "Failed to create account");
         } finally {
             setIsLoading(false);

@@ -19,16 +19,16 @@ export default function PersonalInfoSection() {
         universityId: user?.universityId || "",
     });
 
-    // Hydrate form data when user is loaded from store/persist
     useEffect(() => {
         if (user && !formData.fullName && !formData.bio) {
-            setFormData({
+            setFormData(prev => ({
+                ...prev,
                 fullName: user.name || "",
                 bio: user.bio || "",
                 universityId: user.universityId || "",
-            });
+            }));
         }
-    }, [user]);
+    }, [user, formData.fullName, formData.bio]);
 
     useEffect(() => {
         fetchUniversities();

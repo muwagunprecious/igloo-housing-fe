@@ -7,7 +7,6 @@ import {
     LogOut,
     User,
     ChevronDown,
-    Plus,
     Building2,
     Users,
     FileWarning

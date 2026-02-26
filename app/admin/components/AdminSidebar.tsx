@@ -6,7 +6,6 @@ import {
     LayoutDashboard,
     Users,
     Home,
-    Building2,
     MessageSquare,
     Wallet,
     School,

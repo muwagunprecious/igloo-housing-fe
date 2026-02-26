@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAdminStore, AdminUser } from "@/app/stores/useAdminStore";
+import { useAdminStore } from "@/app/stores/useAdminStore";
 import {
     Search,
-    Shield,
-    ShieldAlert,
-    CheckCircle2,
     UserPlus,
     Mail,
     Calendar,
