@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        unoptimized: true,
+
         remotePatterns: [
             {
                 protocol: 'https',
@@ -22,6 +22,11 @@ const nextConfig = {
                 hostname: '127.0.0.1',
                 port: '5000',
                 pathname: '/uploads/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'igloo-housing-backend.vercel.app',
+                pathname: '/**',
             }
         ]
     }
