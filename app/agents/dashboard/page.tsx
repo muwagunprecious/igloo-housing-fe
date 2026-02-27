@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/app/lib/axios";
-import { Eye, MessageSquare, TrendingUp } from "lucide-react";
+import { Eye, MessageSquare, TrendingUp, Home } from "lucide-react";
 import Link from "next/link";
 
 export default function AgentDashboard() {
