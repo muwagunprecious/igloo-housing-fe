@@ -5,7 +5,7 @@ import { Bell, CheckCheck, Trash2, Clock, Loader2, MessageSquare, Info, AlertTri
 import api from "@/app/lib/axios";
 
 export default function NotificationsSection() {
-    const [notifications, setNotifications] = useState<any[]>([]);
+    const [notifications, setNotifications] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [isLoading, setIsLoading] = useState(true);
     const [isActionLoading, setIsActionLoading] = useState(false);
 

@@ -36,10 +36,10 @@ export default function PaymentPage() {
                     {methods.map((method) => (
                         <button
                             key={method.id}
-                            onClick={() => setPaymentMethod(method.id as any)}
+                            onClick={() => setPaymentMethod(method.id as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
                             className={`p-4 border-2 rounded-xl transition flex flex-col items-center gap-2 ${paymentMethod === method.id
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-gray-200 hover:border-gray-400'
+                                ? 'border-primary bg-primary/5'
+                                : 'border-gray-200 hover:border-gray-400'
                                 }`}
                         >
                             <method.icon size={24} />

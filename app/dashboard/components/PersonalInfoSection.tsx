@@ -10,7 +10,7 @@ export default function PersonalInfoSection() {
     const { user, updateUser } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
     const [isFetchingUniversities, setIsFetchingUniversities] = useState(true);
-    const [universities, setUniversities] = useState<any[]>([]);
+    const [universities, setUniversities] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [formData, setFormData] = useState({

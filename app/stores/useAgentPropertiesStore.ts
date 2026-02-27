@@ -40,7 +40,7 @@ interface AgentPropertiesStore {
     clearError: () => void;
 }
 
-export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) => ({
+export const useAgentPropertiesStore = create<AgentPropertiesStore>((set) => ({
     properties: [],
     currentProperty: null,
     isLoading: false,

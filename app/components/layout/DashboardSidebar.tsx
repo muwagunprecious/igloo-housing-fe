@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutDashboard, Building2, Heart, MessageSquare, Receipt, User, Settings, Bell, CreditCard, Users } from "lucide-react";
+import { LayoutDashboard, Building2, Heart, MessageSquare, Receipt, User, Settings, Bell, CreditCard, Users } from "lucide-react";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 
 export default function DashboardSidebar() {

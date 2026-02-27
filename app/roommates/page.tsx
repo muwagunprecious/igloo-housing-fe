@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/app/components/common/Button";
 import ImageUploadField from "@/app/components/common/ImageUploadField";
-import { useRoommateStore, RoommateRequest } from "@/app/stores/useRoommateStore";
+import { useRoommateStore } from "@/app/stores/useRoommateStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { toast } from "@/app/stores/useToastStore";
 import { motion, AnimatePresence } from "framer-motion";

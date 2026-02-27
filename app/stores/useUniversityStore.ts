@@ -20,7 +20,7 @@ interface UniversityStore {
     deleteUniversity: (id: string) => Promise<boolean>;
 }
 
-export const useUniversityStore = create<UniversityStore>((set, get) => ({
+export const useUniversityStore = create<UniversityStore>((set) => ({
     universities: [],
     isLoading: false,
     error: null,

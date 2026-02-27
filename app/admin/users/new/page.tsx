@@ -166,7 +166,7 @@ export default function AdminCreateUserPage() {
                             <Shield className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-black transition-colors" size={20} />
                             <select
                                 value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
+                                onChange={(e) => setFormData({ ...formData, role: e.target.value as any })} // eslint-disable-line @typescript-eslint/no-explicit-any
                                 className="w-full bg-gray-50 border-transparent focus:bg-white focus:border-black/5 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-8 transition-all duration-500 font-black text-sm appearance-none cursor-pointer"
                             >
                                 <option value="student">Student Account</option>

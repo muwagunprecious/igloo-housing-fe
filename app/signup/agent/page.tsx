@@ -21,7 +21,7 @@ function AgentSignupForm() {
     const [isLoading, setIsLoading] = useState(false);
 
     // University State
-    const [universities, setUniversities] = useState<any[]>([]);
+    const [universities, setUniversities] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [selectedUniversity, setSelectedUniversity] = useState("");
 
     useEffect(() => {

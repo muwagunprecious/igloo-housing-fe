@@ -23,7 +23,7 @@ interface PaymentStore {
     resetPayment: () => void;
 }
 
-export const usePaymentStore = create<PaymentStore>((set, get) => ({
+export const usePaymentStore = create<PaymentStore>((set) => ({
     propertyId: null,
     amount: 0,
     duration: '',

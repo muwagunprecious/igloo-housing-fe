@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Share, Heart, MapPin, Wifi, Shield, Zap, Car, User, Camera, Users, X, Video, Phone } from "lucide-react";
+import { Star, Share, Heart, Wifi, Shield, Zap, Car, Camera, Users, X, Video, Phone } from "lucide-react";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import BackButton from "@/app/components/common/BackButton";

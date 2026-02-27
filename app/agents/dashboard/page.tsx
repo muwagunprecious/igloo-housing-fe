@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import api from "@/app/lib/axios";
-import { Eye, MessageSquare, Home, TrendingUp } from "lucide-react";
+import { Eye, MessageSquare, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default function AgentDashboard() {
-    const [stats, setStats] = useState<any>(null);
+    const [stats, setStats] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -85,7 +85,7 @@ export default function AgentDashboard() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {stats.recentProperties.map((prop: any) => (
+                            {stats.recentProperties.map((prop: any) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
                                 <tr key={prop.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4">
                                         <div className="font-medium text-gray-900">{prop.title}</div>

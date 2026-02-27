@@ -115,7 +115,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
                 isLoading: false
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useFilterStore } from "@/app/stores/useFilterStore";
-import { Building2, Users, Bed, Home } from "lucide-react";
+import { Building2, Home } from "lucide-react";
 
 const quickFilters = [
     { label: "All", value: "", icon: Home },

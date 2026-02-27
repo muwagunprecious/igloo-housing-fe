@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { bookings, transactions, recentChats } from "@/app/data/dashboard";
 import { useFavoritesStore } from "@/app/stores/useFavoritesStore";
 import { useViewHistoryStore } from "@/app/stores/useViewHistoryStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { properties } from "@/app/data/properties";
-import PropertyCard from "@/app/components/features/PropertyCard";
+
 import DashboardSidebar from "@/app/components/layout/DashboardSidebar";
 import SecuritySection from "./components/SecuritySection";
 import NotificationsSection from "./components/NotificationsSection";
 import PersonalInfoSection from "./components/PersonalInfoSection";
-import { User, Settings, Bell, Shield, CreditCard, Heart, Home, MessageSquare, Receipt, Calendar, Users } from "lucide-react";
+import { User, Settings, Bell, Shield, CreditCard, Home, MessageSquare, Receipt, Users } from "lucide-react";
 import { useRoommateStore } from "@/app/stores/useRoommateStore";
 import Button from "@/app/components/common/Button";
 import Link from "next/link";
@@ -27,8 +27,6 @@ export default function Dashboard() {
     const favorites = useFavoritesStore((state) => state.favorites);
     const viewedProperties = useViewHistoryStore((state) => state.viewedProperties);
 
-    const favoriteProperties = properties.filter((p) => favorites.includes(p.id));
-    const recentlyViewedProperties = properties.filter((p) => viewedProperties.slice(0, 3).includes(p.id));
     const activeBookings = bookings.filter((b) => b.status === "Active");
 
     useEffect(() => {
@@ -170,7 +168,7 @@ export default function Dashboard() {
                                                                     className="object-cover"
                                                                 />
                                                             );
-                                                        } catch (e) {
+                                                        } catch {
                                                             return <div className="w-full h-full bg-gray-200" />;
                                                         }
                                                     })()}

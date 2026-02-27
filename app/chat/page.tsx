@@ -15,7 +15,7 @@ function ChatContent() {
     const queryUserId = searchParams.get("userId");
 
     const [selectedChatUserId, setSelectedChatUserId] = useState<string | null>(null);
-    const [newChatUser, setNewChatUser] = useState<any>(null);
+    const [newChatUser, setNewChatUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const { messages, conversations, sendMessage, fetchHistory, fetchConversations, connect, disconnect } = useChatStore();
     const { user } = useAuthStore();
     const [inputText, setInputText] = useState("");

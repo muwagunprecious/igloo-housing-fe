@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Menu, User, Home, LayoutDashboard, Building2, MessageSquare, Users, X, LogOut } from "lucide-react";
+import { Menu, User, Home, LayoutDashboard, Building2, MessageSquare, Users, X, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";

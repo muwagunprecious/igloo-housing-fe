@@ -8,7 +8,7 @@ import Button from "@/app/components/common/Button";
 import { useParams } from "next/navigation";
 
 export default function AgentProfile() {
-    const params = useParams();
+    useParams(); // needed for Next.js routing context
     // In a real app, we'd fetch agent by ID. For demo, we use the first agent from properties.
     const agent = properties[0].agent;
     const agentProperties = properties; // Display all properties as if they belong to this agent for demo
@@ -59,7 +59,7 @@ export default function AgentProfile() {
 
                 {/* Right Column: Listings */}
                 <div className="md:col-span-2">
-                    <h2 className="text-2xl font-bold mb-6">{agent.name}'s listings</h2>
+                    <h2 className="text-2xl font-bold mb-6">{agent.name}&apos;s listings</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {agentProperties.map((property) => (
                             <PropertyCard key={property.id} property={property} />

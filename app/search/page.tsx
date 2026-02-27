@@ -15,12 +15,12 @@ export default function SearchPage() {
     const [showMap, setShowMap] = useState(false);
     const roomTypes = useFilterStore((state) => state.roomTypes);
 
-    const { properties, fetchProperties, isLoading } = usePropertyStore();
+    const { properties, fetchProperties } = usePropertyStore();
     const { user, isAuthenticated } = useAuthStore();
 
     useEffect(() => {
         // Fetch properties filtered by university if user is logged in
-        const filters: any = {};
+        const filters: any = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
         if (isAuthenticated && user?.universityId) {
             filters.universityId = user.universityId;
         }

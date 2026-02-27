@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import api from "@/app/lib/axios";
-import { Upload, X, Home, MapPin, DollarSign, List, Bed, Bath, Users } from "lucide-react";
+import { Upload, X, Home, MapPin, DollarSign, List, Bed, Bath } from "lucide-react";
 import Image from "next/image";
 import { categories } from "@/app/data/categories";
 
@@ -12,7 +12,6 @@ const PROPERTY_CATEGORIES = categories.filter(c => c.label !== "All").map(c => c
 
 export default function CreateListingPage() {
     const router = useRouter();
-    const { user } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -31,7 +30,7 @@ export default function CreateListingPage() {
     const [previews, setPreviews] = useState<string[]>([]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
+        const { name, value } = e.target; // eslint-disable-line @typescript-eslint/no-unused-vars
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -89,7 +88,7 @@ export default function CreateListingPage() {
             if (response.data.success) {
                 router.push('/agents/dashboard');
             }
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.error("Upload failed", err);
             setError(err.response?.data?.message || "Failed to create listing");
         } finally {

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
-import { useToastStore, Toast as ToastType } from '@/app/stores/useToastStore';
+import { useToastStore } from '@/app/stores/useToastStore';
 
 const icons = {
     success: <CheckCircle className="text-green-500" size={20} />,

@@ -4,7 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import api from "@/app/lib/axios";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { io, Socket } from "socket.io-client";
-import { Send, User, Search, Loader2, MessageSquare } from "lucide-react";
+import { Send, Search, Loader2, MessageSquare } from "lucide-react";
+import Image from "next/image";
 
 type Message = {
     id?: string;
@@ -157,11 +158,9 @@ export default function AgentMessagesPage() {
                                 onClick={() => setActiveConversation(conv)}
                                 className={`p-4 flex items-start gap-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${activeConversation?.partner.id === conv.partner.id ? 'bg-green-50 border-green-100' : ''}`}
                             >
-                                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 flex-shrink-0">
-                                    {conv.partner.avatar ? (
-                                        <img src={conv.partner.avatar} alt={conv.partner.fullName} className="w-full h-full rounded-full object-cover" />
-                                    ) : (
-                                        <User size={20} />
+                                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 flex-shrink-0 relative overflow-hidden">
+                                    {conv.partner.avatar && (
+                                        <Image src={conv.partner.avatar} alt={conv.partner.fullName} fill className="object-cover" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">

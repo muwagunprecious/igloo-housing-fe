@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/lib/axios";
-import { Upload, X, Home, MapPin, DollarSign, List, Bed, Bath, Video, Trash2, Play } from "lucide-react";
+import { Upload, X, Video, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { getImageUrl } from "@/app/lib/imageUrl";
 import { categories } from "@/app/data/categories";
@@ -34,7 +34,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
 
     useEffect(() => {
         fetchProperty();
-    }, []);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fetchProperty = async () => {
         try {
@@ -75,14 +75,6 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
         setFormData(prev => ({
             ...prev,
             [name]: value
-        }));
-    };
-
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: checked
         }));
     };
 

@@ -1,4 +1,4 @@
-import { Home, Building2, Bed, Users, Zap, Coffee, Wifi, MapPin } from "lucide-react";
+import { Home, Building2, Zap, Coffee, MapPin } from "lucide-react";
 
 export const categories = [
     { label: "All", icon: Home },

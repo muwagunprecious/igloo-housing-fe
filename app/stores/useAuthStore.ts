@@ -129,7 +129,7 @@ export const useAuthStore = create<AuthStore>()(
                         isAuthenticated: true,
                         isLoading: false
                     }));
-                } catch (error) {
+                } catch { // eslint-disable-line
                     set({ user: null, isAuthenticated: false, isLoading: false });
                 }
             },

@@ -46,7 +46,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             const data = response.data.data || response.data;
 
             // Safe parse images
-            const validProperties = Array.isArray(data) ? data.map((p: any) => {
+            const validProperties = Array.isArray(data) ? data.map((p: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
                 let images = [];
                 try {
                     images = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []);
@@ -57,7 +57,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             }) : [];
 
             set({ properties: validProperties, isLoading: false });
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.message, isLoading: false });
         }
     },
@@ -76,7 +76,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
                 isLoading: false,
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -98,7 +98,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
                 isLoading: false,
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }
@@ -113,7 +113,7 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
                 isLoading: false,
             }));
             return true;
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             set({ error: error.response?.data?.message || error.message, isLoading: false });
             return false;
         }

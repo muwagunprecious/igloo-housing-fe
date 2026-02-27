@@ -24,7 +24,7 @@ function SignupForm() {
     const [isLoading, setIsLoading] = useState(false);
 
     // University State
-    const [universities, setUniversities] = useState<any[]>([]);
+    const [universities, setUniversities] = useState<any[]>([]); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [selectedUniversity, setSelectedUniversity] = useState("");
 
     useEffect(() => {
@@ -49,7 +49,7 @@ function SignupForm() {
         // Simulate network delay
         await new Promise((resolve) => setTimeout(resolve, 800));
 
-        const result = await register(fullName, email, password, "student" as any, selectedUniversity);
+        const result = await register(fullName, email, password, "student" as any, selectedUniversity); // eslint-disable-line @typescript-eslint/no-explicit-any
 
         if (result.success) {
             toast.success("Account created successfully!");

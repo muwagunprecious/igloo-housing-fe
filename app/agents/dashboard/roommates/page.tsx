@@ -8,7 +8,6 @@ import {
     MessageSquare,
     Clock,
     MapPin,
-    User,
     AlertCircle,
     Loader2
 } from "lucide-react";
@@ -31,10 +30,9 @@ export default function AgentRoommatesPage() {
         try {
             const response = await api.put(`/roommate/request/${requestId}/status`, { status });
             if (response.data.success) {
-                toast.success(`Request ${status.toLowerCase()}ed successfully`);
                 fetchAgentRequests();
             }
-        } catch (err: any) {
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             toast.error(err.response?.data?.message || "Failed to update status");
         } finally {
             setActionLoading(null);
@@ -98,7 +96,7 @@ export default function AgentRoommatesPage() {
                                                             className="object-cover"
                                                         />
                                                     );
-                                                } catch (e) {
+                                                } catch {
                                                     return <div className="w-full h-full bg-gray-200" />;
                                                 }
                                             })()}
