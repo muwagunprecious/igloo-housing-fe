@@ -19,8 +19,7 @@ export default function UniversitySearch({ onSelect, selectedUniversity }: Unive
     const displayValue = selectedUni ? selectedUni.name : query;
 
     const filteredUniversities = universities.filter((uni) =>
-        uni.name.toLowerCase().includes(query.toLowerCase()) ||
-        
+        uni.name.toLowerCase().includes(query.toLowerCase()) || uni.state.toLowerCase().includes(query.toLowerCase())   
     );
 
     useEffect(() => {
