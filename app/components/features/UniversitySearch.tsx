@@ -20,7 +20,7 @@ export default function UniversitySearch({ onSelect, selectedUniversity }: Unive
 
     const filteredUniversities = universities.filter((uni) =>
         uni.name.toLowerCase().includes(query.toLowerCase()) ||
-        uni.location.toLowerCase().includes(query.toLowerCase())
+        
     );
 
     useEffect(() => {
@@ -100,7 +100,7 @@ export default function UniversitySearch({ onSelect, selectedUniversity }: Unive
                                     </div>
                                     <div>
                                         <p className="font-bold text-gray-900">{uni.name}</p>
-                                        <p className="text-sm text-gray-500 mt-0.5">{uni.location}</p>
+                                        <p className="text-sm text-gray-500 mt-0.5">{uni.state}</p>
                                     </div>
                                 </button>
                             ))
