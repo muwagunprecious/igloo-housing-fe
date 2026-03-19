@@ -10,6 +10,7 @@ interface FilterBarProps {
     onCategoryChange: (category: string) => void;
     sortOrder: SortOrder;
     onSortChange: (order: SortOrder) => void;
+    onOpenFilters?: () => void; // <-- Added this prop
 }
 
 export default function FilterBar({
@@ -17,6 +18,7 @@ export default function FilterBar({
     onCategoryChange,
     sortOrder,
     onSortChange,
+    onOpenFilters = () => {}, // <-- Default empty function so it doesn't crash if missing
 }: FilterBarProps) {
     const handleSortToggle = () => {
         if (sortOrder === null) onSortChange("asc");
@@ -29,16 +31,17 @@ export default function FilterBar({
     return (
         <div className="bg-white pt-4 pb-2">
             <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 flex flex-row items-center gap-2 sm:gap-4">
-                {/* Filter Icon - always leftmost */}
+                
+                {/* Filter Icon - Opens the Advanced Filters Modal */}
                 <button
-                    onClick={() => {/* TODO: open filter modal */}}
+                    onClick={onOpenFilters} // <-- Wired up the modal trigger!
                     className="flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-full hover:bg-gray-100 shrink-0"
                     aria-label="Open filters"
                 >
                     <SlidersHorizontal size={20} />
                 </button>
 
-                {/* Categories - flex and shrink to fit */}
+                {/* Categories */}
                 <div className="flex-1 flex flex-row items-center justify-start overflow-x-auto hide-scrollbar gap-2 sm:gap-4 md:gap-6 pb-2">
                     {categories.map((item) => (
                         <div
@@ -65,7 +68,7 @@ export default function FilterBar({
                     ))}
                 </div>
 
-                {/* Sort Button - visible on all screens, compact on mobile */}
+                {/* Sort Button */}
                 <button
                     onClick={handleSortToggle}
                     className={`
@@ -84,7 +87,6 @@ export default function FilterBar({
                             ? "Price: High to Low"
                             : "Sort by Price"}
                     </span>
-                    {/* On very small screens, show only icon + short label */}
                     <span className="xs:hidden">
                         {sortOrder === "asc"
                             ? "Low"

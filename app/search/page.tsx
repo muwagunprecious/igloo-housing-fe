@@ -1,15 +1,15 @@
 "use client";
 
 import PropertyCard from "@/app/components/features/PropertyCard";
-import FilterBar from "@/app/components/features/FilterBar";
+import FilterBar, { SortOrder } from "@/app/components/features/FilterBar";
 import QuickFilters from "@/app/components/features/QuickFilters";
 import MapPlaceholder from "@/app/components/features/MapPlaceholder";
 import { useFilterStore } from "@/app/stores/useFilterStore";
 import { Map } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
-import { getImageUrl } from "@/app/lib/imageUrl"; // Needed for image mapping
+import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function SearchPage() {
     const [showMap, setShowMap] = useState(false);
@@ -18,50 +18,56 @@ export default function SearchPage() {
     const { properties, fetchProperties } = usePropertyStore();
     const { user, isAuthenticated } = useAuthStore();
 
-    // 1. Add the state required by your updated FilterBar
-    const [filters, setFilters] = useState({
-        category: "",
-        minPrice: "",
-        maxPrice: "",
-    });
-
-    const updateFilter = useCallback((key: string, value: string) => {
-        setFilters(prev => ({ ...prev, [key]: value }));
-    }, []);
+    // ✅ ADDED ALL MISSING STATE VARIABLES HERE ✅
+    const [selectedCategory, setSelectedCategory] = useState("All");
+    const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
     useEffect(() => {
-        // Fetch properties filtered by university and category
-        const apiFilters: any = { ...filters };
-        
+        // Fetch base properties from API
+        const apiFilters: any = {};
         if (isAuthenticated && user?.universityId) {
             apiFilters.universityId = user.universityId;
         }
+        fetchProperties(apiFilters);
+    }, [isAuthenticated, user?.universityId, fetchProperties]);
 
-        // Clean out empty filters
-        const activeFilters = Object.fromEntries(
-            Object.entries(apiFilters).filter(([_, value]) => value !== "" && value !== "All")
-        );
+    // Apply all filters and sorting client‑side
+    const displayedProperties = useMemo(() => {
+        let filtered = properties;
 
-        fetchProperties(activeFilters);
-    }, [isAuthenticated, user?.universityId, fetchProperties, filters]);
+        // 1. Filter by QuickFilters (from Zustand store)
+        if (roomTypes.length > 0) {
+            filtered = filtered.filter((p) => roomTypes.includes(p.category || ""));
+        }
 
-    // Client-side quick filtering based on room types
-    const filteredProperties = roomTypes.length > 0
-        ? properties.filter((p) => roomTypes.includes(p.category || ""))
-        : properties;
+        // 2. Filter by Top FilterBar Category
+        if (selectedCategory !== "All") {
+            filtered = filtered.filter(p => p.category === selectedCategory);
+        }
+
+        // 3. Sort by price
+        if (sortOrder) {
+            filtered = [...filtered].sort((a, b) =>
+                sortOrder === "asc" ? (a.price || 0) - (b.price || 0) : (b.price || 0) - (a.price || 0)
+            );
+        }
+
+        return filtered;
+    }, [properties, roomTypes, selectedCategory, sortOrder]);
 
     return (
         <div className="pt-[80px]">
             <div className="sticky top-[80px] bg-white z-40 border-b border-gray-200">
                 <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
-                    
-                    {/* 2. Provide the required props to FilterBar */}
+                    {/* FilterBar now has all the state it needs! */}
                     <FilterBar 
-                        currentFilters={filters}
-                        onFilterChange={updateFilter}
-                        onOpenFilters={() => console.log("Open Advanced Filters")} // Placeholder for your modal
+                        selectedCategory={selectedCategory}
+                        onCategoryChange={setSelectedCategory}
+                        sortOrder={sortOrder}
+                        onSortChange={setSortOrder}
+                        onOpenFilters={() => setIsFilterModalOpen(true)}
                     />
-                    
                     <div className="py-4">
                         <QuickFilters />
                     </div>
@@ -69,13 +75,12 @@ export default function SearchPage() {
             </div>
 
             <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-6">
-                <p className="text-sm text-gray-600 mb-6">{filteredProperties.length} properties available</p>
+                <p className="text-sm text-gray-600 mb-6">{displayedProperties.length} properties available</p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {filteredProperties.map((property) => {
-                                // 3. MUST map the property safely just like on the Home and Favorites page
+                            {displayedProperties.map((property) => {
                                 if (!property) return null;
 
                                 let imageList: string[] = [];
@@ -123,6 +128,8 @@ export default function SearchPage() {
                     {showMap ? 'Show list' : 'Show map'}
                 </button>
             </div>
+
+            {/* Optional: You can paste the Advanced Filters Modal block here if you want it on this page too! */}
         </div>
     );
 }
