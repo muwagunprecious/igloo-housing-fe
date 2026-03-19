@@ -115,7 +115,7 @@ const displayedProperties = useMemo(() => {
                         <p className="text-sm text-red-600">Error loading properties: {error}</p>
                     ) : (
                         <p className="text-sm text-gray-600">
-                            {displayedProperties.length} properties available
+                            
                             {selectedUniversity && " near selected university"}
                             {selectedLocation && ` in ${selectedLocation}`}
                             {selectedCategory !== "All" && ` · ${selectedCategory}`}
