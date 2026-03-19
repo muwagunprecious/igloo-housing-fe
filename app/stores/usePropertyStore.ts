@@ -36,6 +36,10 @@ interface PropertyStore {
     error: string | null;
     fetchProperties: (filters?: Record<string, string>) => Promise<void>;
     fetchProperty: (id: string) => Promise<void>;
+    
+    // NEW: Added methods for Editing and Deleting
+    deleteProperty: (id: string) => Promise<boolean>;
+    updateProperty: (id: string, propertyData: Partial<Property>) => Promise<boolean>;
 }
 
 export const usePropertyStore = create<PropertyStore>((set) => ({
@@ -71,9 +75,61 @@ export const usePropertyStore = create<PropertyStore>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await api.get(`/properties/${id}`);
-            set({ currentProperty: response.data.data, isLoading: false });
+            
+            // Safely parse the single property's images as well
+            let parsedImages = [];
+            const rawImages = response.data.data.images;
+            try {
+                parsedImages = typeof rawImages === 'string' ? JSON.parse(rawImages) : (rawImages || []);
+            } catch (e) {
+                console.error("Failed to parse single property images", e);
+            }
+            
+            set({ 
+                currentProperty: { ...response.data.data, images: parsedImages }, 
+                isLoading: false 
+            });
         } catch (error: any) {
             set({ error: error.message, isLoading: false });
+        }
+    },
+
+    // NEW: Delete Property Implementation
+  deleteProperty: async (id) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.delete(`/properties/${id}`);
+            
+            set((state) => ({
+                properties: state.properties.filter(p => p.id !== id),
+                currentProperty: state.currentProperty?.id === id ? null : state.currentProperty,
+                isLoading: false
+            }));
+            return true;
+        } catch (error: any) {
+            // NEW: Log the exact backend error response
+            console.error("DELETE ERROR:", error.response?.data || error.message);
+            set({ error: error.message, isLoading: false });
+            return false;
+        }
+    },
+
+    updateProperty: async (id, propertyData) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.patch(`/properties/${id}`, propertyData);
+            
+            set((state) => ({
+                properties: state.properties.map(p => p.id === id ? { ...p, ...propertyData } : p),
+                currentProperty: state.currentProperty?.id === id ? { ...state.currentProperty, ...propertyData } as Property : state.currentProperty,
+                isLoading: false
+            }));
+            return true;
+        } catch (error: any) {
+            // NEW: Log the exact backend error response
+            console.error("UPDATE ERROR:", error.response?.data || error.message);
+            set({ error: error.message, isLoading: false });
+            return false;
         }
     }
 }));

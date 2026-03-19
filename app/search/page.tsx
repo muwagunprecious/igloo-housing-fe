@@ -75,8 +75,6 @@ export default function SearchPage() {
             </div>
 
             <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-6">
-                <p className="text-sm text-gray-600 mb-6">{displayedProperties.length} properties available</p>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
