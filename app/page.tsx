@@ -23,17 +23,21 @@ export default function Home() {
     }, [fetchProperties]);
 
     // Apply all filters and sorting client‑side
-    const displayedProperties = useMemo(() => {
+const displayedProperties = useMemo(() => {
         let filtered = properties;
 
-        // Filter by university
+        // Filter by university (Strict equality is fine here because IDs are exact)
         if (selectedUniversity) {
             filtered = filtered.filter(p => p.universityId === selectedUniversity);
         }
 
-        // Filter by location (exact match on the `location` field)
-        if (selectedLocation) {
-            filtered = filtered.filter(p => p.location === selectedLocation);
+        // Filter by location (Use case-insensitive partial matching)
+        if (selectedLocation && selectedLocation.trim() !== "") {
+            const searchLower = selectedLocation.toLowerCase();
+            filtered = filtered.filter(p => 
+                p.location?.toLowerCase().includes(searchLower) || 
+                p.address?.toLowerCase().includes(searchLower)
+            );
         }
 
         // Filter by category
