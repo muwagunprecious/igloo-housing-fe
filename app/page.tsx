@@ -148,11 +148,12 @@ const displayedProperties = useMemo(() => {
                                 lng: 0,
                                 address: property.location || "Location not available",
                             },
-                            distance: property.distance || "N/A",
-                            period: property.period || "year",
-                            price: property.price || 0,
-                            rating: property.rating || 4.5,
-                            description: property.description || "",
+                            distance: "N/A", // Hardcode fallback since it's not in the DB yet
+    period: property.category || "year", // Use category instead of period
+    price: property.price || 0,
+    rating: 4.5, // Hardcode fallback
+    
+    description: property.description || "",
                         };
 
                         return <PropertyCard key={property.id} property={mappedProperty} />;
