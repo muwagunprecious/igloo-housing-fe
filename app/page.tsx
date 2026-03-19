@@ -58,7 +58,7 @@ const displayedProperties = useMemo(() => {
     return (
         <div className="relative">
             {/* Hero Section */}
-            <div className="relative h-[100dvh] md:h-[100dvh] flex items-center justify-center z-40">
+            <div className="relative py-12 md:h-[100dvh] flex items-center justify-center z-40">
                 <div className="absolute inset-0 z-0 overflow-hidden">
                     <Image
                         src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"

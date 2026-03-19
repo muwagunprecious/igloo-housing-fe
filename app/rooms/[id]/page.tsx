@@ -1,11 +1,11 @@
 "use client";
 
-import { Star, Share, Heart, Wifi, Shield, Zap, Car, Camera, Users, X, Video, Phone } from "lucide-react";
+import { Star, Share, Heart, Wifi, Shield, Zap, Car, Camera, Users, X, Video, Phone, Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import BackButton from "@/app/components/common/BackButton";
 import MapPlaceholder from "@/app/components/features/MapPlaceholder";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "@/app/stores/useToastStore";
@@ -16,10 +16,16 @@ import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function PropertyDetails() {
     const params = useParams();
+    const router = useRouter();
     const id = params.id as string;
+    
+    // Assume you might add a deleteProperty function to your store later
     const { currentProperty, fetchProperty, isLoading, error } = usePropertyStore();
     const { createRequest, isLoading: isRequesting } = useRoommateStore();
-    const { isAuthenticated } = useAuthStore();
+    
+    // Grab the full user object to check roles and IDs
+    const { user, isAuthenticated } = useAuthStore();
+    
     const [requestSent, setRequestSent] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState({
@@ -32,6 +38,26 @@ export default function PropertyDetails() {
             fetchProperty(id);
         }
     }, [id, fetchProperty]);
+
+    // --- NEW: Authorization Logic for Edit/Delete ---
+    const isAdmin = user?.role === 'admin';
+    const isOwner = user?.id === currentProperty?.agentId;
+    const canManage = isAdmin || isOwner;
+
+const handleDeleteProperty = async () => {
+        if (window.confirm("Are you sure you want to delete this property? This action cannot be undone.")) {
+            // Wait for the store to return true or false
+            const success = await usePropertyStore.getState().deleteProperty(id);
+            
+            if (success) {
+                toast.success("Property deleted successfully!");
+                router.push(isAdmin ? '/admin/dashboard' : '/agents/dashboard');
+            } else {
+                toast.error("Failed to delete property.");
+                // Notice there is NO router.push here, so they stay on the page!
+            }
+        }
+    };
 
     const handleRoommateRequest = () => {
         if (!isAuthenticated) {
@@ -91,15 +117,14 @@ export default function PropertyDetails() {
 
     const property = {
         ...currentProperty,
-        rating: 4.8, // Mock
-        reviews: 124, // Mock
-        specs: { guests: 2, beds: 1, baths: 1 }, // Mock
-        amenities: ["WiFi", "24/7 Security", "Water"], // Mock
-        period: "year", // Mock
-        distance: "5 mins walk" // Mock
+        rating: 4.8, 
+        reviews: 124, 
+        specs: { guests: 2, beds: 1, baths: 1 }, 
+        amenities: ["WiFi", "24/7 Security", "Water"], 
+        period: "year", 
+        distance: "5 mins walk" 
     };
 
-    // Ensure images has fallback
     let imageList: string[] = [];
     if (typeof property.images === 'string') {
         try {
@@ -135,8 +160,8 @@ export default function PropertyDetails() {
             {/* Header */}
             <div className="mb-6 mt-4">
                 <h1 className="text-2xl font-semibold text-gray-900 mb-2">{property.title}</h1>
-                <div className="flex flex-row justify-between items-center text-sm">
-                    <div className="flex items-center gap-2 font-medium underline cursor-pointer">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 text-sm">
+                    <div className="flex flex-wrap items-center gap-2 font-medium underline cursor-pointer">
                         <Star size={14} className="fill-black" />
                         <span>{property.rating}</span>
                         <span>·</span>
@@ -144,7 +169,29 @@ export default function PropertyDetails() {
                         <span>·</span>
                         <span>{property.location}</span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                        {/* NEW: Admin & Owner Management Buttons */}
+                        {canManage && (
+                            <>
+                                <button 
+                                    onClick={() => router.push(isAdmin ? `/admin/properties/${id}/edit` : `/agents/properties/${id}/edit`)}
+                                    className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition font-medium"
+                                >
+                                    <Edit size={16} />
+                                    Edit
+                                </button>
+                                <button 
+                                    onClick={handleDeleteProperty}
+                                    className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition font-medium"
+                                >
+                                    <Trash2 size={16} />
+                                    Delete
+                                </button>
+                                <div className="hidden sm:block w-px h-4 bg-gray-300 mx-1"></div>
+                            </>
+                        )}
+
                         <button
                             onClick={handleShare}
                             className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition underline font-medium"
@@ -165,7 +212,6 @@ export default function PropertyDetails() {
                 <div className="col-span-2 row-span-2 relative cursor-pointer hover:opacity-95 transition">
                     <Image src={images[0]} alt="Main" fill className="object-cover" />
                 </div>
-                {/* Simplified Grid for dynamic images, checking bounds */}
                 <div className="relative cursor-pointer hover:opacity-95 transition">
                     <Image src={images[1] || images[0]} alt="Image 2" fill className="object-cover" />
                 </div>
@@ -199,7 +245,7 @@ export default function PropertyDetails() {
 
                     <div className="border-b border-gray-200 pb-6 mb-6">
                         <h3 className="text-xl font-semibold mb-4">About this place</h3>
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                             {property.description}
                         </p>
                     </div>
@@ -241,7 +287,7 @@ export default function PropertyDetails() {
                     </div>
 
                     <div className="mb-6">
-                        <h3 className="text-xl font-semibold mb-4">Where you&apos;ll be</h3>
+                        <h3 className="text-xl font-semibold mb-4">Where you'll be</h3>
                         <div className="h-[400px] w-full">
                             <MapPlaceholder />
                         </div>
@@ -303,7 +349,7 @@ export default function PropertyDetails() {
                         )}
 
                         <div className="text-center text-sm text-gray-500 mb-4">
-                            You won&apos;t be charged yet
+                            You won't be charged yet
                         </div>
 
                         <div className="flex justify-between text-gray-600 mb-2">
