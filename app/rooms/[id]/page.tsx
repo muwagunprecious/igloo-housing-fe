@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Share, Heart, Wifi, Shield, Zap, Car, Camera, Users, X, Video, Phone } from "lucide-react";
+import { Star, Share, Heart, Camera, Users, X, Video, Phone } from "lucide-react";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import BackButton from "@/app/components/common/BackButton";
@@ -94,7 +94,6 @@ export default function PropertyDetails() {
         rating: 4.8, // Mock
         reviews: 124, // Mock
         specs: { guests: 2, beds: 1, baths: 1 }, // Mock
-        amenities: ["WiFi", "24/7 Security", "Water"], // Mock
         period: "year", // Mock
         distance: "5 mins walk" // Mock
     };
@@ -116,18 +115,6 @@ export default function PropertyDetails() {
         ? imageList.map(img => getImageUrl(img))
         : ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"];
 
-    const iconMap: Record<string, React.ElementType> = {
-        "WiFi": Wifi,
-        "24/7 Security": Shield,
-        "Water": Zap,
-        "Generator": Zap,
-        "Parking": Car,
-        "Furnished": HomeIcon,
-    };
-
-    function HomeIcon(props: React.SVGProps<SVGSVGElement>) {
-        return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-    }
 
     return (
         <div className="max-w-[1120px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
@@ -225,20 +212,6 @@ export default function PropertyDetails() {
                         </div>
                     )}
 
-                    <div className="border-b border-gray-200 pb-6 mb-6">
-                        <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            {property.amenities.map((amenity) => {
-                                const Icon = iconMap[amenity] || Star;
-                                return (
-                                    <div key={amenity} className="flex items-center gap-3 text-gray-700">
-                                        <Icon size={20} className="text-gray-500" />
-                                        <span>{amenity}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
 
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-4">Where you&apos;ll be</h3>
