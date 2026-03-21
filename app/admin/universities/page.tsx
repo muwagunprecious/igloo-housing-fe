@@ -15,7 +15,7 @@ export default function AdminUniversitiesPage() {
     // Form state
     const [name, setName] = useState("");
     const [abbr, setAbbr] = useState("");
-    const [location, setLocation] = useState("");
+    const [state, setState] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ export default function AdminUniversitiesPage() {
         setEditingUniversity(null);
         setName("");
         setAbbr("");
-        setLocation("");
+        setState("");
         setIsModalOpen(true);
     };
 
@@ -34,7 +34,7 @@ export default function AdminUniversitiesPage() {
         setEditingUniversity(uni);
         setName(uni.name);
         setAbbr(uni.abbr);
-        setLocation(uni.location);
+        setState(uni.state);
         setIsModalOpen(true);
     };
 
@@ -44,9 +44,9 @@ export default function AdminUniversitiesPage() {
 
         let success = false;
         if (editingUniversity) {
-            success = await updateUniversity(editingUniversity.id, { name, abbr, location });
+            success = await updateUniversity(editingUniversity.id, { name, abbr, state });
         } else {
-            success = await createUniversity({ name, abbr, location });
+            success = await createUniversity({ name, abbr, state });
         }
 
         setIsSubmitting(false);
@@ -81,7 +81,7 @@ export default function AdminUniversitiesPage() {
                                 <tr>
                                     <th className="px-6 py-4 font-semibold text-gray-700">Name</th>
                                     <th className="px-6 py-4 font-semibold text-gray-700">Abbreviation</th>
-                                    <th className="px-6 py-4 font-semibold text-gray-700">Location</th>
+                                    <th className="px-6 py-4 font-semibold text-gray-700">State</th>
                                     <th className="px-6 py-4 font-semibold text-gray-700 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -90,7 +90,7 @@ export default function AdminUniversitiesPage() {
                                     <tr key={uni.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">{uni.name}</td>
                                         <td className="px-6 py-4">{uni.abbr}</td>
-                                        <td className="px-6 py-4">{uni.location}</td>
+                                        <td className="px-6 py-4">{uni.state}</td>
                                         <td className="px-6 py-4 text-right flex justify-end gap-2">
                                             <button
                                                 onClick={() => openEditModal(uni)}
@@ -169,14 +169,14 @@ export default function AdminUniversitiesPage() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium mb-1">Location</label>
+                                            <label className="block text-sm font-medium mb-1">State</label>
                                             <input
                                                 type="text"
                                                 required
-                                                value={location}
-                                                onChange={(e) => setLocation(e.target.value)}
+                                                value={state}
+                                                onChange={(e) => setState(e.target.value)}
                                                 className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-                                                placeholder="e.g. Akoka, Yaba"
+                                                placeholder="e.g. Lagos"
                                             />
                                         </div>
 

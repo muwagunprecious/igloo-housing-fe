@@ -5,7 +5,7 @@ export interface University {
     id: string;
     name: string;
     abbr: string;
-    location: string;
+    state: string;
     logo?: string;
     createdAt?: string;
 }
