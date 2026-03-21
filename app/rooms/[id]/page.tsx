@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Share, Heart, Camera, Users, X, Video, Phone } from "lucide-react";
+import { Star, Share, Heart, Camera, Users, X, Video, Phone, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import BackButton from "@/app/components/common/BackButton";
@@ -12,6 +12,8 @@ import { toast } from "@/app/stores/useToastStore";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
 import { useRoommateStore } from "@/app/stores/useRoommateStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
+import { useAdminStore } from "@/app/stores/useAdminStore";
+import { useRouter } from "next/navigation";
 import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function PropertyDetails() {
@@ -19,7 +21,9 @@ export default function PropertyDetails() {
     const id = params.id as string;
     const { currentProperty, fetchProperty, isLoading, error } = usePropertyStore();
     const { createRequest, isLoading: isRequesting } = useRoommateStore();
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, user } = useAuthStore();
+    const { deleteProperty } = useAdminStore();
+    const router = useRouter();
     const [requestSent, setRequestSent] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState({
@@ -54,6 +58,18 @@ export default function PropertyDetails() {
             toast.success("Roommate request sent!");
         } else {
             toast.error("Failed to send request or request already exists");
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!confirm("ADMIN ACTION: Are you sure you want to PERMANENTLY delete this property? This cannot be undone.")) return;
+        
+        const success = await deleteProperty(id);
+        if (success) {
+            toast.success("Property deleted successfully");
+            router.push("/admin/properties");
+        } else {
+            toast.error("Failed to delete property");
         }
     };
 
@@ -145,6 +161,25 @@ export default function PropertyDetails() {
                         </button>
                     </div>
                 </div>
+                
+                {user?.role === 'admin' && (
+                    <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-red-700">
+                            <Trash2 size={20} />
+                            <div>
+                                <p className="font-bold text-sm">Administrative Controls</p>
+                                <p className="text-xs opacity-80">You have authority to remove this listing from the platform.</p>
+                            </div>
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            className="bg-white border-red-200 text-red-600 hover:bg-red-600 hover:text-white transition-all font-bold text-xs uppercase tracking-widest px-6"
+                            onClick={handleDelete}
+                        >
+                            Delete Property
+                        </Button>
+                    </div>
+                )}
             </div>
 
             {/* Image Grid */}
