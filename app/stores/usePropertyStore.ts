@@ -19,6 +19,15 @@ export interface Property {
     status?: string;
     agentId?: string;
     universityId?: string;
+    distance?: string;
+    period?: string;
+    rating?: number;
+    reviews?: number;
+    specs?: {
+        guests: number;
+        beds: number;
+        baths: number;
+    };
     createdAt?: string;
     agent?: {
         id: string;
