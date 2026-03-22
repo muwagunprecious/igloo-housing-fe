@@ -19,11 +19,9 @@ export default function PropertyDetails() {
     const router = useRouter();
     const id = params.id as string;
     
-    // Assume you might add a deleteProperty function to your store later
     const { currentProperty, fetchProperty, isLoading, error } = usePropertyStore();
     const { createRequest, isLoading: isRequesting } = useRoommateStore();
     
-    // Grab the full user object to check roles and IDs
     const { user, isAuthenticated } = useAuthStore();
     
     const [requestSent, setRequestSent] = useState(false);
@@ -39,25 +37,9 @@ export default function PropertyDetails() {
         }
     }, [id, fetchProperty]);
 
-    // --- NEW: Authorization Logic for Edit/Delete ---
     const isAdmin = user?.role === 'admin';
     const isOwner = user?.id === currentProperty?.agentId;
     const canManage = isAdmin || isOwner;
-
-const handleDeleteProperty = async () => {
-        if (window.confirm("Are you sure you want to delete this property? This action cannot be undone.")) {
-            // Wait for the store to return true or false
-            const success = await usePropertyStore.getState().deleteProperty(id);
-            
-            if (success) {
-                toast.success("Property deleted successfully!");
-                router.push(isAdmin ? '/admin/dashboard' : '/agents/dashboard');
-            } else {
-                toast.error("Failed to delete property.");
-                // Notice there is NO router.push here, so they stay on the page!
-            }
-        }
-    };
 
     const handleRoommateRequest = () => {
         if (!isAuthenticated) {
@@ -105,6 +87,18 @@ const handleDeleteProperty = async () => {
                 toast.error("Failed to copy link");
             }
         }
+    };
+
+    // --- NEW: Handle WhatsApp Click with Page Link ---
+    const handleWhatsAppClick = () => {
+        if (!property?.agent?.whatsapp) return;
+        
+        // Formats the message with double line breaks for readability
+        const message = `Hello, I'm interested in your property: ${property.title}\n\nProperty Link: ${window.location.href}`;
+        const whatsappUrl = `https://wa.me/${property.agent.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+        
+        // Opens WhatsApp in a new tab securely
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     };
 
     if (isLoading || !currentProperty) {
@@ -171,27 +165,6 @@ const handleDeleteProperty = async () => {
                     </div>
                     
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                        {/* NEW: Admin & Owner Management Buttons */}
-                        {canManage && (
-                            <>
-                                <button 
-                                    onClick={() => router.push(isAdmin ? `/admin/properties/${id}/edit` : `/agents/properties/${id}/edit`)}
-                                    className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition font-medium"
-                                >
-                                    <Edit size={16} />
-                                    Edit
-                                </button>
-                                <button 
-                                    onClick={handleDeleteProperty}
-                                    className="flex items-center gap-2 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition font-medium"
-                                >
-                                    <Trash2 size={16} />
-                                    Delete
-                                </button>
-                                <div className="hidden sm:block w-px h-4 bg-gray-300 mx-1"></div>
-                            </>
-                        )}
-
                         <button
                             onClick={handleShare}
                             className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg transition underline font-medium"
@@ -312,18 +285,16 @@ const handleDeleteProperty = async () => {
                             </div>
                         </div>
 
+                        {/* FIXED: The WhatsApp action is now cleanly handled by our function */}
                         {property.agent?.whatsapp ? (
-                            <a
-                                href={`https://wa.me/${property.agent.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello, I'm interested in your property: ${property.title}`)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full"
+                            <Button 
+                                onClick={handleWhatsAppClick}
+                                className="w-full mb-4 bg-[#25D366] hover:bg-[#128C7E] text-white border-none" 
+                                size="lg"
                             >
-                                <Button className="w-full mb-4 bg-[#25D366] hover:bg-[#128C7E] text-white border-none" size="lg">
-                                    <Phone size={18} className="mr-2" />
-                                    Contact Agent
-                                </Button>
-                            </a>
+                                <Phone size={18} className="mr-2" />
+                                Contact Agent
+                            </Button>
                         ) : (
                             <Link href={`/chat?userId=${property.agent?.id || property.agentId}`} className="block w-full">
                                 <Button className="w-full mb-4" size="lg">
