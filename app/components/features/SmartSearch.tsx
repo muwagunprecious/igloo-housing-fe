@@ -7,15 +7,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
 
 interface SmartSearchProps {
-    onSelectUniversity: (universityId: string | null) => void;
     onSelectLocation: (location: string | null) => void;
+    onSelectUniversity: (universityId: string | null) => void;
     selectedUniversity: string | null;
     selectedLocation: string | null;
 }
 
 export default function SmartSearch({
-    onSelectUniversity,
     onSelectLocation,
+    onSelectUniversity,
     selectedUniversity,
     selectedLocation,
 }: SmartSearchProps) {
@@ -128,34 +128,7 @@ export default function SmartSearch({
                         transition={{ duration: 0.2 }}
                         className="absolute top-full mt-3 w-full bg-white border border-gray-100 rounded-[2rem] shadow-2xl max-h-[420px] overflow-y-auto z-[60] py-3 hide-scrollbar"
                     >
-                        {/* Universities */}
-                        {filteredUniversities.length > 0 && (
-                            <>
-                                <p className="px-8 pt-1 pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                                    Universities
-                                </p>
-                                {filteredUniversities.map((uni) => (
-                                    <button
-                                        key={uni.id}
-                                        onClick={() => handleSelectUniversity(uni)}
-                                        className="w-full px-8 py-4 hover:bg-gray-50 transition-colors text-left flex items-start gap-4"
-                                    >
-                                        <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <Building2 size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold text-gray-900">{uni.name}</p>
-                                            <p className="text-sm text-gray-500 mt-0.5">{uni.state}</p>
-                                        </div>
-                                    </button>
-                                ))}
-                            </>
-                        )}
-
-                        {filteredUniversities.length > 0 && filteredLocations.length > 0 && (
-                            <div className="my-2 mx-8 border-t border-gray-100" />
-                        )}
-
+                        
                         {/* Locations from real properties */}
                         {filteredLocations.length > 0 && (
                             <>
@@ -191,6 +164,34 @@ export default function SmartSearch({
                                     No results for &quot;{query}&quot;
                                 </p>
                             </div>
+                        )}
+                        
+                        {/* Universities */}
+                        {filteredUniversities.length > 0 && (
+                            <>
+                                <p className="px-8 pt-1 pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                    Universities
+                                </p>
+                                {filteredUniversities.map((uni) => (
+                                    <button
+                                        key={uni.id}
+                                        onClick={() => handleSelectUniversity(uni)}
+                                        className="w-full px-8 py-4 hover:bg-gray-50 transition-colors text-left flex items-start gap-4"
+                                    >
+                                        <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <Building2 size={18} className="text-primary" />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900">{uni.name}</p>
+                                            <p className="text-sm text-gray-500 mt-0.5">{uni.state}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </>
+                        )}
+
+                        {filteredUniversities.length > 0 && filteredLocations.length > 0 && (
+                            <div className="my-2 mx-8 border-t border-gray-100" />
                         )}
                     </motion.div>
                 )}
