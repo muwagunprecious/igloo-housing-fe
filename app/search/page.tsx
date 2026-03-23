@@ -18,7 +18,6 @@ export default function SearchPage() {
     const { properties, fetchProperties } = usePropertyStore();
     const { user, isAuthenticated } = useAuthStore();
 
-    // ✅ ADDED ALL MISSING STATE VARIABLES HERE ✅
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [sortOrder, setSortOrder] = useState<SortOrder>(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -46,11 +45,22 @@ export default function SearchPage() {
             filtered = filtered.filter(p => p.category === selectedCategory);
         }
 
-        // 3. Sort by price
+        // 3. FIXED: Sort by price AND date
         if (sortOrder) {
-            filtered = [...filtered].sort((a, b) =>
-                sortOrder === "asc" ? (a.price || 0) - (b.price || 0) : (b.price || 0) - (a.price || 0)
-            );
+            filtered = [...filtered].sort((a, b) => {
+                switch (sortOrder) {
+                    case "price-asc":
+                        return (a.price || 0) - (b.price || 0);
+                    case "price-desc":
+                        return (b.price || 0) - (a.price || 0);
+                    case "date-newest":
+                        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+                    case "date-oldest":
+                        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+                    default:
+                        return 0;
+                }
+            });
         }
 
         return filtered;
@@ -60,7 +70,6 @@ export default function SearchPage() {
         <div className="pt-[80px]">
             <div className="sticky top-[80px] bg-white z-40 border-b border-gray-200">
                 <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
-                    {/* FilterBar now has all the state it needs! */}
                     <FilterBar 
                         selectedCategory={selectedCategory}
                         onCategoryChange={setSelectedCategory}
@@ -126,8 +135,6 @@ export default function SearchPage() {
                     {showMap ? 'Show list' : 'Show map'}
                 </button>
             </div>
-
-            {/* Optional: You can paste the Advanced Filters Modal block here if you want it on this page too! */}
         </div>
     );
 }
