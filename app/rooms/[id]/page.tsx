@@ -12,18 +12,18 @@ import { toast } from "@/app/stores/useToastStore";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
 import { useRoommateStore } from "@/app/stores/useRoommateStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
+import { useAdminStore } from "@/app/stores/useAdminStore";
 import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function PropertyDetails() {
     const params = useParams();
-    const router = useRouter();
     const id = params.id as string;
     
     const { currentProperty, fetchProperty, isLoading, error } = usePropertyStore();
     const { createRequest, isLoading: isRequesting } = useRoommateStore();
-    
-    const { user, isAuthenticated } = useAuthStore();
-    
+    const { isAuthenticated, user } = useAuthStore();
+    const { deleteProperty } = useAdminStore();
+    const router = useRouter();
     const [requestSent, setRequestSent] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalData, setModalData] = useState({
@@ -62,6 +62,18 @@ export default function PropertyDetails() {
             toast.success("Roommate request sent!");
         } else {
             toast.error("Failed to send request or request already exists");
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!confirm("ADMIN ACTION: Are you sure you want to PERMANENTLY delete this property? This cannot be undone.")) return;
+        
+        const success = await deleteProperty(id);
+        if (success) {
+            toast.success("Property deleted successfully");
+            router.push("/admin/properties");
+        } else {
+            toast.error("Failed to delete property");
         }
     };
 
@@ -135,18 +147,6 @@ export default function PropertyDetails() {
         ? imageList.map(img => getImageUrl(img))
         : ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"];
 
-    const iconMap: Record<string, React.ElementType> = {
-        "WiFi": Wifi,
-        "24/7 Security": Shield,
-        "Water": Zap,
-        "Generator": Zap,
-        "Parking": Car,
-        "Furnished": HomeIcon,
-    };
-
-    function HomeIcon(props: React.SVGProps<SVGSVGElement>) {
-        return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-    }
 
     return (
         <div className="max-w-[1120px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
@@ -178,6 +178,25 @@ export default function PropertyDetails() {
                         </button>
                     </div>
                 </div>
+                
+                {user?.role === 'admin' && (
+                    <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-red-700">
+                            <Trash2 size={20} />
+                            <div>
+                                <p className="font-bold text-sm">Administrative Controls</p>
+                                <p className="text-xs opacity-80">You have authority to remove this listing from the platform.</p>
+                            </div>
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            className="bg-white border-red-200 text-red-600 hover:bg-red-600 hover:text-white transition-all font-bold text-xs uppercase tracking-widest px-6"
+                            onClick={handleDelete}
+                        >
+                            Delete Property
+                        </Button>
+                    </div>
+                )}
             </div>
 
             {/* Image Grid */}
@@ -244,20 +263,6 @@ export default function PropertyDetails() {
                         </div>
                     )}
 
-                    <div className="border-b border-gray-200 pb-6 mb-6">
-                        <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            {property.amenities.map((amenity) => {
-                                const Icon = iconMap[amenity] || Star;
-                                return (
-                                    <div key={amenity} className="flex items-center gap-3 text-gray-700">
-                                        <Icon size={20} className="text-gray-500" />
-                                        <span>{amenity}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
 
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-4">Where you'll be</h3>

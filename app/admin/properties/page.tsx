@@ -6,7 +6,7 @@ import { MapPin, User, Building2, Clock, Trash2, CheckCircle2 } from "lucide-rea
 import Image from "next/image";
 
 export default function AdminPropertiesPage() {
-    const { properties, isLoading, fetchProperties, approveProperty, rejectProperty } = useAdminStore();
+    const { properties, isLoading, fetchProperties, approveProperty, rejectProperty, deleteProperty } = useAdminStore();
     const [filterStatus, setFilterStatus] = useState("PENDING");
     const [rejectingId, setRejectingId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState("");
@@ -31,6 +31,12 @@ export default function AdminPropertiesPage() {
             await rejectProperty(rejectingId, rejectReason);
             setRejectingId(null);
             setRejectReason("");
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (confirm("Are you sure you want to PERMANENTLY delete this property? This action cannot be undone.")) {
+            await deleteProperty(id);
         }
     };
 
@@ -145,26 +151,34 @@ export default function AdminPropertiesPage() {
 
                                     <p className="text-gray-500 font-medium leading-relaxed text-sm lg:text-base line-clamp-2 italic border-l-4 border-primary/20 pl-6 mb-8">{property.description}</p>
                                 </div>
-
-                                {filterStatus === 'PENDING' && (
-                                    <div className="flex flex-col md:flex-row gap-4 mt-4 justify-end">
-                                        <button
-                                            onClick={() => handleRejectClick(property.id)}
-                                            className="px-10 py-5 bg-white border-2 border-red-50 text-red-600 rounded-[20px] hover:bg-red-50 flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
-                                        >
-                                            <Trash2 size={20} />
-                                            Decline Asset
-                                        </button>
-                                        <button
-                                            onClick={() => handleApprove(property.id)}
-                                            className="px-10 py-5 bg-black text-white rounded-[20px] hover:bg-primary hover:text-black flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest transition-all shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95"
-                                        >
-                                            <CheckCircle2 size={20} />
-                                            Authorize Listing
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                                 <div className="flex flex-col md:flex-row gap-4 mt-4 justify-end">
+                                     {property.status === 'PENDING' && (
+                                         <>
+                                             <button
+                                                 onClick={() => handleRejectClick(property.id)}
+                                                 className="px-10 py-5 bg-white border-2 border-red-50 text-red-600 rounded-[20px] hover:bg-red-50 flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
+                                             >
+                                                 <Trash2 size={20} />
+                                                 Decline Asset
+                                             </button>
+                                             <button
+                                                 onClick={() => handleApprove(property.id)}
+                                                 className="px-10 py-5 bg-black text-white rounded-[20px] hover:bg-primary hover:text-black flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest transition-all shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95"
+                                             >
+                                                 <CheckCircle2 size={20} />
+                                                 Authorize Listing
+                                             </button>
+                                         </>
+                                     )}
+                                     <button
+                                         onClick={() => handleDelete(property.id)}
+                                         className="px-10 py-5 bg-white border-2 border-red-50 text-red-600 rounded-[20px] hover:bg-red-50 flex items-center justify-center gap-3 font-black text-xs uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
+                                     >
+                                         <Trash2 size={20} />
+                                         Delete Asset
+                                     </button>
+                                 </div>
+                             </div>
                         </div>
                     ))}
                 </div>

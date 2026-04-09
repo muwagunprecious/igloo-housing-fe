@@ -7,7 +7,7 @@ import { config } from './config';
  * @returns The full URL to the image
  */
 export const getImageUrl = (path: string | null | undefined): string => {
-    if (!path) return '/placeholder-property.jpg';
+    if (!path) return 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800';
 
     let actualPath = path;
 
@@ -37,7 +37,7 @@ export const getImageUrl = (path: string | null | undefined): string => {
     // Safety: If the path is a legacy local upload (/uploads/...) and we are on Vercel,
     // it's guaranteed to 404. Return a placeholder instead.
     if (actualPath.startsWith('/uploads/') && baseURL.includes('vercel.app')) {
-        return '/placeholder-property.jpg';
+        return 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800'; // Reliable house placeholder
     }
 
     // Ensure we don't end up with double slashes

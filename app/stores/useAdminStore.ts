@@ -68,6 +68,7 @@ interface AdminStore {
     unblockUser: (id: string) => Promise<boolean>;
     verifyAgent: (id: string) => Promise<boolean>;
     rejectAgent: (id: string, reason?: string) => Promise<boolean>;
+    deleteProperty: (id: string, reason?: string) => Promise<boolean>;
 }
 
 export const useAdminStore = create<AdminStore>((set) => ({
@@ -193,6 +194,20 @@ export const useAdminStore = create<AdminStore>((set) => ({
             await api.put(`/admin/agents/reject/${id}`, { reason });
             set((state) => ({
                 users: state.users.filter(u => u.id !== id),
+                isLoading: false
+            }));
+            return true;
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            set({ error: error.response?.data?.message || error.message, isLoading: false });
+            return false;
+        }
+    },
+    deleteProperty: async (id: string, reason?: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.delete(`/admin/property/${id}`, { data: { reason } });
+            set((state) => ({
+                properties: state.properties.filter((p) => p.id !== id),
                 isLoading: false
             }));
             return true;
