@@ -18,7 +18,7 @@ export default function SearchPage() {
     const [category, setCategory] = useState("All");
 const [sort, setSort] = useState<SortOrder>(null);
 
-const [isOpen, setIsOpen] = useState(false);
+const [Open, setOpen] = useState(false);
 
     const { properties, fetchProperties } = usePropertyStore();
     const { user, isAuthenticated } = useAuthStore();
