@@ -142,9 +142,9 @@ function LoginForm() {
                                 />
                                 <span className="text-sm text-gray-600">Remember me</span>
                             </label>
-                            <button type="button" className="text-sm text-primary font-semibold hover:underline">
-                                Forgot password?
-                            </button>
+                            <Link href="/forgot-password" className="text-sm text-primary font-semibold hover:underline">
+    Forgot password?
+</Link>
                         </div>
 
                         {/* Login Button */}
