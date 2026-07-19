@@ -59,9 +59,9 @@ export default function CreateListingPage() {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
 
-            // Limit check: 30MB
-            if (file.size > 30 * 1024 * 1024) {
-                alert("Video size must be less than 30MB");
+            // Limit check: 100MB
+            if (file.size > 100 * 1024 * 1024) {
+                alert("Video size must be less than 100MB");
                 return;
             }
 
@@ -187,7 +187,7 @@ export default function CreateListingPage() {
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg font-semibold text-gray-900">Property Video (Optional)</h2>
-                            <span className="text-xs text-gray-500 font-normal italic">Max size: 30MB</span>
+                            <span className="text-xs text-gray-500 font-normal italic">Max size: 100MB</span>
                         </div>
 
                         {videoPreviewUrl ? (
@@ -211,7 +211,7 @@ export default function CreateListingPage() {
                                     <Video className="text-blue-500" />
                                 </div>
                                 <span className="text-sm text-gray-700 font-semibold mb-1">Upload a virtual tour video</span>
-                                <span className="text-xs text-gray-500">MP4, WebM, OGG (Max 30MB)</span>
+                                <span className="text-xs text-gray-500">MP4, WebM, OGG (Max 100MB)</span>
                                 <input type="file" accept="video/*" onChange={handleVideoChange} className="hidden" />
                             </label>
                         )}

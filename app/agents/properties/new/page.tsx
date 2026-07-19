@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAgentPropertiesStore } from "../../stores/useAgentPropertiesStore";
 import AgentSidebar from "../../components/AgentSidebar";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { ArrowLeft, AlertCircle, Video, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Button from "@/app/components/common/Button";
 import ImageUploadField from "@/app/components/common/ImageUploadField";
@@ -31,6 +31,26 @@ export default function AddPropertyPage() {
         roommatesAllowed: false,
     });
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [video, setVideo] = useState<File | null>(null);
+    const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+
+    const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            if (file.size > 100 * 1024 * 1024) {
+                alert("Video size must be less than 100MB");
+                return;
+            }
+            setVideo(file);
+            setVideoPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
+    const removeVideo = () => {
+        if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+        setVideo(null);
+        setVideoPreviewUrl(null);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,6 +58,11 @@ export default function AddPropertyPage() {
 
         if (images.length === 0) {
             setSubmitError("Please upload at least one property image");
+            return;
+        }
+
+        if (video && images.length === 0) {
+            setSubmitError("You must upload at least one picture before adding a video");
             return;
         }
 
@@ -57,6 +82,10 @@ export default function AddPropertyPage() {
         images.forEach((image) => {
             data.append("images", image);
         });
+
+        if (video) {
+            data.append("video", video);
+        }
 
         const success = await addProperty(data);
         if (success) {
@@ -223,8 +252,41 @@ export default function AddPropertyPage() {
                             <ImageUploadField
                                 images={images}
                                 onImagesChange={setImages}
-                                maxImages={10}
+                                maxImages={50}
                             />
+                        </div>
+
+                        {/* Video */}
+                        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="font-semibold text-lg">Property Video (Optional)</h2>
+                                <span className="text-xs text-gray-500 italic">Max size: 100MB</span>
+                            </div>
+                            {videoPreviewUrl ? (
+                                <div className="relative rounded-xl overflow-hidden bg-black aspect-video max-w-md border border-gray-200 shadow-lg group">
+                                    <video
+                                        src={videoPreviewUrl}
+                                        controls
+                                        className="w-full h-full"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={removeVideo}
+                                        className="absolute top-4 right-4 bg-red-500/90 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <label className="border-2 border-dashed border-gray-300 rounded-xl py-12 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group max-w-md">
+                                    <div className="bg-blue-50 p-3 rounded-full mb-3 group-hover:bg-blue-100 transition-colors">
+                                        <Video className="text-blue-500" />
+                                    </div>
+                                    <span className="text-sm text-gray-700 font-semibold mb-1">Upload a virtual tour video</span>
+                                    <span className="text-xs text-gray-500">MP4, WebM, OGG (Max 100MB)</span>
+                                    <input type="file" accept="video/*" onChange={handleVideoChange} className="hidden" />
+                                </label>
+                            )}
                         </div>
 
                         {/* Actions */}

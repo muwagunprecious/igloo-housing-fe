@@ -10,7 +10,7 @@ interface ImageUploadFieldProps {
     maxImages?: number;
 }
 
-export default function ImageUploadField({ images, onImagesChange, maxImages = 10 }: ImageUploadFieldProps) {
+export default function ImageUploadField({ images, onImagesChange, maxImages = 50 }: ImageUploadFieldProps) {
     const [dragActive, setDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 

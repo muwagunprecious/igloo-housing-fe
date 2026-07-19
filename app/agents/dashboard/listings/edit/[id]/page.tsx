@@ -81,8 +81,8 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
     const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            if (file.size > 30 * 1024 * 1024) {
-                alert("Video size must be less than 30MB");
+            if (file.size > 100 * 1024 * 1024) {
+                alert("Video size must be less than 100MB");
                 return;
             }
             setNewVideo(file);
@@ -258,7 +258,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                     <div className="col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
                             <label className="block text-sm font-medium text-gray-700">Virtual Tour Video</label>
-                            <span className="text-xs text-gray-500 italic">Max size: 30MB</span>
+                            <span className="text-xs text-gray-500 italic">Max size: 100MB</span>
                         </div>
 
                         {newVideoPreview || existingVideo ? (
@@ -287,7 +287,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                                     <Video className="text-blue-500" />
                                 </div>
                                 <span className="text-sm text-gray-700 font-semibold mb-1">Upload a virtual tour video</span>
-                                <span className="text-xs text-gray-500">MP4, WebM, OGG (Max 30MB)</span>
+                                <span className="text-xs text-gray-500">MP4, WebM, OGG (Max 100MB)</span>
                                 <input type="file" accept="video/*" onChange={handleVideoChange} className="hidden" />
                             </label>
                         )}

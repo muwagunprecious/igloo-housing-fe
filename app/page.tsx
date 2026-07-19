@@ -88,96 +88,56 @@ export default function Home() {
 
   return (
     <div className="relative bg-white">
-      {/* RED HERO SECTION - Reduced padding/margins */}
-      <div className="relative bg-[#fef2f2] pt-14 pb-32 lg:pt-12 lg:pb-48 overflow-hidden">
-        <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Text & Stats */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+      {/* IMMERSIVE AIRBNB-STYLE HERO BANNER */}
+      <div className="relative max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-4 px-4 pt-6 md:pt-8">
+        <div className="relative w-full h-[380px] md:h-[460px] lg:h-[540px] rounded-3xl overflow-hidden shadow-2xl bg-gray-950">
+          <Image
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"
+            alt="Modern Student Housing"
+            fill
+            className="object-cover opacity-75"
+            priority
+          />
+          {/* Dark gradient overlay for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/55" />
+          
+          {/* Centered Typography */}
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-6 md:px-12 z-10">
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="max-w-xl"
+              className="text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight mb-4 max-w-4xl"
             >
-              {/* NEW HEADING TITLE */}
-              <h1 className="text-5xl lg:text-[4.5rem] font-extrabold text-gray-900 leading-[1.1] mb-6 tracking-tight">
-                Your <span className="text-[#dc2626]">Student</span> <br />
-                Housing Platform
-              </h1>
-              <p className="text-gray-600 text-lg mb-8 max-w-md leading-relaxed font-medium">
-                Secure, verified, and close to campus. Join thousands of
-                students finding their next stay today.
-              </p>
-
-              {/* Stats Row - Dummy data for Social Proof */}
-              <div className="flex items-center gap-8 lg:gap-12 mt-8">
-                <div>
-                  <h3 className="text-3xl font-black text-gray-900">
-                    1200<span className="text-[#dc2626]">+</span>
-                  </h3>
-                  <p className="text-sm text-gray-500 font-semibold mt-1">
-                    Properties
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-3xl font-black text-gray-900">
-                    4500<span className="text-[#dc2626]">+</span>
-                  </h3>
-                  <p className="text-sm text-gray-500 font-semibold mt-1">
-                    Happy Students
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-3xl font-black text-gray-900">
-                    100<span className="text-[#dc2626]">+</span>
-                  </h3>
-                  <p className="text-sm text-gray-500 font-semibold mt-1">
-                    Campuses
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right Column: Hero Image */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
+              Find Your <span className="text-[#FF385C]">Perfect</span> Student Home
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative w-full h-[350px] lg:h-[500px] hidden md:block"
+              className="text-gray-200 text-sm md:text-lg lg:text-xl font-medium max-w-xl leading-relaxed"
             >
-              <div className="absolute inset-0 rounded-tl-[4rem] rounded-br-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-gray-200 transform lg:-rotate-2 hover:rotate-0 transition-transform duration-700">
-                <Image
-                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"
-                  alt="Modern Student Housing"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </motion.div>
+              Secure, verified student rooms and apartments close to campus.
+            </motion.p>
           </div>
         </div>
       </div>
 
-      {/* OVERLAPPING SEARCH BOX - Using the sleek UniversitySearch pill */}
-      <div className="relative max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 z-40 -mt-16 lg:-mt-20 mb-8">
+      {/* REDESIGNED SEARCH PILL OVERLAPPING THE BANNER */}
+      <div className="relative max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-4 px-4 z-40 -mt-10 md:-mt-12 mb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="bg-white rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] p-6 lg:p-10 border border-gray-100 max-w-5xl"
+          className="max-w-4xl mx-auto"
         >
-          <h3 className="text-lg font-bold text-gray-900 mb-6">
-            Search for available properties
-          </h3>
-
-          {/* Assuming the 'Search Now' button inside is also styled red in its component */}
-
           <SmartSearch
             selectedUniversity={selectedUniversity}
             selectedLocation={selectedLocation}
+            selectedCategory={selectedCategory}
             onSelectUniversity={setSelectedUniversity}
             onSelectLocation={setSelectedLocation}
+            onSelectCategory={setSelectedCategory}
           />
         </motion.div>
       </div>

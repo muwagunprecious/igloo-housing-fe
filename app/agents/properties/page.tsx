@@ -112,7 +112,7 @@ export default function AgentPropertiesPage() {
                                                     View
                                                 </button>
                                             </Link>
-                                            <Link href={`/agents/properties/${property.id}/edit`}>
+                                            <Link href={`/agents/dashboard/listings/edit/${property.id}`}>
                                                 <button className="w-full p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-center gap-1 text-sm">
                                                     <Edit size={14} />
                                                     Edit

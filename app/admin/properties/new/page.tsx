@@ -171,12 +171,12 @@ export default function AdminAddPropertyPage() {
                     <div className="bg-white border border-gray-100 rounded-[40px] p-10 shadow-sm">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl font-black tracking-tighter">Media Repository</h2>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Max 10 Assets</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Max 50 Assets</span>
                         </div>
                         <ImageUploadField
                             images={images}
                             onImagesChange={setImages}
-                            maxImages={10}
+                            maxImages={50}
                         />
                     </div>
                 </div>

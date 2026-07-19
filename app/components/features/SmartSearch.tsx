@@ -1,7 +1,8 @@
 "use client";
 
 import { universities } from "@/app/data/universities";
-import { MapPin, Search, Building2 } from "lucide-react";
+import { categories } from "@/app/data/categories";
+import { MapPin, Search, Building2, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
@@ -11,6 +12,8 @@ interface SmartSearchProps {
     onSelectUniversity: (universityId: string | null) => void;
     selectedUniversity: string | null;
     selectedLocation: string | null;
+    selectedCategory: string;
+    onSelectCategory: (category: string) => void;
 }
 
 export default function SmartSearch({
@@ -18,10 +21,14 @@ export default function SmartSearch({
     onSelectUniversity,
     selectedUniversity,
     selectedLocation,
+    selectedCategory,
+    onSelectCategory,
 }: SmartSearchProps) {
     const [query, setQuery] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const { properties } = usePropertyStore();
 
     // Group properties by exact location value from DB
@@ -56,8 +63,10 @@ export default function SmartSearch({
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node))
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
                 setShowDropdown(false);
+                setShowCategoryDropdown(false);
+            }
         };
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
@@ -77,7 +86,8 @@ export default function SmartSearch({
         setShowDropdown(false);
     };
 
-    const handleClear = () => {
+    const handleClear = (e: React.MouseEvent) => {
+        e.stopPropagation();
         onSelectUniversity(null);
         onSelectLocation(null);
         setQuery("");
@@ -86,35 +96,99 @@ export default function SmartSearch({
     const isSelected = !!selectedUniversity || !!selectedLocation;
 
     return (
-        <div className="relative w-full max-w-2xl mx-auto" ref={dropdownRef}>
-            <div className="relative group">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
-                    <MapPin size={22} />
-                </div>
-                <input
-                    type="text"
-                    value={displayValue}
-                    onChange={(e) => {
-                        setQuery(e.target.value);
+        <div className="relative w-full max-w-3xl mx-auto" ref={dropdownRef}>
+            <div className="flex flex-col md:flex-row items-stretch bg-white border border-gray-200 rounded-2xl md:rounded-full shadow-lg hover:shadow-xl transition-all duration-300 p-2 md:p-1.5 relative gap-2 md:gap-0">
+                
+                {/* Segment 1: Where */}
+                <div 
+                    onClick={() => {
+                        setShowCategoryDropdown(false);
                         setShowDropdown(true);
-                        if (selectedUniversity) onSelectUniversity(null);
-                        if (selectedLocation) onSelectLocation(null);
+                        inputRef.current?.focus();
                     }}
-                    onFocus={() => setShowDropdown(true)}
-                    placeholder="Search university, street, or area..."
-                    className="w-full pl-14 pr-28 py-5 border border-gray-200 rounded-full text-base focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-lg hover:shadow-xl transition-all duration-300 bg-white"
-                />
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-3">
-                    {isSelected && (
-                        <button
-                            onClick={handleClear}
-                            className="text-sm font-semibold text-gray-500 hover:text-black px-4 py-2 rounded-full hover:bg-gray-100 transition"
-                        >
-                            Clear
-                        </button>
-                    )}
-                    <button className="p-4 bg-primary text-white rounded-full hover:bg-primary-hover shadow-md hover:shadow-lg transition-all">
-                        <Search size={20} strokeWidth={3} />
+                    className="flex-1 flex flex-col justify-center px-6 py-2.5 md:py-1.5 rounded-xl md:rounded-full hover:bg-gray-100/80 transition-colors cursor-pointer"
+                >
+                    <span className="text-[10px] font-black uppercase text-gray-800 tracking-wider mb-0.5">Where</span>
+                    <div className="relative flex items-center w-full">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={displayValue}
+                            onChange={(e) => {
+                                setQuery(e.target.value);
+                                setShowDropdown(true);
+                                setShowCategoryDropdown(false);
+                                if (selectedUniversity) onSelectUniversity(null);
+                                if (selectedLocation) onSelectLocation(null);
+                            }}
+                            placeholder="Search university, street, or area..."
+                            className="w-full bg-transparent border-none p-0 text-sm font-semibold text-gray-900 focus:outline-none focus:ring-0 placeholder-gray-400"
+                        />
+                        {isSelected && (
+                            <button
+                                onClick={handleClear}
+                                className="absolute right-0 text-xs font-bold text-gray-400 hover:text-gray-800 px-1 py-0.5 hover:bg-gray-200/50 rounded-full transition"
+                            >
+                                Clear
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Vertical Divider */}
+                <div className="hidden md:block w-[1px] bg-gray-200 my-2" />
+
+                {/* Segment 2: Room Type */}
+                <div 
+                    onClick={() => {
+                        setShowDropdown(false);
+                        setShowCategoryDropdown(!showCategoryDropdown);
+                    }}
+                    className="flex-1 flex flex-col justify-center px-6 py-2.5 md:py-1.5 rounded-xl md:rounded-full hover:bg-gray-100/80 transition-colors cursor-pointer relative"
+                >
+                    <span className="text-[10px] font-black uppercase text-gray-800 tracking-wider mb-0.5">Room Type</span>
+                    <div className="flex items-center justify-between w-full text-sm font-semibold text-gray-900">
+                        <span className={selectedCategory === "All" ? "text-gray-400" : "text-gray-900"}>
+                            {selectedCategory === "All" ? "Select Category" : selectedCategory}
+                        </span>
+                        <ChevronDown size={14} className="text-gray-400 ml-2" />
+                    </div>
+
+                    {/* Category Dropdown */}
+                    <AnimatePresence>
+                        {showCategoryDropdown && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                transition={{ duration: 0.15 }}
+                                className="absolute top-full left-0 mt-3 w-full min-w-[240px] bg-white border border-gray-100 rounded-2xl shadow-2xl z-[60] py-2"
+                            >
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat.label}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onSelectCategory(cat.label);
+                                            setShowCategoryDropdown(false);
+                                        }}
+                                        className={`w-full px-5 py-3 hover:bg-gray-50 transition-colors text-left flex items-center gap-3 text-sm font-semibold
+                                            ${selectedCategory === cat.label ? "text-[#FF385C] bg-red-50/50" : "text-gray-700"}`}
+                                    >
+                                        <cat.icon size={16} className={selectedCategory === cat.label ? "text-[#FF385C]" : "text-gray-400"} />
+                                        <span>{cat.label}</span>
+                                    </button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Search Button Zone */}
+                <div className="flex items-center justify-end pl-2 pr-1 pb-1 md:pb-0">
+                    <button className="w-full md:w-auto px-6 py-3.5 bg-[#FF385C] hover:bg-[#D9324E] text-white rounded-xl md:rounded-full font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200">
+                        <Search size={16} strokeWidth={3} />
+                        <span className="md:hidden">Search</span>
                     </button>
                 </div>
             </div>
@@ -126,9 +200,8 @@ export default function SmartSearch({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.98 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full mt-3 w-full bg-white border border-gray-100 rounded-[2rem] shadow-2xl max-h-[420px] overflow-y-auto z-[60] py-3 hide-scrollbar"
+                        className="absolute top-full left-0 mt-3 w-full bg-white border border-gray-100 rounded-[2rem] shadow-2xl max-h-[420px] overflow-y-auto z-[60] py-3 hide-scrollbar"
                     >
-                        
                         {/* Locations from real properties */}
                         {filteredLocations.length > 0 && (
                             <>
@@ -155,17 +228,10 @@ export default function SmartSearch({
                             </>
                         )}
 
-                        {!hasResults && query && (
-                            <div className="px-8 py-10 text-center">
-                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Search size={32} className="text-gray-300" />
-                                </div>
-                                <p className="text-gray-500 font-medium">
-                                    No results for &quot;{query}&quot;
-                                </p>
-                            </div>
+                        {filteredLocations.length > 0 && filteredUniversities.length > 0 && (
+                            <div className="my-2 mx-8 border-t border-gray-100" />
                         )}
-                        
+
                         {/* Universities */}
                         {filteredUniversities.length > 0 && (
                             <>
@@ -178,8 +244,8 @@ export default function SmartSearch({
                                         onClick={() => handleSelectUniversity(uni)}
                                         className="w-full px-8 py-4 hover:bg-gray-50 transition-colors text-left flex items-start gap-4"
                                     >
-                                        <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <Building2 size={18} className="text-primary" />
+                                        <div className="w-9 h-9 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <Building2 size={18} className="text-[#FF385C]" />
                                         </div>
                                         <div>
                                             <p className="font-bold text-gray-900">{uni.name}</p>
@@ -190,8 +256,15 @@ export default function SmartSearch({
                             </>
                         )}
 
-                        {filteredUniversities.length > 0 && filteredLocations.length > 0 && (
-                            <div className="my-2 mx-8 border-t border-gray-100" />
+                        {!hasResults && query && (
+                            <div className="px-8 py-10 text-center">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Search size={32} className="text-gray-300" />
+                                </div>
+                                <p className="text-gray-500 font-medium">
+                                    No results for &quot;{query}&quot;
+                                </p>
+                            </div>
                         )}
                     </motion.div>
                 )}

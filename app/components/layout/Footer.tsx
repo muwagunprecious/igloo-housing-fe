@@ -2,10 +2,18 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { igloo } from "@/app/assets";
 
 export default function Footer() {
+    const pathname = usePathname();
+    
+    // Hide footer on agent dashboard and admin panel pages
+    if (pathname?.startsWith("/agents") || pathname?.startsWith("/admin")) {
+        return null;
+    }
+
     return (
         <footer className="bg-gray-900 text-gray-300 pt-12 pb-6">
             <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
