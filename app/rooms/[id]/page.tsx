@@ -14,6 +14,7 @@ import { useRoommateStore } from "@/app/stores/useRoommateStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { useAdminStore } from "@/app/stores/useAdminStore";
 import { getImageUrl } from "@/app/lib/imageUrl";
+import ImageLightbox from "@/app/components/common/ImageLightbox";
 
 export default function PropertyDetails() {
     const params = useParams();
@@ -31,6 +32,13 @@ export default function PropertyDetails() {
         bio: ""
     });
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+
+    const openLightbox = (index: number) => {
+        setLightboxIndex(index);
+        setLightboxOpen(true);
+    };
 
     useEffect(() => {
         if (id) {
@@ -164,7 +172,11 @@ export default function PropertyDetails() {
                     style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
                 >
                     {images.map((img, idx) => (
-                        <div key={idx} className="w-full h-full flex-shrink-0 snap-start snap-always relative">
+                        <div
+                            key={idx}
+                            className="w-full h-full flex-shrink-0 snap-start snap-always relative cursor-pointer"
+                            onClick={() => openLightbox(idx)}
+                        >
                             <Image src={img} alt={`Apartment image ${idx + 1}`} fill className="object-cover" />
                         </div>
                     ))}
@@ -294,26 +306,27 @@ export default function PropertyDetails() {
 
                 {/* DESKTOP ONLY Image Grid */}
                 <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 relative">
-                    <div className="col-span-2 row-span-2 relative cursor-pointer hover:opacity-95 transition">
+                    <div className="col-span-2 row-span-2 relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(0)}>
                         <Image src={images[0]} alt="Main" fill className="object-cover" />
                     </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition">
+                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(1)}>
                         <Image src={images[1] || images[0]} alt="Image 2" fill className="object-cover" />
                     </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition">
+                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(2)}>
                         <Image src={images[2] || images[0]} alt="Image 3" fill className="object-cover" />
                     </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition">
+                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(3)}>
                         <Image src={images[3] || images[0]} alt="Image 4" fill className="object-cover" />
                     </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition">
+                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(4)}>
                         <Image src={images[0]} alt="Image 5" fill className="object-cover" />
-                        <Link href={`/rooms/${property.id}/gallery`}>
-                            <button className="absolute bottom-4 right-4 bg-white border border-black px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition shadow-sm flex items-center gap-2">
-                                <Camera size={16} />
-                                Show all photos
-                            </button>
-                        </Link>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); openLightbox(0); }}
+                            className="absolute bottom-4 right-4 bg-white border border-black px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition shadow-sm flex items-center gap-2 z-10"
+                        >
+                            <Camera size={16} />
+                            Show all photos
+                        </button>
                     </div>
                 </div>
 
@@ -565,6 +578,13 @@ export default function PropertyDetails() {
                     </div>
                 </div>
             )}
+
+            <ImageLightbox
+                images={images}
+                initialIndex={lightboxIndex}
+                isOpen={lightboxOpen}
+                onClose={() => setLightboxOpen(false)}
+            />
         </div>
     );
 }
