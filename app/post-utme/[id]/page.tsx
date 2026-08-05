@@ -46,11 +46,11 @@ export default function PostUtmePropertyDetail() {
     const images = p.images?.sort((a, b) => a.order - b.order) || [];
     const amenities: string[] = (() => { try { return JSON.parse(p.amenities); } catch { return []; } })();
 
-    const totalPrice = p.pricePerNight * (bookingData.numberOfNights || 1);
-    const serviceFee = Math.round(totalPrice * 0.05);
     const nights = bookingData.checkInDate && bookingData.checkOutDate
         ? Math.max(1, Math.ceil((new Date(bookingData.checkOutDate).getTime() - new Date(bookingData.checkInDate).getTime()) / (1000 * 60 * 60 * 24)))
         : 1;
+    const totalPrice = p.pricePerNight * nights;
+    const serviceFee = Math.round(totalPrice * 0.05);
 
     const handleBook = async () => {
         if (!isAuthenticated) {
