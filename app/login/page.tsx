@@ -5,16 +5,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { toast } from "@/app/stores/useToastStore";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, Home } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Button from "@/app/components/common/Button";
 import { igloo } from "../assets";
 import Image from "next/image";
+import { cn } from "@/app/utils/cn";
 
 function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectPath = searchParams.get("redirect");
+    const roleParam = searchParams.get("role");
+    const isPostUtme = roleParam === "renter" || roleParam === "post-utme";
     const login = useAuthStore((state) => state.login);
 
     const [email, setEmail] = useState("");
@@ -32,7 +35,7 @@ function LoginForm() {
         // Simulate network delay
         await new Promise((resolve) => setTimeout(resolve, 800));
 
-        const result = await login(email, password);
+        const result = await login(email.trim(), password.trim());
 
         if (result.success) {
             toast.success("Welcome back!");
@@ -54,7 +57,10 @@ function LoginForm() {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
             {/* Background Pattern */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+                <div className={cn(
+                    "absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl",
+                    isPostUtme ? "bg-[#008489]/10" : "bg-primary/10"
+                )}></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
             </div>
 
@@ -66,12 +72,18 @@ function LoginForm() {
             >
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-4">
-                            <Image src={igloo} width={100} height={30} alt="logo" />
-                   
+                    <Link href={isPostUtme ? "/post-utme" : "/"} className="inline-flex items-center gap-2 mb-4">
+                        {isPostUtme && (
+                            <div className="bg-[#008489] text-white text-xs font-black px-2 py-1 rounded-lg">POST-UTME</div>
+                        )}
+                        <Image src={igloo} width={100} height={30} alt="logo" />
                     </Link>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                    <p className="text-gray-600">Sign in to your account to continue</p>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        {isPostUtme ? "Post-UTME Portal" : "Welcome Back"}
+                    </h1>
+                    <p className="text-gray-600">
+                        {isPostUtme ? "Sign in to manage or book short-stay accommodation" : "Sign in to your account to continue"}
+                    </p>
                 </div>
 
                 {/* Login Card */}
@@ -100,8 +112,11 @@ function LoginForm() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="student@igloo.com"
-                                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                                    placeholder={isPostUtme ? "agent@igloo.com" : "student@igloo.com"}
+                                    className={cn(
+                                        "w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition",
+                                        isPostUtme ? "focus:ring-[#008489]" : "focus:ring-primary"
+                                    )}
                                 />
                             </div>
                         </div>
@@ -119,7 +134,10 @@ function LoginForm() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                                    className={cn(
+                                        "w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition",
+                                        isPostUtme ? "focus:ring-[#008489]" : "focus:ring-primary"
+                                    )}
                                 />
                                 <button
                                     type="button"
@@ -138,20 +156,32 @@ function LoginForm() {
                                     type="checkbox"
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                    className={cn(
+                                        "w-4 h-4 rounded focus:ring-2",
+                                        isPostUtme ? "text-[#008489] border-gray-300 focus:ring-[#008489]" : "text-primary border-gray-300 focus:ring-primary"
+                                    )}
                                 />
                                 <span className="text-sm text-gray-600">Remember me</span>
                             </label>
-                            <Link href="/forgot-password" className="text-sm text-primary font-semibold hover:underline">
-    Forgot password?
-</Link>
+                            <Link 
+                                href="/forgot-password" 
+                                className={cn(
+                                    "text-sm font-semibold hover:underline",
+                                    isPostUtme ? "text-[#008489]" : "text-primary"
+                                )}
+                            >
+                                Forgot password?
+                            </Link>
                         </div>
 
                         {/* Login Button */}
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full"
+                            className={cn(
+                                "w-full",
+                                isPostUtme && "bg-[#008489] hover:bg-[#006b6e] text-white border-transparent"
+                            )}
                         >
                             {isLoading ? "Signing in..." : "Sign In"}
                         </Button>
@@ -195,7 +225,13 @@ function LoginForm() {
                     {/* Sign Up Link */}
                     <p className="text-center text-sm text-gray-600 mt-6">
                         Don&apos;t have an account?{" "}
-                        <Link href="/signup" className="text-primary font-semibold hover:underline">
+                        <Link 
+                            href={isPostUtme ? "/post-utme/signup" : "/signup"} 
+                            className={cn(
+                                "font-semibold hover:underline",
+                                isPostUtme ? "text-[#008489]" : "text-primary"
+                            )}
+                        >
                             Sign up
                         </Link>
                     </p>
@@ -203,8 +239,8 @@ function LoginForm() {
 
                 {/* Back to Home */}
                 <div className="text-center mt-6">
-                    <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 transition">
-                        ← Back to home
+                    <Link href={isPostUtme ? "/post-utme" : "/"} className="text-sm text-gray-600 hover:text-gray-900 transition">
+                        ← Back to {isPostUtme ? "Post-UTME" : "home"}
                     </Link>
                 </div>
             </motion.div>

@@ -6,7 +6,7 @@ interface User {
     id: string;
     email: string;
     name: string; // Mapped from fullName in backend
-    role: "student" | "agent" | "admin";
+    role: "student" | "agent" | "admin" | "renter";
     avatar?: string;
     bio?: string;
     universityId?: string;
@@ -20,7 +20,7 @@ interface AuthStore {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string; redirectTo?: string }>;
-    register: (fullName: string, email: string, password: string, role: "student" | "agent" | "admin", universityId?: string) => Promise<{ success: boolean; error?: string; redirectTo?: string }>;
+    register: (fullName: string, email: string, password: string, role: "student" | "agent" | "admin" | "renter", universityId?: string) => Promise<{ success: boolean; error?: string; redirectTo?: string }>;
     logout: () => void;
     checkAuth: () => Promise<void>;
     updateUser: (updates: Partial<User>) => void;
@@ -58,6 +58,7 @@ export const useAuthStore = create<AuthStore>()(
                     let redirectTo = '/dashboard';
                     if (user.role === 'agent') redirectTo = '/agents/dashboard';
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
+                    if (user.role === 'renter') redirectTo = '/dashboard/renter';
 
                     return { success: true, redirectTo };
                 } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -92,6 +93,7 @@ export const useAuthStore = create<AuthStore>()(
                     let redirectTo = '/dashboard';
                     if (user.role === 'agent') redirectTo = '/agents/dashboard';
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
+                    if (user.role === 'renter') redirectTo = '/dashboard/renter';
 
                     return { success: true, redirectTo };
                 } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any

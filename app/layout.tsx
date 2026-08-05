@@ -4,6 +4,7 @@ import BottomNav from "./components/layout/BottomNav";
 import EnhancedNavbar from "./components/layout/EnhancedNavbar";
 import ToastContainer from "./components/common/Toast";
 import Footer from "./components/layout/Footer";
+import IntentModal from "./components/common/IntentModal";
 
 export const metadata: Metadata = {
   title: {
@@ -71,6 +72,7 @@ export default function RootLayout({
         <Footer />
         <BottomNav />
         <ToastContainer />
+        <IntentModal />
       </body>
     </html>
   );

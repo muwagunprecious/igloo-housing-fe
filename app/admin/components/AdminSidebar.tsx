@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     LayoutDashboard, Users, Home, MessageSquare, Wallet, School, Plus, 
-    Settings, Calendar, FileWarning, Megaphone, AlertCircle, BadgeCheck, X
+    Settings, Calendar, FileWarning, Megaphone, AlertCircle, BadgeCheck, X,
+    GraduationCap, CreditCard, RotateCcw
 } from "lucide-react";
 
 // Accept the new props
@@ -76,6 +77,32 @@ export default function AdminSidebar({ isOpen, setIsOpen }: { isOpen?: boolean; 
                                 <Link key={link.href} href={link.href} onClick={() => setIsOpen?.(false)}>
                                     <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${isActive(link.href)
                                         ? 'bg-black text-white font-semibold'
+                                        : 'text-gray-600 hover:bg-gray-50'
+                                        }`}>
+                                        <link.icon size={20} />
+                                        <span className="text-sm">{link.label}</span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </nav>
+                    </div>
+
+                    {/* Post-UTME Section */}
+                    <div>
+                        <h3 className="text-xs font-semibold text-[#008489] uppercase tracking-wider mb-3 px-3">
+                            Post-UTME Housing
+                        </h3>
+                        <nav className="space-y-1">
+                            {[
+                                { label: "Overview", href: "/admin/post-utme", icon: GraduationCap },
+                                { label: "Properties", href: "/admin/post-utme/properties", icon: Home },
+                                { label: "Bookings", href: "/admin/post-utme/bookings", icon: Calendar },
+                                { label: "Payouts", href: "/admin/post-utme/payouts", icon: CreditCard },
+                                { label: "Refunds", href: "/admin/post-utme/refunds", icon: RotateCcw },
+                            ].map((link) => (
+                                <Link key={link.href} href={link.href} onClick={() => setIsOpen?.(false)}>
+                                    <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${isActive(link.href)
+                                        ? 'bg-[#008489] text-white font-semibold'
                                         : 'text-gray-600 hover:bg-gray-50'
                                         }`}>
                                         <link.icon size={20} />

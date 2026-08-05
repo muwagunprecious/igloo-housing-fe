@@ -15,7 +15,7 @@ export default function EnhancedNavbar() {
     const { user, isAuthenticated, logout } = useAuthStore();
 
     // Hide this global navbar completely on dashboard pages
-    if (pathname.startsWith('/agents/dashboard') || pathname.startsWith('/admin/dashboard')) {
+    if (pathname.startsWith('/agents/dashboard') || pathname.startsWith('/admin/dashboard') || pathname.startsWith('/dashboard/renter')) {
         return null;
     }
 
@@ -29,6 +29,14 @@ export default function EnhancedNavbar() {
         { label: "My Houses", href: "/my-houses", icon: Building2, studentOnly: true },
         { label: "Find Roommate", href: "/roommates", icon: Users },
         { label: "Favorites", href: "/favorites", icon: Home },
+    ];
+
+    const renterMenuItems = [
+        { label: "Renter Dashboard", href: "/dashboard/renter", icon: LayoutDashboard },
+        { label: "My Listings", href: "/dashboard/renter/listings", icon: Building2 },
+        { label: "Bookings", href: "/dashboard/renter/bookings", icon: Home },
+        { label: "Wallet", href: "/dashboard/renter/wallet", icon: Home },
+        { label: "Payouts", href: "/dashboard/renter/payouts", icon: Home },
     ];
 
     return (
@@ -101,12 +109,13 @@ export default function EnhancedNavbar() {
                                                 <p className="text-xs text-gray-500">{user?.email}</p>
                                             </div>
 
-                                            {authenticatedMenuItems.map((item) => {
+                                            {(user?.role === 'renter' ? renterMenuItems : authenticatedMenuItems).map((item) => {
                                                 if (item.studentOnly && user?.role === 'agent') return null;
                                                 let href = item.href;
                                                 if (item.label === "Dashboard") {
                                                     if (user?.role === 'admin') href = "/admin/dashboard";
                                                     else if (user?.role === 'agent') href = "/agents/dashboard";
+                                                    else if (user?.role === 'renter') href = "/dashboard/renter";
                                                 }
                                                 return (
                                                     <Link key={item.href} href={href} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition" onClick={() => setShowMenu(false)}>

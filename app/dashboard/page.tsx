@@ -36,6 +36,8 @@ export default function Dashboard() {
             router.replace('/admin/dashboard');
         } else if (user?.role === 'agent') {
             router.replace('/agents/dashboard');
+        } else if (user?.role === 'renter') {
+            router.replace('/dashboard/renter');
         }
     }, [user?.role, router]);
 
