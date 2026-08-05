@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Home, Wallet, Calendar, ChevronRight, Plus, Eye, TrendingUp } from "lucide-react";
+import { Home, Wallet, Calendar, ChevronRight, Plus, Eye, TrendingUp, User } from "lucide-react";
 import { usePostUtmeStore } from "@/app/stores/usePostUtmeStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 
@@ -67,6 +67,7 @@ export default function RenterDashboard() {
                         { label: "My Wallet", desc: "View balance and transactions", href: "/dashboard/renter/wallet", icon: Wallet },
                         { label: "Booking Requests", desc: "View incoming bookings", href: "/dashboard/renter/bookings", icon: Calendar },
                         { label: "Payout History", desc: "Track your payout requests", href: "/dashboard/renter/payouts", icon: TrendingUp },
+                        { label: "Account Settings", desc: "Edit your profile and contact number", href: "/settings", icon: User },
                     ].map((item) => {
                         const Icon = item.icon;
                         return (

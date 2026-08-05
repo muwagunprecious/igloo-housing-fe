@@ -129,8 +129,8 @@ export default function GlobalSettingsPage() {
                             </div>
                         </div>
 
-                        {/* WhatsApp - ONLY SHOW TO AGENTS */}
-                        {isAgent && (
+                        {/* WhatsApp - SHOW TO AGENTS AND RENTERS */}
+                        {(user.role === 'agent' || user.role === 'renter') && (
                             <div className="col-span-2">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
                                 {isEditing ? (
