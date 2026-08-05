@@ -45,7 +45,7 @@ export default function PostUtmeNavbar() {
                         </Link>
                     ) : (
                         <Link
-                            href="/login?role=post-utme"
+                            href="/login?role=post-utme-student"
                             className="bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-full text-sm font-semibold transition"
                         >
                             Sign In
@@ -67,7 +67,7 @@ export default function PostUtmeNavbar() {
                     {isAuthenticated ? (
                         <Link href={user?.role === 'RENTER' ? '/dashboard/renter' : '/post-utme/bookings'} onClick={() => setMobileOpen(false)} className="block bg-[#008489] text-white text-center py-2.5 rounded-xl text-sm font-semibold">Dashboard</Link>
                     ) : (
-                        <Link href="/login?role=post-utme" onClick={() => setMobileOpen(false)} className="block bg-gray-900 text-white text-center py-2.5 rounded-xl text-sm font-semibold">Sign In</Link>
+                        <Link href="/login?role=post-utme-student" onClick={() => setMobileOpen(false)} className="block bg-gray-900 text-white text-center py-2.5 rounded-xl text-sm font-semibold">Sign In</Link>
                     )}
                 </div>
             )}
