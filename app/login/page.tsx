@@ -16,8 +16,7 @@ function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectPath = searchParams.get("redirect");
-    const roleParam = searchParams.get("role");
-    const isPostUtme = roleParam === "renter" || roleParam === "post-utme" || roleParam === "post-utme-student";
+    const isPostUtme = false;
     const login = useAuthStore((state) => state.login);
 
     const [email, setEmail] = useState("");
@@ -79,18 +78,10 @@ function LoginForm() {
                         <Image src={igloo} width={100} height={30} alt="logo" />
                     </Link>
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                        {roleParam === "renter" 
-                            ? "Post-UTME Landlord Portal" 
-                            : roleParam === "post-utme-student" 
-                            ? "Post-UTME Student Portal" 
-                            : "Welcome Back"}
+                        Welcome Back
                     </h1>
                     <p className="text-gray-600">
-                        {roleParam === "renter"
-                            ? "Sign in to manage your short-stay listings"
-                            : roleParam === "post-utme-student"
-                            ? "Sign in to book your short-stay accommodation"
-                            : "Sign in to your account to continue"}
+                        Sign in to your account to continue
                     </p>
                 </div>
 
@@ -234,11 +225,8 @@ function LoginForm() {
                     <p className="text-center text-sm text-gray-600 mt-6">
                         Don&apos;t have an account?{" "}
                         <Link 
-                            href={roleParam === "renter" ? "/post-utme/signup" : "/signup"} 
-                            className={cn(
-                                "font-semibold hover:underline",
-                                isPostUtme ? "text-[#008489]" : "text-primary"
-                            )}
+                            href="/signup" 
+                            className="font-semibold hover:underline text-primary"
                         >
                             Sign up
                         </Link>

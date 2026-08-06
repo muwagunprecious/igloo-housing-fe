@@ -55,7 +55,7 @@ export default function PostUtmePropertyDetail() {
     const handleBook = async () => {
         if (!isAuthenticated) {
             toast.info("Please sign in to book this apartment");
-            router.push("/login?role=post-utme-student&redirect=" + encodeURIComponent(window.location.pathname));
+            router.push("/post-utme/login?redirect=" + encodeURIComponent(window.location.pathname));
             return;
         }
         if (!bookingData.checkInDate || !bookingData.checkOutDate) {

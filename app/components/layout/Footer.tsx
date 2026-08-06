@@ -9,8 +9,8 @@ import { igloo } from "@/app/assets";
 export default function Footer() {
     const pathname = usePathname();
     
-    // Hide footer on agent dashboard and admin panel pages
-    if (pathname?.startsWith("/agents") || pathname?.startsWith("/admin")) {
+    // Hide footer on agent dashboard, admin panel, renter dashboard, and post-utme routes
+    if (pathname?.startsWith("/agents") || pathname?.startsWith("/admin") || pathname?.startsWith("/dashboard/renter") || pathname?.startsWith("/post-utme")) {
         return null;
     }
 

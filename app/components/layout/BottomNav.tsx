@@ -13,6 +13,10 @@ export default function BottomNav() {
 
     const isActive = (path: string) => pathname === path;
 
+    if (pathname.startsWith('/post-utme')) {
+        return null;
+    }
+
     if (user?.role === 'renter') {
         const renterLinks = [
             { label: "Dashboard", href: "/dashboard/renter", icon: LayoutDashboard },

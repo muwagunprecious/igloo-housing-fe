@@ -14,8 +14,8 @@ export default function EnhancedNavbar() {
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
 
-    // Hide this global navbar completely on dashboard pages
-    if (pathname.startsWith('/agents/dashboard') || pathname.startsWith('/admin/dashboard') || pathname.startsWith('/dashboard/renter')) {
+    // Hide this global navbar completely on dashboard pages and Post-UTME pages
+    if (pathname.startsWith('/agents/dashboard') || pathname.startsWith('/admin/dashboard') || pathname.startsWith('/dashboard/renter') || pathname.startsWith('/post-utme')) {
         return null;
     }
 
