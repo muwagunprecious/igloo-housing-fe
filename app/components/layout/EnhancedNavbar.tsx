@@ -2,7 +2,7 @@
 
 import { Menu, User, Home, LayoutDashboard, Building2, MessageSquare, Users, LogOut } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import Image from "next/image";
@@ -23,7 +23,14 @@ export default function EnhancedNavbar() {
         { label: "Find Housing", href: "/" },
     ];
 
-    const authenticatedMenuItems = [
+    interface MenuItem {
+        label: string;
+        href: string;
+        icon: React.ComponentType<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+        studentOnly?: boolean;
+    }
+
+    const authenticatedMenuItems: MenuItem[] = [
         { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { label: "Messages", href: "/chat", icon: MessageSquare },
         { label: "My Houses", href: "/my-houses", icon: Building2, studentOnly: true },
@@ -31,7 +38,7 @@ export default function EnhancedNavbar() {
         { label: "Favorites", href: "/favorites", icon: Home },
     ];
 
-    const renterMenuItems = [
+    const renterMenuItems: MenuItem[] = [
         { label: "Renter Dashboard", href: "/dashboard/renter", icon: LayoutDashboard },
         { label: "My Listings", href: "/dashboard/renter/listings", icon: Building2 },
         { label: "Bookings", href: "/dashboard/renter/bookings", icon: Home },

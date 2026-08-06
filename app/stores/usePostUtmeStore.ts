@@ -136,7 +136,7 @@ interface PostUtmeState {
 
     // Booking actions
     createBooking: (data: { propertyId: string; checkInDate: string; checkOutDate: string; numberOfGuests: number }) => Promise<{ success: boolean; booking?: PostUtmeBooking }>;
-    payBooking: (bookingId: string) => Promise<{ success: boolean }>;
+    payBooking: (bookingId: string) => Promise<boolean>;
     fetchMyBookings: (status?: string) => Promise<void>;
     fetchRenterBookings: (status?: string) => Promise<void>;
     fetchBooking: (id: string) => Promise<void>;
