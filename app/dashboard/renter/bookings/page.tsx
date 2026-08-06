@@ -3,58 +3,52 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Calendar, Users, CheckCircle, Clock, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Button from "@/app/components/common/Button";
 import { usePostUtmeStore } from "@/app/stores/usePostUtmeStore";
 import { toast } from "@/app/stores/useToastStore";
 import { useRouter } from "next/navigation";
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-    PAYMENT_SUCCESSFUL: { label: "New Booking", color: "bg-blue-100 text-blue-700" },
+    PENDING_PAYMENT: { label: "Awaiting Payment", color: "bg-yellow-100 text-yellow-700" },
+    PAYMENT_SUCCESSFUL: { label: "Paid", color: "bg-blue-100 text-blue-700" },
     BOOKING_CONFIRMED: { label: "Confirmed", color: "bg-indigo-100 text-indigo-700" },
     AWAITING_CHECKIN: { label: "Awaiting Guest", color: "bg-purple-100 text-purple-700" },
     STUDENT_ARRIVED: { label: "Student Arrived", color: "bg-cyan-100 text-cyan-700" },
-    CHECKED_IN: { label: "Checked In", color: "bg-green-100 text-green-700" },
+    CHECKED_IN: { label: "Checked In ✓", color: "bg-green-100 text-green-700" },
+    COMPLETED: { label: "Completed", color: "bg-gray-100 text-gray-600" },
     CANCELLED: { label: "Cancelled", color: "bg-red-100 text-red-700" },
 };
 
+const RELEASABLE_STATUSES = ['PAYMENT_SUCCESSFUL', 'BOOKING_CONFIRMED', 'AWAITING_CHECKIN', 'STUDENT_ARRIVED'];
+
 export default function RenterBookingsPage() {
     const router = useRouter();
-    const { renterBookings, isLoading, fetchRenterBookings, confirmArrival, updateBookingStatus } = usePostUtmeStore();
-    const [verifyModal, setVerifyModal] = useState<string | null>(null);
-    const [verifyCode, setVerifyCode] = useState("");
+    const { renterBookings, isLoading, fetchRenterBookings, confirmArrival } = usePostUtmeStore();
+    const [escrowModal, setEscrowModal] = useState<string | null>(null);
+    const [escrowCode, setEscrowCode] = useState("");
     const [verifying, setVerifying] = useState(false);
 
     useEffect(() => {
         fetchRenterBookings();
     }, [fetchRenterBookings]);
 
-    const handleConfirmArrival = async (bookingId: string) => {
-        if (!verifyCode.trim()) {
+    const handleConfirmBooking = async (bookingId: string) => {
+        if (!escrowCode.trim()) {
             toast.error("Please enter the booking code");
             return;
         }
         setVerifying(true);
-        const success = await confirmArrival(bookingId, verifyCode.trim());
+        const success = await confirmArrival(bookingId, escrowCode.trim());
         if (success) {
-            toast.success("Guest arrival confirmed! Funds released to your wallet.");
-            setVerifyModal(null);
-            setVerifyCode("");
+            toast.success("Booking confirmed! Funds released to your wallet.");
+            setEscrowModal(null);
+            setEscrowCode("");
             fetchRenterBookings();
         } else {
-            toast.error("Invalid code or verification failed");
+            toast.error("Invalid code. Ask the student for their correct booking code.");
         }
         setVerifying(false);
-    };
-
-    const handleAdvanceStatus = async (bookingId: string, status: string) => {
-        const success = await updateBookingStatus(bookingId, status);
-        if (success) {
-            toast.success("Status updated");
-            fetchRenterBookings();
-        } else {
-            toast.error("Failed to update status");
-        }
     };
 
     return (
@@ -80,6 +74,7 @@ export default function RenterBookingsPage() {
                         {renterBookings.map((booking, idx) => {
                             const img = booking.property?.images?.[0]?.url;
                             const status = STATUS_LABELS[booking.status] || { label: booking.status, color: "bg-gray-100 text-gray-600" };
+                            const canConfirm = RELEASABLE_STATUSES.includes(booking.status);
                             return (
                                 <motion.div
                                     key={booking.id}
@@ -109,29 +104,18 @@ export default function RenterBookingsPage() {
                                         </div>
                                     </div>
 
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 mt-4">
-                                        {booking.status === 'PAYMENT_SUCCESSFUL' && (
-                                            <Button size="sm" className="bg-indigo-600 text-white border-none" onClick={() => handleAdvanceStatus(booking.id, 'BOOKING_CONFIRMED')}>
-                                                Confirm Booking
-                                            </Button>
-                                        )}
-                                        {booking.status === 'BOOKING_CONFIRMED' && (
-                                            <Button size="sm" className="bg-purple-600 text-white border-none" onClick={() => handleAdvanceStatus(booking.id, 'AWAITING_CHECKIN')}>
-                                                Mark Ready
-                                            </Button>
-                                        )}
-                                        {booking.status === 'AWAITING_CHECKIN' && (
-                                            <Button size="sm" className="bg-cyan-600 text-white border-none" onClick={() => handleAdvanceStatus(booking.id, 'STUDENT_ARRIVED')}>
-                                                Student Has Arrived
-                                            </Button>
-                                        )}
-                                        {booking.status === 'STUDENT_ARRIVED' && (
-                                            <Button size="sm" className="bg-[#008489] text-white border-none" onClick={() => setVerifyModal(booking.id)}>
-                                                <ShieldCheck size={14} className="mr-1" /> Verify Guest
-                                            </Button>
-                                        )}
-                                    </div>
+                                    {/* Single action button */}
+                                    {canConfirm && (
+                                        <div className="mt-4">
+                                            <button
+                                                onClick={() => { setEscrowModal(booking.id); setEscrowCode(""); }}
+                                                className="w-full flex items-center justify-center gap-2 bg-[#008489] hover:bg-[#006b6e] text-white font-semibold text-sm py-2.5 rounded-xl transition"
+                                            >
+                                                <ShieldCheck size={16} />
+                                                Confirm Booking &amp; Release Funds
+                                            </button>
+                                        </div>
+                                    )}
                                 </motion.div>
                             );
                         })}
@@ -139,24 +123,49 @@ export default function RenterBookingsPage() {
                 )}
             </div>
 
-            {/* Verification Modal */}
-            {verifyModal && (
+            {/* Code Input Modal */}
+            {escrowModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
-                        <h3 className="text-lg font-bold mb-2">Confirm Guest Arrival</h3>
-                        <p className="text-sm text-gray-500 mb-4">Ask the student for their booking verification code and enter it below.</p>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl"
+                    >
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-[#008489]/10 rounded-2xl flex items-center justify-center">
+                                <ShieldCheck size={24} className="text-[#008489]" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Enter Student's Code</h3>
+                                <p className="text-xs text-gray-500">6-character booking code</p>
+                            </div>
+                        </div>
+
+                        <p className="text-sm text-gray-600 bg-gray-50 rounded-xl p-3 mb-4">
+                            Ask the student for the <span className="font-bold text-gray-900">booking code</span> they received after payment. Entering it confirms their booking and <span className="font-bold text-[#008489]">releases your funds immediately</span>.
+                        </p>
+
                         <input
                             type="text"
-                            value={verifyCode}
-                            onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
-                            placeholder="Enter 6-character code"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-center text-lg font-mono font-bold tracking-[0.2em] outline-none focus:border-[#008489] mb-4"
+                            value={escrowCode}
+                            onChange={(e) => setEscrowCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                            placeholder="A1B2C3"
+                            className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl text-center text-2xl font-mono font-bold tracking-[0.3em] outline-none focus:border-[#008489] mb-4 transition"
                             maxLength={6}
+                            autoFocus
                         />
+
                         <div className="flex gap-3">
-                            <Button variant="outline" className="flex-1" onClick={() => { setVerifyModal(null); setVerifyCode(""); }}>Cancel</Button>
-                            <Button className="flex-1 bg-[#008489] text-white border-none" onClick={() => handleConfirmArrival(verifyModal)} disabled={verifying}>
-                                {verifying ? <Loader2 size={16} className="animate-spin" /> : "Confirm"}
+                            <Button variant="outline" className="flex-1" onClick={() => { setEscrowModal(null); setEscrowCode(""); }}>
+                                Cancel
+                            </Button>
+                            <Button
+                                className="flex-1 bg-[#008489] text-white border-none"
+                                onClick={() => handleConfirmBooking(escrowModal)}
+                                disabled={verifying || escrowCode.length < 6}
+                            >
+                                {verifying ? <Loader2 size={16} className="animate-spin mr-1" /> : null}
+                                {verifying ? "Verifying..." : "Confirm & Release"}
                             </Button>
                         </div>
                     </motion.div>
