@@ -229,7 +229,7 @@ export const usePostUtmeAdminStore = create<PostUtmeAdminState>()((set) => ({
             const response = await api.get(`/post-utme/admin/payouts${query}`);
             const data = response.data.data;
             set({
-                payouts: data.payoutRequests || data,
+                payouts: data.payouts || data.payoutRequests || (Array.isArray(data) ? data : []),
                 payoutsTotal: data.total || 0,
                 isLoading: false,
             });
@@ -240,10 +240,11 @@ export const usePostUtmeAdminStore = create<PostUtmeAdminState>()((set) => ({
 
     processPayout: async (id, action) => {
         try {
-            await api.put(`/post-utme/admin/payouts/${id}/${action}`);
+            const uppercaseAction = action.toUpperCase();
+            await api.put(`/post-utme/admin/payouts/${id}`, { action: uppercaseAction });
             set((state) => ({
                 payouts: state.payouts.map((p) =>
-                    p.id === id ? { ...p, status: action === "approve" ? "COMPLETED" : "REJECTED" } : p
+                    p.id === id ? { ...p, status: uppercaseAction === "APPROVE" ? "APPROVED" : "REJECTED" } : p
                 ),
             }));
             return true;
@@ -259,7 +260,7 @@ export const usePostUtmeAdminStore = create<PostUtmeAdminState>()((set) => ({
             const response = await api.get(`/post-utme/admin/refunds${query}`);
             const data = response.data.data;
             set({
-                refunds: data.refundRequests || data,
+                refunds: data.refunds || data.refundRequests || (Array.isArray(data) ? data : []),
                 refundsTotal: data.total || 0,
                 isLoading: false,
             });
@@ -270,10 +271,11 @@ export const usePostUtmeAdminStore = create<PostUtmeAdminState>()((set) => ({
 
     processRefund: async (id, action) => {
         try {
-            await api.put(`/post-utme/admin/refunds/${id}/${action}`);
+            const uppercaseAction = action.toUpperCase();
+            await api.put(`/post-utme/admin/refunds/${id}`, { action: uppercaseAction });
             set((state) => ({
                 refunds: state.refunds.map((r) =>
-                    r.id === id ? { ...r, status: action === "approve" ? "APPROVED" : "REJECTED" } : r
+                    r.id === id ? { ...r, status: uppercaseAction === "APPROVE" ? "APPROVED" : "REJECTED" } : r
                 ),
             }));
             return true;
