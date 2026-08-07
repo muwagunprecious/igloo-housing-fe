@@ -396,7 +396,9 @@ export const usePostUtmeStore = create<PostUtmeState>()((set, get) => ({
         try {
             await api.post('/post-utme/refunds', data);
             return true;
-        } catch {
+        } catch (error: any) {
+            const message = error.response?.data?.message || "Failed to submit refund request";
+            toast.error(message);
             return false;
         }
     },
