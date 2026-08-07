@@ -9,6 +9,7 @@ import Button from "@/app/components/common/Button";
 import { usePostUtmeStore } from "@/app/stores/usePostUtmeStore";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { toast } from "@/app/stores/useToastStore";
+import { loadPaystackScript } from "@/app/utils/paystack";
 
 const AMENITY_ICONS: Record<string, string> = {
     electricity: "⚡", water: "💧", wifi: "📶", kitchen: "🍳",
@@ -67,21 +68,64 @@ export default function PostUtmePropertyDetail() {
 
     const confirmBooking = async () => {
         const { createBooking, payBooking } = usePostUtmeStore.getState();
+        const { user } = useAuthStore.getState();
         setIsBooking(true);
+
         const booking = await createBooking({
             propertyId: id,
             checkInDate: bookingData.checkInDate,
             checkOutDate: bookingData.checkOutDate,
             numberOfGuests: bookingData.numberOfGuests,
         });
+
         if (booking.success && booking.booking) {
-            const paid = await payBooking(booking.booking.id);
-            if (paid) {
-                toast.success("Booking confirmed! Redirecting...");
-                router.push(`/post-utme/bookings/${booking.booking.id}`);
+            const bookingObj = booking.booking;
+            const amountInKobo = Math.round(bookingObj.totalPayable * 100);
+            const userEmail = user?.email || "student@igloo.ng";
+
+            const isLoaded = await loadPaystackScript();
+            if (isLoaded && (window as any).PaystackPop) {
+                const handler = (window as any).PaystackPop.setup({
+                    key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_5416765eee4770e59472cf1f9a7190f4352fcb8e",
+                    email: userEmail,
+                    amount: amountInKobo,
+                    currency: "NGN",
+                    ref: `PTME-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    metadata: {
+                        bookingId: bookingObj.id,
+                        custom_fields: [
+                            {
+                                display_name: "Booking ID",
+                                variable_name: "booking_id",
+                                value: bookingObj.id
+                            }
+                        ]
+                    },
+                    callback: async function () {
+                        const paid = await payBooking(bookingObj.id);
+                        if (paid) {
+                            toast.success("Payment successful! Booking confirmed.");
+                            router.push(`/post-utme/bookings/${bookingObj.id}`);
+                        } else {
+                            toast.error("Payment verification failed. Please try again.");
+                            setIsBooking(false);
+                        }
+                    },
+                    onClose: function () {
+                        toast.info("Payment window closed.");
+                        setIsBooking(false);
+                    }
+                });
+                handler.openIframe();
             } else {
-                toast.error("Payment failed. Please try again.");
-                setIsBooking(false);
+                const paid = await payBooking(bookingObj.id);
+                if (paid) {
+                    toast.success("Booking confirmed! Redirecting...");
+                    router.push(`/post-utme/bookings/${bookingObj.id}`);
+                } else {
+                    toast.error("Payment failed. Please try again.");
+                    setIsBooking(false);
+                }
             }
         } else {
             setIsBooking(false);
