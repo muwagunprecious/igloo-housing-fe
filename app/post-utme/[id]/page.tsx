@@ -85,6 +85,17 @@ export default function PostUtmePropertyDetail() {
 
             const isLoaded = await loadPaystackScript();
             if (isLoaded && (window as any).PaystackPop) {
+                const handleSuccess = async (response?: any) => {
+                    const paid = await payBooking(bookingObj.id);
+                    if (paid) {
+                        toast.success("Payment successful! Booking confirmed.");
+                        router.push(`/post-utme/bookings/${bookingObj.id}`);
+                    } else {
+                        toast.error("Payment verification failed. Please try again.");
+                        setIsBooking(false);
+                    }
+                };
+
                 const handler = (window as any).PaystackPop.setup({
                     key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "pk_test_5416765eee4770e59472cf1f9a7190f4352fcb8e",
                     email: userEmail,
@@ -101,15 +112,11 @@ export default function PostUtmePropertyDetail() {
                             }
                         ]
                     },
-                    callback: async function () {
-                        const paid = await payBooking(bookingObj.id);
-                        if (paid) {
-                            toast.success("Payment successful! Booking confirmed.");
-                            router.push(`/post-utme/bookings/${bookingObj.id}`);
-                        } else {
-                            toast.error("Payment verification failed. Please try again.");
-                            setIsBooking(false);
-                        }
+                    callback: function (response: any) {
+                        handleSuccess(response);
+                    },
+                    onSuccess: function (response: any) {
+                        handleSuccess(response);
                     },
                     onClose: function () {
                         toast.info("Payment window closed.");
