@@ -80,10 +80,9 @@ export default function AgentDashboardLayout({
     if (!isMounted || !user) return null;
 
     const navItems = [
-        { name: "Overview", href: "/agents/dashboard", icon: LayoutDashboard },
-        { name: "My Listings", href: "/agents/dashboard/listings", icon: List },
-        { name: "Post New Property", href: "/agents/dashboard/listings/create", icon: PlusCircle },
-        { name: "Roommate Requests", href: "/agents/dashboard/roommates", icon: Users },
+        { name: "Dashboard", href: "/agents/dashboard", icon: LayoutDashboard },
+        { name: "Upload New House", href: "/agents/dashboard/listings/create", icon: PlusCircle },
+        { name: "My House Listings", href: "/agents/dashboard/listings", icon: List },
         { name: "Messages", href: "/agents/dashboard/messages", icon: MessageSquare },
         { name: "Settings", href: "/agents/dashboard/settings", icon: Settings },
     ];

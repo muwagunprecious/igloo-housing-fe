@@ -28,8 +28,26 @@ export default function MyListingsPage() {
         }
     };
 
+    const [togglingId, setTogglingId] = useState<string | null>(null);
+
+    const handleToggleStock = async (id: string, currentStatus: boolean) => {
+        setTogglingId(id);
+        try {
+            const response = await api.put(`/properties/${id}`, {
+                isAvailable: !currentStatus,
+            });
+            if (response.data.success) {
+                setProperties(prev => prev.map(p => p.id === id ? { ...p, isAvailable: !currentStatus } : p));
+            }
+        } catch {
+            alert("Failed to update stock status");
+        } finally {
+            setTogglingId(null);
+        }
+    };
+
     const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this listing?")) return;
+        if (!confirm("Are you sure you want to bring down (delete) this listing?")) return;
 
         try {
             await api.delete(`/properties/${id}`);
@@ -119,21 +137,35 @@ export default function MyListingsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex gap-2">
-                                        <Link
-                                            href={`/agents/dashboard/listings/edit/${property.id}`}
-                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition"
-                                        >
-                                            <Edit2 size={16} />
-                                            Edit
-                                        </Link>
+                                    <div className="space-y-2">
                                         <button
-                                            onClick={() => handleDelete(property.id)}
-                                            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition"
+                                            onClick={() => handleToggleStock(property.id, property.isAvailable)}
+                                            disabled={togglingId === property.id}
+                                            className={`w-full py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                                                property.isAvailable
+                                                    ? 'bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100'
+                                                    : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100'
+                                            }`}
                                         >
-                                            <Trash2 size={16} />
-                                            Delete
+                                            {property.isAvailable ? "Make Out of Stock" : "Make In Stock"}
                                         </button>
+
+                                        <div className="flex gap-2">
+                                            <Link
+                                                href={`/agents/dashboard/listings/edit/${property.id}`}
+                                                className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition"
+                                            >
+                                                <Edit2 size={16} />
+                                                Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(property.id)}
+                                                className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition"
+                                            >
+                                                <Trash2 size={16} />
+                                                Bring Down
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
