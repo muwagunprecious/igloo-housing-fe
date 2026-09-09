@@ -72,6 +72,8 @@ export default function AgentDashboardLayout({
         if (isMounted) {
             if (!isAuthenticated || (user && user.role !== 'agent')) {
                 router.push('/login');
+            } else if (user && user.role === 'agent' && user.verificationStatus !== 'APPROVED') {
+                router.push('/agents/pending-approval');
             }
         }
     }, [isAuthenticated, user, router, isMounted]);

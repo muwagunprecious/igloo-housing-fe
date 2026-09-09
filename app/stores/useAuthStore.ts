@@ -11,6 +11,7 @@ interface User {
     bio?: string;
     universityId?: string;
     isVerified?: boolean;
+    verificationStatus?: string;
     whatsapp?: string;
     token?: string;
 }
@@ -50,6 +51,7 @@ export const useAuthStore = create<AuthStore>()(
                         whatsapp: userData.whatsapp,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
+                        verificationStatus: userData.verificationStatus,
                         token: token
                     };
 
@@ -85,13 +87,14 @@ export const useAuthStore = create<AuthStore>()(
                         whatsapp: userData.whatsapp,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
+                        verificationStatus: userData.verificationStatus,
                         token: token
                     };
 
                     set({ user, isAuthenticated: true, isLoading: false });
 
                     let redirectTo = '/dashboard';
-                    if (user.role === 'agent') redirectTo = '/agents/dashboard';
+                    if (user.role === 'agent') redirectTo = '/agents/pending-approval';
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
                     if (user.role === 'renter') redirectTo = '/dashboard/renter';
 
@@ -123,6 +126,7 @@ export const useAuthStore = create<AuthStore>()(
                         whatsapp: userData.whatsapp,
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
+                        verificationStatus: userData.verificationStatus,
                         // Token is presumed to be in storage if this succeeds, or we could store it separately
                     };
                     // We might need to keep the existing token if this is just a refresh/check

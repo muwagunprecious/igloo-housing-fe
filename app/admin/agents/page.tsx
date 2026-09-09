@@ -28,7 +28,7 @@ export default function AgentVerificationPage() {
     }, [fetchUsers]);
 
     const unverifiedAgents = users.filter(u =>
-        u.role === "AGENT" && !u.isVerified &&
+        u.role === "AGENT" && !u.isVerified && (u.verificationStatus === "PENDING_APPROVAL" || !u.verificationStatus) &&
         (u.fullName.toLowerCase().includes(search.toLowerCase()) ||
             u.email.toLowerCase().includes(search.toLowerCase()))
     );
@@ -135,9 +135,23 @@ export default function AgentVerificationPage() {
                                         {new Date(agent.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-center mb-2">
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform Role</span>
                                     <span className="text-[10px] font-black bg-white px-2 py-0.5 rounded border border-gray-100">{agent.role}</span>
+                                </div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">NIN</span>
+                                    <span className="text-xs font-mono font-bold text-gray-700 tracking-widest">
+                                        {agent.nin || <span className="text-red-400 text-[10px]">Not provided</span>}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">₦1,000 Fee</span>
+                                    {agent.verificationFeePaid ? (
+                                        <span className="text-[10px] font-black bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Paid ✓</span>
+                                    ) : (
+                                        <span className="text-[10px] font-black bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Not Paid</span>
+                                    )}
                                 </div>
                             </div>
 
