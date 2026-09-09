@@ -58,14 +58,10 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
     };
 
     const handleCardClick = () => {
-        if (!isAuthenticated) {
-            // Redirect to signup if not logged in
-            router.push(`/signup?callback=/rooms/${property.id}`);
-        } else {
-            // Proceed to property and track view
+        if (isAuthenticated) {
             addView(property.id);
-            router.push(`/rooms/${property.id}`);
         }
+        router.push(`/rooms/${property.id}`);
     };
 
     return (
