@@ -28,6 +28,9 @@ export interface AdminUser {
     avatar?: string;
     isVerified: boolean;
     isBlocked: boolean;
+    nin?: string;
+    verificationFeePaid?: boolean;
+    verificationStatus?: string;
     createdAt: string;
 }
 

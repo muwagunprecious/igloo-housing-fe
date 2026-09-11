@@ -10,4 +10,4 @@ export const loadPaystackScript = (): Promise<boolean> => {
         script.onerror = () => resolve(false);
         document.body.appendChild(script);
     });
-};
+};export const loadPaystack = loadPaystackScript;

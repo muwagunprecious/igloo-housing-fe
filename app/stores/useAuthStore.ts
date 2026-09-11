@@ -12,6 +12,8 @@ interface User {
     universityId?: string;
     isVerified?: boolean;
     verificationStatus?: string;
+    verificationFeePaid?: boolean;
+    nin?: string;
     whatsapp?: string;
     token?: string;
 }
@@ -52,13 +54,17 @@ export const useAuthStore = create<AuthStore>()(
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         verificationStatus: userData.verificationStatus,
+                        verificationFeePaid: userData.verificationFeePaid,
+                        nin: userData.nin,
                         token: token
                     };
 
                     set({ user, isAuthenticated: true, isLoading: false });
 
                     let redirectTo = '/dashboard';
-                    if (user.role === 'agent') redirectTo = '/agents/dashboard';
+                    if (user.role === 'agent') {
+                        redirectTo = user.verificationStatus === 'APPROVED' ? '/agents/dashboard' : '/agents/pending-approval';
+                    }
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
                     if (user.role === 'renter') redirectTo = '/dashboard/renter';
 
@@ -88,6 +94,8 @@ export const useAuthStore = create<AuthStore>()(
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         verificationStatus: userData.verificationStatus,
+                        verificationFeePaid: userData.verificationFeePaid,
+                        nin: userData.nin,
                         token: token
                     };
 
@@ -127,6 +135,8 @@ export const useAuthStore = create<AuthStore>()(
                         universityId: userData.universityId,
                         isVerified: userData.isVerified,
                         verificationStatus: userData.verificationStatus,
+                        verificationFeePaid: userData.verificationFeePaid,
+                        nin: userData.nin,
                         // Token is presumed to be in storage if this succeeds, or we could store it separately
                     };
                     // We might need to keep the existing token if this is just a refresh/check

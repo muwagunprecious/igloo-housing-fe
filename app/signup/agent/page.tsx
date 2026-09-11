@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -422,4 +422,4 @@ export default function AgentSignupPage() {
             <AgentSignupForm />
         </Suspense>
     );
-    // University State
+}

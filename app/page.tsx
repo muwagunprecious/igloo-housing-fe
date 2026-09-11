@@ -10,7 +10,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { getImageUrl } from "@/app/lib/imageUrl";
 import SmartSearch from "./components/features/SmartSearch";
-import { p } from "framer-motion/client";
+import { useCampusStore, propertyMatchesCampus, CAMPUSES } from "@/app/stores/useCampusStore";
 
 export default function Home() {
   const [selectedUniversity, setSelectedUniversity] = useState<string | null>(
@@ -20,6 +20,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState<SortOrder>(null);
   const { properties, fetchProperties, isLoading, error } = usePropertyStore();
+  const { selectedCampus, openCampusModal, setCampus } = useCampusStore();
 
   useEffect(() => {
     fetchProperties();
@@ -36,6 +37,11 @@ export default function Home() {
 
   const displayedProperties = useMemo(() => {
     let filtered = properties;
+
+    // Filter by MyCampus selection
+    if (selectedCampus && selectedCampus !== "all") {
+      filtered = filtered.filter((p) => propertyMatchesCampus(p, selectedCampus));
+    }
 
     if (selectedUniversity) {
       filtered = filtered.filter((p) => p.universityId === selectedUniversity);
@@ -80,6 +86,7 @@ export default function Home() {
     return filtered;
   }, [
     properties,
+    selectedCampus,
     selectedUniversity,
     selectedLocation,
     selectedCategory,
@@ -154,22 +161,54 @@ export default function Home() {
 
       {/* Property Grid */}
       <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-10 pb-20">
-        {/* Cleaned up Popular Homes Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 flex items-center gap-3">
-            <span className="w-8 h-1 bg-[#dc2626] rounded-full"></span>
-            Our Popular Homes
-          </h2>
-
-          {isLoading ? (
-            <p className="text-sm font-semibold text-gray-500">Loading...</p>
-          ) : error ? (
-            <p className="text-sm text-red-600 font-semibold">
-              Error loading properties
+        {/* Popular Homes Header with Active Campus Pill */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 flex items-center gap-3">
+              <span className="w-2.5 h-8 bg-primary rounded-full" />
+              <span>Our Popular Homes</span>
+            </h2>
+            <p className="text-gray-500 text-sm font-medium mt-1">
+              {selectedCampus && selectedCampus !== "all" ? (
+                <>
+                  Showing houses & apartments in{" "}
+                  <strong className="text-gray-900 font-bold">
+                    {CAMPUSES.find((c) => c.id === selectedCampus)?.name || selectedCampus}
+                  </strong>
+                </>
+              ) : (
+                "Verified student accommodation across all campuses"
+              )}
             </p>
-          ) : (
-            <p/>
-          )}
+          </div>
+
+          {/* Active Campus Badge + Change Button */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={openCampusModal}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-gray-200 hover:border-primary text-gray-800 text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all group cursor-pointer"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <span>Campus:</span>
+              <span className="text-primary font-black">
+                {selectedCampus && selectedCampus !== "all"
+                  ? CAMPUSES.find((c) => c.id === selectedCampus)?.name || selectedCampus
+                  : "All Campuses"}
+              </span>
+              <span className="text-[11px] uppercase tracking-wider text-gray-400 group-hover:text-primary font-bold ml-1">
+                Change ▾
+              </span>
+            </button>
+
+            {selectedCampus && selectedCampus !== "all" && (
+              <button
+                onClick={() => setCampus("all")}
+                className="text-xs text-gray-400 hover:text-gray-700 font-semibold underline px-2 py-1 transition-colors"
+              >
+                View All Campuses
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8">
@@ -210,23 +249,35 @@ export default function Home() {
 
         {/* Empty State */}
         {!isLoading && displayedProperties.length === 0 && !error && (
-          <div className="text-center py-24 bg-gray-50 rounded-3xl border border-dashed border-gray-200 mt-4">
-            <p className="text-2xl font-bold text-gray-900 mb-2">
-              No exact matches found
+          <div className="text-center py-20 px-4 bg-gray-50 rounded-3xl border border-dashed border-gray-200 mt-4">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+              <Map size={26} className="text-gray-400" />
+            </div>
+            <p className="text-xl sm:text-2xl font-black text-gray-900 mb-2">
+              No homes found in {selectedCampus && selectedCampus !== "all" ? CAMPUSES.find(c => c.id === selectedCampus)?.name : "this filter"}
             </p>
-            <p className="text-gray-500 mb-8">
-              Try adjusting your filters or searching a different area.
+            <p className="text-gray-500 mb-8 max-w-md mx-auto text-sm">
+              We couldn&apos;t find any verified listings matching this campus or category right now.
             </p>
-            <button
-              onClick={() => {
-                setSelectedUniversity(null);
-                setSelectedLocation(null);
-                setSelectedCategory("All");
-              }}
-              className="bg-white border border-gray-200 text-[#dc2626] px-8 py-3 rounded-full font-bold hover:bg-[#fef2f2] transition shadow-sm"
-            >
-              Clear all filters
-            </button>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <button
+                onClick={openCampusModal}
+                className="bg-primary text-white px-6 py-3 rounded-full font-bold hover:bg-primary/90 transition shadow-md text-xs sm:text-sm cursor-pointer"
+              >
+                Choose Another Campus
+              </button>
+              <button
+                onClick={() => {
+                  setCampus("all");
+                  setSelectedUniversity(null);
+                  setSelectedLocation(null);
+                  setSelectedCategory("All");
+                }}
+                className="bg-white border border-gray-300 text-gray-800 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition shadow-sm text-xs sm:text-sm cursor-pointer"
+              >
+                Browse All Campuses
+              </button>
+            </div>
           </div>
         )}
       </div>

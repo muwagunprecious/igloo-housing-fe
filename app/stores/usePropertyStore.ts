@@ -7,6 +7,7 @@ export interface Property {
     description: string;
     price: number;
     location: string;
+    campus?: string;
     address?: string;
     images: string[];
     video?: string;

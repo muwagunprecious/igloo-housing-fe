@@ -1,10 +1,11 @@
 "use client";
 
-import { Menu, User, Home, LayoutDashboard, Building2, MessageSquare, Users, LogOut } from "lucide-react";
+import { Menu, User, Home, LayoutDashboard, Building2, MessageSquare, Users, LogOut, GraduationCap, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/stores/useAuthStore";
+import { useCampusStore, CAMPUSES } from "@/app/stores/useCampusStore";
 import Image from "next/image";
 import { igloo } from "@/app/assets";
 
@@ -13,6 +14,7 @@ export default function EnhancedNavbar() {
     const pathname = usePathname();
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
+    const { selectedCampus, openCampusModal } = useCampusStore();
 
     // Hide this global navbar completely on dashboard pages and Post-UTME pages
     if (pathname.startsWith('/agents/dashboard') || pathname.startsWith('/admin/dashboard') || pathname.startsWith('/dashboard/renter') || pathname.startsWith('/post-utme')) {
@@ -51,11 +53,29 @@ export default function EnhancedNavbar() {
             <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4">
                 <div className="flex flex-row items-center justify-between py-4">
                     {/* Logo - VISIBLE EVERYWHERE */}
-                    <Link href="/" className="cursor-pointer">
-                        <div className="flex items-center gap-1">
-                            <Image src={igloo} width={60} height={30} alt="logo" />
-                        </div>
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <Link href="/" className="cursor-pointer">
+                            <div className="flex items-center gap-1">
+                                <Image src={igloo} width={60} height={30} alt="logo" />
+                            </div>
+                        </Link>
+
+                        {/* MyCampus Switcher Pill */}
+                        <button
+                            onClick={openCampusModal}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-800 text-xs font-bold transition-all shadow-sm cursor-pointer hover:border-primary group"
+                            title="Choose your campus"
+                        >
+                            <GraduationCap size={15} className="text-primary group-hover:scale-110 transition-transform" />
+                            <span className="hidden xs:inline text-gray-500 font-normal">Campus:</span>
+                            <span className="font-black text-gray-900 truncate max-w-[110px] sm:max-w-[150px]">
+                                {selectedCampus && selectedCampus !== "all"
+                                    ? CAMPUSES.find((c) => c.id === selectedCampus)?.name || selectedCampus
+                                    : "All Campuses"}
+                            </span>
+                            <ChevronDown size={13} className="text-gray-400 group-hover:text-primary transition-colors" />
+                        </button>
+                    </div>
 
                     {/* Desktop Public Navigation */}
                     {!isAuthenticated && (

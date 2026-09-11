@@ -2,10 +2,11 @@
 
 import { universities } from "@/app/data/universities";
 import { categories } from "@/app/data/categories";
-import { MapPin, Search, Building2, ChevronDown } from "lucide-react";
+import { MapPin, Search, Building2, ChevronDown, GraduationCap } from "lucide-react";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePropertyStore } from "@/app/stores/usePropertyStore";
+import { useCampusStore, CAMPUSES } from "@/app/stores/useCampusStore";
 
 interface SmartSearchProps {
     onSelectLocation: (location: string | null) => void;
@@ -30,6 +31,7 @@ export default function SmartSearch({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const { properties } = usePropertyStore();
+    const { selectedCampus, setCampus } = useCampusStore();
 
     // Group properties by exact location value from DB
     const propertyLocations = useMemo(() => {
@@ -40,12 +42,25 @@ export default function SmartSearch({
         return Array.from(map.entries()).map(([address, count]) => ({ address, count }));
     }, [properties]);
 
+    const selectedCampusData = CAMPUSES.find((c) => c.id === selectedCampus);
     const selectedUni = universities.find((u) => u.id === selectedUniversity);
     const displayValue = selectedUni
         ? selectedUni.name
-        : selectedLocation ?? query;
+        : selectedLocation
+        ? selectedLocation
+        : selectedCampus && selectedCampus !== "all"
+        ? selectedCampusData?.name || ""
+        : query;
 
     const lowerQuery = query.toLowerCase();
+
+    const filteredCampuses = CAMPUSES.filter(
+        (c) =>
+            !query ||
+            c.name.toLowerCase().includes(lowerQuery) ||
+            c.fullName.toLowerCase().includes(lowerQuery) ||
+            c.tag.toLowerCase().includes(lowerQuery)
+    );
 
     const filteredUniversities = query
         ? universities.filter(
@@ -59,7 +74,7 @@ export default function SmartSearch({
         l.address.toLowerCase().includes(lowerQuery)
     );
 
-    const hasResults = filteredUniversities.length > 0 || filteredLocations.length > 0;
+    const hasResults = filteredCampuses.length > 0 || filteredUniversities.length > 0 || filteredLocations.length > 0;
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -72,9 +87,18 @@ export default function SmartSearch({
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
+    const handleSelectCampus = (campusId: (typeof CAMPUSES)[0]["id"]) => {
+        setCampus(campusId);
+        onSelectUniversity(null);
+        onSelectLocation(null);
+        setQuery("");
+        setShowDropdown(false);
+    };
+
     const handleSelectUniversity = (uni: (typeof universities)[0]) => {
         onSelectUniversity(uni.id);
         onSelectLocation(null);
+        setCampus("all");
         setQuery(uni.name);
         setShowDropdown(false);
     };
@@ -82,6 +106,7 @@ export default function SmartSearch({
     const handleSelectLocation = (address: string) => {
         onSelectLocation(address);
         onSelectUniversity(null);
+        setCampus("all");
         setQuery(address);
         setShowDropdown(false);
     };
@@ -90,10 +115,11 @@ export default function SmartSearch({
         e.stopPropagation();
         onSelectUniversity(null);
         onSelectLocation(null);
+        setCampus("all");
         setQuery("");
     };
 
-    const isSelected = !!selectedUniversity || !!selectedLocation;
+    const isSelected = !!selectedUniversity || !!selectedLocation || (!!selectedCampus && selectedCampus !== "all");
 
     return (
         <div className="relative w-full max-w-3xl mx-auto" ref={dropdownRef}>
@@ -202,6 +228,37 @@ export default function SmartSearch({
                         transition={{ duration: 0.2 }}
                         className="absolute top-full left-0 mt-3 w-full bg-white border border-gray-100 rounded-[2rem] shadow-2xl max-h-[420px] overflow-y-auto z-[60] py-3 hide-scrollbar"
                     >
+                        {/* Featured Campuses (Ago, Ibogun, Sagamu) */}
+                        {filteredCampuses.length > 0 && (
+                            <>
+                                <p className="px-8 pt-1 pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <GraduationCap size={14} className="text-primary" />
+                                    <span>MyCampuses</span>
+                                </p>
+                                {filteredCampuses.map((campus) => (
+                                    <button
+                                        key={campus.id}
+                                        onClick={() => handleSelectCampus(campus.id)}
+                                        className="w-full px-8 py-3.5 hover:bg-gray-50 transition-colors text-left flex items-start gap-4"
+                                    >
+                                        <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 text-primary">
+                                            <GraduationCap size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-gray-900">{campus.name}</p>
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
+                                                    {campus.tag}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-0.5">{campus.fullName}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                                <div className="my-2 mx-8 border-t border-gray-100" />
+                            </>
+                        )}
+
                         {/* Locations from real properties */}
                         {filteredLocations.length > 0 && (
                             <>
