@@ -67,7 +67,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        <ClerkProvider>
+        <ClerkProvider
+          publishableKey={
+            process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+            "pk_test_Y2xvc2UtYmVkYnVnLTYyMzQuY2xlcmsuYWNjb3VudHMuZGV2JA"
+          }
+        >
           <EnhancedNavbar />
           <main className="min-h-screen">
           {children}
