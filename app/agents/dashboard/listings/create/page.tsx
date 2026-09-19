@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/app/lib/axios";
 import { Upload, X, Loader2, Home, AlertCircle, Video, Play, Trash2 } from "lucide-react";
@@ -15,8 +15,14 @@ const PROPERTY_CATEGORIES = categoryData.filter(c => c.label !== "All").map(c =>
 
 export default function CreateListingPage() {
     const router = useRouter();
-    const { user } = useAuthStore();
+    const { user, checkAuth } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (checkAuth) {
+            checkAuth();
+        }
+    }, [checkAuth]);
     const [images, setImages] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [video, setVideo] = useState<File | null>(null);
@@ -100,22 +106,13 @@ export default function CreateListingPage() {
             data.append("description", formData.description);
             data.append("price", formData.price);
             data.append("location", formData.location);
+            data.append("campus", user?.universityId || "e433530e-7e3d-4a70-b25b-fdc9db5d0600");
             data.append("category", formData.category);
             data.append("distanceFromSchool", formData.distanceFromSchool);
             data.append("bedrooms", formData.bedrooms);
             data.append("bathrooms", formData.bathrooms);
             data.append("rooms", formData.rooms);
             data.append("roommatesAllowed", String(formData.roommatesAllowed));
-
-            // Amenities split by comma
-            // Backend might expect string or array, strictly speaking our backend just takes general fields in req.body
-            // looking at propertyController (Step 116), it takes { title, description, price, location, roommatesAllowed } explicitly
-            // It might ignore others! 
-            // Wait, I should update backend to accept category, bedrooms, etc otherwise they won't save.
-            // step 116 createProperty: const { title, description, price, location, roommatesAllowed } = req.body;
-            // It MISSES category, bedrooms, bathrooms, rooms, amenities.
-            // Schema has them. 
-            // I MUST UPDATE BACKEND CONTROLLER TOO.
 
             if (video && images.length === 0) {
                 alert("You must upload at least one picture before adding a video");
@@ -138,7 +135,14 @@ export default function CreateListingPage() {
             alert("Property uploaded successfully! It is now pending approval.");
             router.push("/agents/dashboard/listings");
         } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-            const errorMessage = err.response?.data?.message || "Failed to create property. Please try again.";
+            console.error("Property upload error:", err);
+            const errorMessage =
+                err.response?.data?.message ||
+                (err.response?.data?.errors && typeof err.response.data.errors === "object"
+                    ? Object.values(err.response.data.errors).join(". ")
+                    : null) ||
+                err.message ||
+                "Failed to create property. Please try again.";
             alert(errorMessage);
         } finally {
             setIsLoading(false);
@@ -154,9 +158,14 @@ export default function CreateListingPage() {
 
             {/* Unverified Agent Warning */}
             {user && !user.isVerified && (
-                <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg flex items-center gap-2">
-                    <AlertCircle size={20} />
-                    <p>Your account must be verified by admin before you can upload properties.</p>
+                <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-2xl flex items-start gap-3 shadow-xs">
+                    <AlertCircle size={22} className="text-amber-600 mt-0.5 shrink-0" />
+                    <div>
+                        <h4 className="font-bold text-sm">Agent Verification Under Review</h4>
+                        <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+                            Your agent account is currently pending administrator verification. You will be able to publish property listings as soon as an administrator approves your account.
+                        </p>
+                    </div>
                 </div>
             )}
 
@@ -389,10 +398,10 @@ export default function CreateListingPage() {
                     <button
                         type="submit"
                         disabled={isLoading || !user?.isVerified}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 shadow-sm"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                     >
                         {isLoading && <Loader2 size={18} className="animate-spin" />}
-                        {isLoading ? "Publishing..." : "Publish Listing"}
+                        {isLoading ? "Publishing..." : !user?.isVerified ? "Pending Admin Approval" : "Publish Listing"}
                     </button>
                 </div>
             </form>

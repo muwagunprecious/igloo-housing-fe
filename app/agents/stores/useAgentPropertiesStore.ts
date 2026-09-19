@@ -77,7 +77,15 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
             }));
             return true;
         } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-            set({ error: error.response?.data?.message || error.message, isLoading: false });
+            console.error("addProperty error:", error);
+            const msg =
+                error.response?.data?.message ||
+                (error.response?.data?.errors && typeof error.response.data.errors === "object"
+                    ? Object.values(error.response.data.errors).join(". ")
+                    : null) ||
+                error.message ||
+                "Failed to create property. Please try again.";
+            set({ error: msg, isLoading: false });
             return false;
         }
     },

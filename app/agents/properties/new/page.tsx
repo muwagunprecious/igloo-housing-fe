@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAgentPropertiesStore } from "../../stores/useAgentPropertiesStore";
 import AgentSidebar from "../../components/AgentSidebar";
@@ -16,7 +16,13 @@ const PROPERTY_CATEGORIES = categories.filter(c => c.label !== "All").map(c => c
 export default function AddPropertyPage() {
     const router = useRouter();
     const { addProperty, isLoading, error } = useAgentPropertiesStore();
-    const { user } = useAuthStore();
+    const { user, checkAuth } = useAuthStore();
+
+    useEffect(() => {
+        if (checkAuth) {
+            checkAuth();
+        }
+    }, [checkAuth]);
 
     const [images, setImages] = useState<File[]>([]);
     const [formData, setFormData] = useState({
@@ -72,6 +78,7 @@ export default function AddPropertyPage() {
         data.append("description", formData.description);
         data.append("price", formData.price);
         data.append("location", formData.location);
+        data.append("campus", user?.universityId || "e433530e-7e3d-4a70-b25b-fdc9db5d0600");
         data.append("category", formData.category);
         data.append("bedrooms", formData.bedrooms);
         data.append("bathrooms", formData.bathrooms);
@@ -91,7 +98,8 @@ export default function AddPropertyPage() {
         if (success) {
             router.push("/agents/properties");
         } else {
-            setSubmitError(error || "Failed to create property. Please try again.");
+            const currentErr = useAgentPropertiesStore.getState().error;
+            setSubmitError(currentErr || "Failed to create property. Please try again.");
         }
     };
 

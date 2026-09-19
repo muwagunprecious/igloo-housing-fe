@@ -27,7 +27,7 @@ export default function AgentDashboardLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { user, logout, isAuthenticated, updateUser } = useAuthStore();
+    const { user, logout, isAuthenticated, updateUser, checkAuth } = useAuthStore();
     
     // Existing state
     const [showWhatsappModal, setShowWhatsappModal] = useState(false);
@@ -38,10 +38,13 @@ export default function AgentDashboardLayout({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
-    // Wait until component is mounted to check auth (fixes Zustand hydration flash)
+    // Wait until component is mounted and refresh latest agent verification status
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+        if (checkAuth) {
+            checkAuth();
+        }
+    }, [checkAuth]);
 
     useEffect(() => {
         if (user && user.role === 'agent' && user.isVerified && !user.whatsapp) {
