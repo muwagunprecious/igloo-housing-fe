@@ -13,7 +13,8 @@ import {
     Lock,
     ExternalLink,
     HelpCircle,
-    FileCheck2
+    FileCheck2,
+    RefreshCw
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,14 +24,30 @@ import { igloo } from "@/app/assets";
 
 export default function PendingApprovalPage() {
     const router = useRouter();
-    const { user, logout, isAuthenticated, updateUser } = useAuthStore();
+    const { user, logout, isAuthenticated, updateUser, checkAuth } = useAuthStore();
     const [isMounted, setIsMounted] = useState(false);
     const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [payError, setPayError] = useState("");
+
+    const isApproved = user && (user.isVerified || user.verificationStatus === "APPROVED" || user.verificationStatus === "VERIFIED");
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    // Fetch latest user status on mount and poll every 4 seconds to auto-detect admin approval
+    useEffect(() => {
+        if (!isMounted) return;
+
+        checkAuth();
+
+        const interval = setInterval(() => {
+            checkAuth();
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [isMounted, checkAuth]);
 
     useEffect(() => {
         if (isMounted) {
@@ -38,11 +55,20 @@ export default function PendingApprovalPage() {
                 router.push("/login");
             } else if (user.role !== "agent") {
                 router.push("/dashboard");
-            } else if (user.verificationStatus === "APPROVED") {
+            } else if (isApproved) {
                 router.push("/agents/dashboard");
             }
         }
-    }, [isMounted, isAuthenticated, user, router]);
+    }, [isMounted, isAuthenticated, user, isApproved, router]);
+
+    const handleManualRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await checkAuth();
+        } finally {
+            setTimeout(() => setIsRefreshing(false), 600);
+        }
+    };
 
     if (!isMounted || !user) return null;
 
@@ -300,16 +326,26 @@ export default function PendingApprovalPage() {
 
                         {/* Confirmation Box if Fee Paid */}
                         {feePaid && (
-                            <div className="mt-8 p-5 bg-emerald-50/60 rounded-xl border border-emerald-200 flex items-start gap-3.5">
-                                <FileCheck2 size={20} className="text-emerald-700 shrink-0 mt-0.5" />
-                                <div className="text-xs text-emerald-900 leading-relaxed">
-                                    <p className="font-semibold text-sm text-emerald-900">
-                                        Payment Received &amp; Profile Under Review
-                                    </p>
-                                    <p className="mt-1 text-emerald-800">
-                                        Your ₦1,000 screening fee has been confirmed. The administration team has been notified and will verify your campus jurisdiction and National ID. You will be granted immediate access once approved.
-                                    </p>
+                            <div className="mt-8 p-5 bg-emerald-50/60 rounded-xl border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-start gap-3.5">
+                                    <FileCheck2 size={20} className="text-emerald-700 shrink-0 mt-0.5" />
+                                    <div className="text-xs text-emerald-900 leading-relaxed">
+                                        <p className="font-semibold text-sm text-emerald-900">
+                                            Payment Received &amp; Profile Under Review
+                                        </p>
+                                        <p className="mt-1 text-emerald-800">
+                                            Your ₦1,000 screening fee has been confirmed. The administration team has been notified and will verify your campus jurisdiction and National ID. You will be granted immediate access once approved.
+                                        </p>
+                                    </div>
                                 </div>
+                                <button
+                                    onClick={handleManualRefresh}
+                                    disabled={isRefreshing}
+                                    className="shrink-0 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-sm cursor-pointer disabled:opacity-60"
+                                >
+                                    <RefreshCw size={13} className={isRefreshing ? "animate-spin" : ""} />
+                                    <span>{isRefreshing ? "Checking..." : "Check Status Now"}</span>
+                                </button>
                             </div>
                         )}
                     </div>

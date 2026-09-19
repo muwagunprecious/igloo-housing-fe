@@ -18,6 +18,7 @@ interface PropertyProps {
         address?: string;
     };
     distance?: string;
+    distanceFromSchool?: string;
     period?: string;
     price: number;
     rating?: number;
@@ -136,7 +137,7 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
                     )}
                 </div>
                 <p className="text-gray-500 text-[14px] leading-tight">
-                    {property.distance || "Near Campus"} • {property.period || "Yearly"}
+                    {property.distanceFromSchool || property.distance || "Near Campus"} • {property.period || "Yearly"}
                 </p>
                 <div className="flex items-baseline gap-1 mt-1">
                     <span className="font-extrabold text-gray-900">₦{property.price.toLocaleString()}</span>

@@ -50,7 +50,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-4">
                     {user?.avatar ? (
                         <div className="relative w-16 h-16">
-                            <Image src={user.avatar} alt="Profile" fill className="rounded-full object-cover" />
+                            <Image src={user.avatar} alt="Profile" fill unoptimized className="rounded-full object-cover" />
                         </div>
                     ) : (
                         <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">

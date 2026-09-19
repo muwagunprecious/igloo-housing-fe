@@ -63,7 +63,8 @@ export const useAuthStore = create<AuthStore>()(
 
                     let redirectTo = '/dashboard';
                     if (user.role === 'agent') {
-                        redirectTo = user.verificationStatus === 'APPROVED' ? '/agents/dashboard' : '/agents/pending-approval';
+                        const isApproved = user.isVerified || user.verificationStatus === 'APPROVED' || user.verificationStatus === 'VERIFIED';
+                        redirectTo = isApproved ? '/agents/dashboard' : '/agents/pending-approval';
                     }
                     if (user.role === 'admin') redirectTo = '/admin/dashboard';
                     if (user.role === 'renter') redirectTo = '/dashboard/renter';

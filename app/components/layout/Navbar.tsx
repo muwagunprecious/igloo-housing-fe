@@ -106,6 +106,7 @@ export default function Navbar() {
                                                 src={getImageUrl(user.avatar)}
                                                 alt={user.name}
                                                 fill
+                                                unoptimized
                                                 className="object-cover"
                                             />
                                         </div>

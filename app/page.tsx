@@ -10,6 +10,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { getImageUrl } from "@/app/lib/imageUrl";
 import SmartSearch from "./components/features/SmartSearch";
+import BudgetFinderSection from "./components/features/BudgetFinderSection";
 import { useCampusStore, propertyMatchesCampus, CAMPUSES } from "@/app/stores/useCampusStore";
 
 export default function Home() {
@@ -159,6 +160,9 @@ export default function Home() {
         />
       </div>
 
+      {/* SMART BUDGET FINDER SECTION */}
+      <BudgetFinderSection />
+
       {/* Property Grid */}
       <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-10 pb-20">
         {/* Popular Homes Header with Active Campus Pill */}
@@ -236,7 +240,8 @@ export default function Home() {
                 lng: 0,
                 address: property.location || "Location not available",
               },
-              distance: "N/A",
+              distance: property.distanceFromSchool || "Near Campus",
+              distanceFromSchool: property.distanceFromSchool,
               period: property.category || "year",
               price: property.price || 0,
               rating: 4.5,

@@ -28,6 +28,7 @@ export default function CreateListingPage() {
         price: "",
         location: "",
         category: "Self-contained",
+        distanceFromSchool: "5 mins from school",
         bedrooms: "1",
         bathrooms: "1",
         rooms: "1", // Number of rooms available
@@ -100,6 +101,7 @@ export default function CreateListingPage() {
             data.append("price", formData.price);
             data.append("location", formData.location);
             data.append("category", formData.category);
+            data.append("distanceFromSchool", formData.distanceFromSchool);
             data.append("bedrooms", formData.bedrooms);
             data.append("bathrooms", formData.bathrooms);
             data.append("rooms", formData.rooms);
@@ -158,12 +160,12 @@ export default function CreateListingPage() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                 {/* Media Upload */}
                 <div className="space-y-6">
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900">Property Images</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                             {previewUrls.map((url, index) => (
                                 <div key={index} className="relative aspect-square rounded-lg overflow-hidden group border border-gray-100 shadow-sm">
                                     <Image src={url} alt={`Preview ${index}`} fill className="object-cover" />
@@ -226,56 +228,57 @@ export default function CreateListingPage() {
                 </div>
 
                 {/* Basic Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Property Title</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="col-span-1 md:col-span-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Property Title</label>
                         <input
                             type="text"
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
                             placeholder="e.g. Modern Apartment near Campus Gate"
                         />
                     </div>
 
-                    <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <div className="col-span-1 md:col-span-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                         <textarea
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
                             required
                             rows={4}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
                             placeholder="Describe the property, amenities, and surroundings..."
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price (Yearly/Session)</label>
+                    {/* Price & Category */}
+                    <div className="col-span-1">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Price (Yearly/Session)</label>
                         <div className="relative">
-                            <span className="absolute left-4 top-3 text-gray-500">₦</span>
+                            <span className="absolute left-4 top-3.5 text-gray-500 font-bold">₦</span>
                             <input
                                 type="number"
                                 name="price"
                                 value={formData.price}
                                 onChange={handleChange}
                                 required
-                                className="w-full pl-8 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
                                 placeholder="0.00"
                             />
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <div className="col-span-1">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                         <select
                             name="category"
                             value={formData.category}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm bg-white"
                         >
                             {PROPERTY_CATEGORIES.map(cat => (
                                 <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -283,58 +286,84 @@ export default function CreateListingPage() {
                         </select>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Location / Address</label>
+                    {/* Distance & Location */}
+                    <div className="col-span-1">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Distance from School / Campus</label>
+                        <select
+                            name="distanceFromSchool"
+                            value={formData.distanceFromSchool}
+                            onChange={handleChange}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm bg-white"
+                        >
+                            <option value="5 mins from school">5 mins from school</option>
+                            <option value="10 mins from school">10 mins from school</option>
+                            <option value="15 mins from school">15 mins from school</option>
+                            <option value="20 mins from school">20 mins from school</option>
+                            <option value="25 mins from school">25 mins from school</option>
+                            <option value="30+ mins from school">30+ mins from school</option>
+                        </select>
+                    </div>
+
+                    <div className="col-span-1">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Location / Address</label>
                         <input
                             type="text"
                             name="location"
                             value={formData.location}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
                             placeholder="Full address"
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Bedrooms</label>
-                        <input
-                            type="number"
-                            name="bedrooms"
-                            value={formData.bedrooms}
-                            onChange={handleChange}
-                            min="0"
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                    </div>
+                    {/* Specifications: Bedrooms, Bathrooms, Total Rooms */}
+                    <div className="col-span-1 md:col-span-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Bedrooms</label>
+                                <input
+                                    type="number"
+                                    name="bedrooms"
+                                    value={formData.bedrooms}
+                                    onChange={handleChange}
+                                    min="0"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
+                                    placeholder="e.g. 1"
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Bathrooms</label>
-                        <input
-                            type="number"
-                            name="bathrooms"
-                            value={formData.bathrooms}
-                            onChange={handleChange}
-                            min="0"
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                    </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Bathrooms</label>
+                                <input
+                                    type="number"
+                                    name="bathrooms"
+                                    value={formData.bathrooms}
+                                    onChange={handleChange}
+                                    min="0"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
+                                    placeholder="e.g. 1"
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Total Rooms Available</label>
-                        <input
-                            type="number"
-                            name="rooms"
-                            value={formData.rooms}
-                            onChange={handleChange}
-                            min="1"
-                            required
-                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Total Rooms Available</label>
+                                <input
+                                    type="number"
+                                    name="rooms"
+                                    value={formData.rooms}
+                                    onChange={handleChange}
+                                    min="1"
+                                    required
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-base sm:text-sm"
+                                    placeholder="e.g. 1"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
                     <input
                         type="checkbox"
                         name="roommatesAllowed"
@@ -349,18 +378,18 @@ export default function CreateListingPage() {
                     </label>
                 </div>
 
-                <div className="flex justify-end gap-4 pt-4 border-t border-gray-100">
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4 border-t border-gray-100">
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="px-6 py-3 text-gray-600 font-medium hover:bg-gray-50 rounded-lg transition-colors"
+                        className="w-full sm:w-auto px-6 py-3 text-gray-600 font-medium hover:bg-gray-50 rounded-xl transition-colors text-center"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={isLoading || !user?.isVerified}
-                        className="flex items-center gap-2 px-8 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 shadow-sm"
                     >
                         {isLoading && <Loader2 size={18} className="animate-spin" />}
                         {isLoading ? "Publishing..." : "Publish Listing"}

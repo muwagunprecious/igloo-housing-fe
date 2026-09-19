@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Share, Heart, Wifi, Shield, Zap, Car, Camera, Users, X, Video, Phone, Edit, Trash2, ArrowLeft } from "lucide-react";
+import { Star, Share, Heart, Wifi, Shield, Zap, Car, Camera, Users, X, Video, Phone, Edit, Trash2, ArrowLeft, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import BackButton from "@/app/components/common/BackButton";
@@ -23,7 +23,7 @@ export default function PropertyDetails() {
     const { currentProperty, fetchProperty, isLoading, error } = usePropertyStore();
     const { createRequest, isLoading: isRequesting } = useRoommateStore();
     const { isAuthenticated, user } = useAuthStore();
-    const { deleteProperty } = useAdminStore();
+    const { deleteProperty, approveProperty, rejectProperty } = useAdminStore();
     const router = useRouter();
     const [requestSent, setRequestSent] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +46,7 @@ export default function PropertyDetails() {
         }
     }, [id, fetchProperty]);
 
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role?.toLowerCase() === 'admin';
     const isOwner = user?.id === currentProperty?.agentId;
     const canManage = isAdmin || isOwner;
 
@@ -214,6 +214,58 @@ export default function PropertyDetails() {
             {/* Main Content Container */}
             <div className="max-w-[1120px] mx-auto xl:px-20 md:px-10 sm:px-4 px-4 relative z-20">
                 
+                {/* ADMIN ONLY: Pending Approval Banner */}
+                {isAdmin && currentProperty?.status === 'PENDING' && (
+                    <div className="my-6 p-6 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border-2 border-orange-300 rounded-[28px] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg shadow-orange-500/5">
+                        <div className="flex items-center gap-3.5">
+                            <div className="p-3 bg-orange-500 text-white rounded-2xl shrink-0 shadow-md shadow-orange-500/20">
+                                <AlertCircle size={24} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="px-2.5 py-0.5 bg-orange-500 text-white rounded-md text-[10px] font-black uppercase tracking-wider">
+                                        Pending Verification
+                                    </span>
+                                    <h3 className="font-black text-black text-base">Admin Preview Mode</h3>
+                                </div>
+                                <p className="text-xs text-gray-600 font-medium mt-0.5">
+                                    This apartment listing is awaiting your review. Students cannot see this listing until you authorize it.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <button
+                                onClick={async () => {
+                                    const reason = prompt("Enter reason for declining this listing:");
+                                    if (reason && reason.trim()) {
+                                        await rejectProperty(id, reason.trim());
+                                        toast.success("Listing declined");
+                                        router.push("/admin/properties?status=PENDING");
+                                    }
+                                }}
+                                className="flex-1 md:flex-none px-6 py-3.5 bg-white border-2 border-red-100 text-red-600 rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-red-50 transition active:scale-95"
+                            >
+                                Decline
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (confirm("Authorize this listing? It will become visible to all students.")) {
+                                        const success = await approveProperty(id);
+                                        if (success) {
+                                            toast.success("Listing authorized successfully!");
+                                            fetchProperty(id);
+                                        }
+                                    }
+                                }}
+                                className="flex-1 md:flex-none px-8 py-3.5 bg-black hover:bg-primary hover:text-black text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-xl shadow-black/10 active:scale-95"
+                            >
+                                <CheckCircle2 size={16} />
+                                <span>Authorize Listing</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Mobile Overlapping Header Card */}
                 <div className="md:hidden -mt-8 pt-8 pb-6 px-6 bg-white rounded-t-[2.5rem] border-t border-gray-100 -mx-4 relative z-20 shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
                     <h1 className="text-2xl font-bold text-gray-900 mb-2 leading-snug">{property.title}</h1>
@@ -337,6 +389,8 @@ export default function PropertyDetails() {
                         <div className="border-b border-gray-200 pb-6 mb-6">
                             <h2 className="text-xl font-semibold mb-1">Hosted by {property.agent?.fullName || 'Agent'}</h2>
                             <p className="text-gray-500 text-sm mb-4">
+                                {property.category && <span className="font-bold text-gray-800">{property.category} · </span>}
+                                {property.distanceFromSchool && <span className="text-emerald-700 font-semibold">{property.distanceFromSchool} · </span>}
                                 {property.specs.guests} guests · {property.specs.beds} bedroom · {property.specs.baths} bath
                             </p>
                         </div>
@@ -415,7 +469,7 @@ export default function PropertyDetails() {
                             </div>
                             <div className="mt-4">
                                 <h4 className="font-semibold">{property.location}</h4>
-                                <p className="text-gray-500 text-sm">{property.distance} from campus</p>
+                                <p className="text-gray-500 text-sm">{property.distanceFromSchool || property.distance || "Near Campus"}</p>
                             </div>
                         </div>
                     </div>

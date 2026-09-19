@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-
         remotePatterns: [
             {
                 protocol: 'https',
@@ -31,6 +30,31 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'ialjamifosdmalaecqpa.supabase.co',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'img.clerk.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'images.clerk.dev',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: '*.googleusercontent.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'avatars.githubusercontent.com',
                 pathname: '/**',
             }
         ]

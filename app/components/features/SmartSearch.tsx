@@ -228,7 +228,7 @@ export default function SmartSearch({
                         transition={{ duration: 0.2 }}
                         className="absolute top-full left-0 mt-3 w-full bg-white border border-gray-100 rounded-[2rem] shadow-2xl max-h-[420px] overflow-y-auto z-[60] py-3 hide-scrollbar"
                     >
-                        {/* Featured Campuses (Ago, Ibogun, Sagamu) */}
+                        {/* Featured Campuses (Ago, Ibogun, Sagamu, Ayetoro) */}
                         {filteredCampuses.length > 0 && (
                             <>
                                 <p className="px-8 pt-1 pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">

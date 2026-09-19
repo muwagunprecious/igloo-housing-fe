@@ -12,7 +12,7 @@ import DashboardSidebar from "@/app/components/layout/DashboardSidebar";
 import SecuritySection from "./components/SecuritySection";
 import NotificationsSection from "./components/NotificationsSection";
 import PersonalInfoSection from "./components/PersonalInfoSection";
-import { User, Settings, Bell, Shield, CreditCard, Home, MessageSquare, Receipt, Users, Menu } from "lucide-react"; // <-- Added Menu import
+import { User, Settings, Bell, Shield, CreditCard, Home, MessageSquare, Receipt, Users, Menu, AlertCircle } from "lucide-react"; // <-- Added Menu and AlertCircle import
 import { useRoommateStore } from "@/app/stores/useRoommateStore";
 import Button from "@/app/components/common/Button";
 import Link from "next/link";
@@ -387,12 +387,31 @@ export default function Dashboard() {
 
                 {/* Main Content */}
                 <div className="flex-1 min-w-0 overflow-y-auto">
+                    {/* Incomplete Profile Alert Banner */}
+                    {(!user?.whatsapp || !user?.name || user?.name.toUpperCase() === "JOHN DOE") && (
+                        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 shadow-xs">
+                            <div className="flex items-center gap-2.5">
+                                <AlertCircle className="text-amber-600 shrink-0" size={18} />
+                                <span>
+                                    <strong>Profile Incomplete:</strong> Please add your full name and WhatsApp phone number so agents and roommates can reach you.
+                                </span>
+                            </div>
+                            <Link
+                                href="/dashboard#personal"
+                                onClick={() => setCurrentHash("#personal")}
+                                className="font-bold text-primary underline shrink-0 hover:opacity-80 cursor-pointer"
+                            >
+                                Update Profile →
+                            </Link>
+                        </div>
+                    )}
+
                     {/* Welcome Header */}
                     <div className="mb-10 p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
                         <div className="flex flex-col md:flex-row md:items-center gap-6">
                             <div className="relative w-20 h-20 bg-primary/20 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border-4 border-white shadow-sm">
                                 {user?.avatar ? (
-                                    <Image src={getImageUrl(user.avatar)} alt={user.name} fill className="object-cover" />
+                                    <Image src={getImageUrl(user.avatar)} alt={user.name} fill unoptimized className="object-cover" />
                                 ) : (
                                     <User size={32} className="text-primary" />
                                 )}

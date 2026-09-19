@@ -21,6 +21,7 @@ export default function CreateListingPage() {
         price: "",
         location: "",
         category: "Self-contained",
+        distanceFromSchool: "5 mins from school",
         bedrooms: "1",
         bathrooms: "1",
         roommatesAllowed: false
@@ -144,6 +145,25 @@ export default function CreateListingPage() {
                                     {PROPERTY_CATEGORIES.map(cat => (
                                         <option key={cat} value={cat}>{cat}</option>
                                     ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Distance from School / Campus</label>
+                            <div className="relative">
+                                <select
+                                    name="distanceFromSchool"
+                                    value={formData.distanceFromSchool}
+                                    onChange={handleInputChange}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                                >
+                                    <option value="5 mins from school">5 mins from school</option>
+                                    <option value="10 mins from school">10 mins from school</option>
+                                    <option value="15 mins from school">15 mins from school</option>
+                                    <option value="20 mins from school">20 mins from school</option>
+                                    <option value="25 mins from school">25 mins from school</option>
+                                    <option value="30+ mins from school">30+ mins from school</option>
                                 </select>
                             </div>
                         </div>

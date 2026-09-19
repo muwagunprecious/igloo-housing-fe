@@ -21,6 +21,7 @@ export interface Property {
     agentId?: string;
     universityId?: string;
     distance?: string;
+    distanceFromSchool?: string;
     period?: string;
     rating?: number;
     reviews?: number;

@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "./components/layout/BottomNav";
@@ -5,6 +6,7 @@ import EnhancedNavbar from "./components/layout/EnhancedNavbar";
 import ToastContainer from "./components/common/Toast";
 import Footer from "./components/layout/Footer";
 import MyCampusModal from "./components/common/MyCampusModal";
+import AccountTypeModal from "./components/common/AccountTypeModal";
 
 export const metadata: Metadata = {
   title: {
@@ -65,14 +67,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        <EnhancedNavbar />
-        <main className="min-h-screen">
+        <ClerkProvider>
+          <EnhancedNavbar />
+          <main className="min-h-screen">
           {children}
-        </main>
-        <Footer />
-        <BottomNav />
-        <ToastContainer />
-        <MyCampusModal />
+          </main>
+          <Footer />
+          <BottomNav />
+          <ToastContainer />
+          <MyCampusModal />
+          <AccountTypeModal />
+        </ClerkProvider>
       </body>
     </html>
   );

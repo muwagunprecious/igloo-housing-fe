@@ -10,7 +10,9 @@ import {
     CheckCircle2,
     XCircle,
     Info,
-    AlertTriangle
+    AlertTriangle,
+    Phone,
+    School
 } from "lucide-react";
 import Image from "next/image";
 import { getImageUrl } from "@/app/lib/imageUrl";
@@ -27,11 +29,21 @@ export default function AgentVerificationPage() {
         fetchUsers({ role: "AGENT", isVerified: "false" });
     }, [fetchUsers]);
 
-    const unverifiedAgents = users.filter(u =>
-        u.role === "AGENT" && !u.isVerified && (u.verificationStatus === "PENDING_APPROVAL" || !u.verificationStatus) &&
-        (u.fullName.toLowerCase().includes(search.toLowerCase()) ||
-            u.email.toLowerCase().includes(search.toLowerCase()))
-    );
+    const unverifiedAgents = users
+        .filter(u =>
+            u.role?.toUpperCase() === "AGENT" &&
+            !u.isVerified &&
+            (u.verificationStatus === "PENDING" || u.verificationStatus === "PENDING_APPROVAL" || !u.verificationStatus || u.verificationFeePaid) &&
+            ((u.fullName && u.fullName.toLowerCase().includes(search.toLowerCase())) ||
+                (u.email && u.email.toLowerCase().includes(search.toLowerCase())) ||
+                (u.whatsapp && u.whatsapp.includes(search)) ||
+                (u.nin && u.nin.includes(search)))
+        )
+        .sort((a, b) => {
+            if (a.verificationFeePaid && !b.verificationFeePaid) return -1;
+            if (!a.verificationFeePaid && b.verificationFeePaid) return 1;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
 
     const handleVerify = async (id: string, name: string) => {
         if (confirm(`Are you sure you want to verify ${name} as a platform agent?`)) {
@@ -102,7 +114,12 @@ export default function AgentVerificationPage() {
                 ) : unverifiedAgents.map((agent) => (
                     <div key={agent.id} className="bg-white border border-gray-100 rounded-[32px] p-6 shadow-sm hover:shadow-card-hover transition-all duration-300 group relative overflow-hidden">
                         {/* Status Badge */}
-                        <div className="absolute top-6 right-6">
+                        <div className="absolute top-6 right-6 flex items-center gap-1.5">
+                            {agent.verificationFeePaid && (
+                                <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-200">
+                                    Fee Paid ✓
+                                </span>
+                            )}
                             <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest">
                                 Pending
                             </span>
@@ -138,6 +155,29 @@ export default function AgentVerificationPage() {
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Platform Role</span>
                                     <span className="text-[10px] font-black bg-white px-2 py-0.5 rounded border border-gray-100">{agent.role}</span>
+                                </div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">WhatsApp</span>
+                                    {agent.whatsapp ? (
+                                        <a
+                                            href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-xs font-bold text-green-700 hover:underline flex items-center gap-1"
+                                        >
+                                            <Phone size={12} className="text-green-600" />
+                                            {agent.whatsapp}
+                                        </a>
+                                    ) : (
+                                        <span className="text-red-400 text-[10px]">Not provided</span>
+                                    )}
+                                </div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Campus</span>
+                                    <span className="text-xs font-bold text-gray-700 flex items-center gap-1 truncate max-w-[150px]">
+                                        <School size={12} className="text-gray-400 shrink-0" />
+                                        {agent.university?.name || (agent.universityId ? "Assigned" : "Not specified")}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">NIN</span>

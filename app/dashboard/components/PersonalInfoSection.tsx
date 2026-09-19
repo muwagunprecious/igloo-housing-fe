@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { User, Loader2, CheckCircle2, AlertCircle, School, Mail } from "lucide-react";
+import { User, Loader2, CheckCircle2, AlertCircle, School, Mail, Phone } from "lucide-react";
 import Button from "@/app/components/common/Button";
 import api from "@/app/lib/axios";
 import { useAuthStore } from "@/app/stores/useAuthStore";
@@ -15,6 +15,7 @@ export default function PersonalInfoSection() {
     const [success, setSuccess] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         fullName: user?.name || "",
+        whatsapp: user?.whatsapp || "",
         bio: user?.bio || "",
         universityId: user?.universityId || "",
     });
@@ -24,6 +25,7 @@ export default function PersonalInfoSection() {
             setFormData(prev => ({
                 ...prev,
                 fullName: user.name || "",
+                whatsapp: user.whatsapp || "",
                 bio: user.bio || "",
                 universityId: user.universityId || "",
             }));
@@ -60,6 +62,7 @@ export default function PersonalInfoSection() {
                 // Update local auth store
                 updateUser({
                     name: response.data.data.fullName,
+                    whatsapp: response.data.data.whatsapp,
                     bio: response.data.data.bio,
                     universityId: response.data.data.universityId,
                 });
@@ -109,6 +112,21 @@ export default function PersonalInfoSection() {
                                 value={formData.fullName}
                                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                             />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
+                                <Phone size={14} className="text-gray-400" />
+                                WhatsApp Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                placeholder="e.g. 08012345678"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                                value={formData.whatsapp}
+                                onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                            />
+                            <p className="text-[10px] text-gray-400 mt-1">Used by agents and roommates to reach you via WhatsApp</p>
                         </div>
 
                         <div>

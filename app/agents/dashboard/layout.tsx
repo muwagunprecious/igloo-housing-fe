@@ -70,9 +70,10 @@ export default function AgentDashboardLayout({
     useEffect(() => {
         // Only run redirect logic AFTER the app has mounted to prevent local storage bugs
         if (isMounted) {
+            const isApprovedAgent = user && (user.isVerified || user.verificationStatus === 'APPROVED' || user.verificationStatus === 'VERIFIED');
             if (!isAuthenticated || (user && user.role !== 'agent')) {
                 router.push('/login');
-            } else if (user && user.role === 'agent' && user.verificationStatus !== 'APPROVED') {
+            } else if (user && user.role === 'agent' && !isApprovedAgent) {
                 router.push('/agents/pending-approval');
             }
         }
@@ -183,7 +184,7 @@ export default function AgentDashboardLayout({
             </aside>
 
             {/* Main Content */}
-            <main className="md:ml-64 p-4 md:p-8 w-full">
+            <main className="md:ml-64 p-4 sm:p-6 md:p-8 min-w-0 max-w-full overflow-x-hidden">
                 {children}
             </main>
 

@@ -168,12 +168,12 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                 </button>
             </header>
 
-            <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                 {error && <div className="bg-red-50 text-red-700 p-4 rounded-lg">{error}</div>}
 
                 {/* Simplified form fields (reusing layout from Create) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                         <input
                             type="text"
@@ -206,7 +206,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                             ))}
                         </select>
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                         <textarea
                             name="description"
@@ -216,7 +216,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                             className="w-full p-3 border rounded-lg"
                         />
                     </div>
-                    <div className="col-span-2 space-y-4">
+                    <div className="col-span-1 md:col-span-2 space-y-4">
                         <label className="block text-sm font-medium text-gray-700">Property Photos</label>
                         <div className="border-2 border-dashed border-gray-200 rounded-xl p-6">
                             <input
@@ -255,7 +255,7 @@ export default function EditListingPage({ params }: { params: Promise<{ id: stri
                         </div>
                     </div>
 
-                    <div className="col-span-2 space-y-4">
+                    <div className="col-span-1 md:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
                             <label className="block text-sm font-medium text-gray-700">Virtual Tour Video</label>
                             <span className="text-xs text-gray-500 italic">Max size: 100MB</span>

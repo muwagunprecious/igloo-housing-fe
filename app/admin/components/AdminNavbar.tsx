@@ -94,7 +94,7 @@ export default function AdminNavbar({ onMenuClick }: { onMenuClick?: () => void 
                         >
                             <div className="w-10 h-10 sm:w-8 sm:h-8 rounded-xl bg-primary text-black flex items-center justify-center font-black text-xs relative overflow-hidden">
                                 {user?.avatar ? (
-                                    <Image src={getImageUrl(user.avatar)} alt={user?.name || 'User'} fill className="object-cover" />
+                                    <Image src={getImageUrl(user.avatar)} alt={user?.name || 'User'} fill unoptimized className="object-cover" />
                                 ) : (
                                     user?.name?.charAt(0) || "A"
                                 )}

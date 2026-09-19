@@ -8,6 +8,8 @@ import { useAuthStore } from "@/app/stores/useAuthStore";
 import { useCampusStore, CAMPUSES } from "@/app/stores/useCampusStore";
 import Image from "next/image";
 import { igloo } from "@/app/assets";
+import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { useAccountTypeModal } from "@/app/stores/useAccountTypeModal";
 
 export default function EnhancedNavbar() {
     const [showMenu, setShowMenu] = useState(false);
@@ -15,6 +17,7 @@ export default function EnhancedNavbar() {
     const router = useRouter();
     const { user, isAuthenticated, logout } = useAuthStore();
     const { selectedCampus, openCampusModal } = useCampusStore();
+    const { openModal: openAccountTypeModal } = useAccountTypeModal();
 
     // Hide this global navbar completely on dashboard pages and Post-UTME pages
     if (pathname.startsWith('/agents/dashboard') || pathname.startsWith('/admin/dashboard') || pathname.startsWith('/dashboard/renter') || pathname.startsWith('/post-utme')) {
@@ -92,21 +95,28 @@ export default function EnhancedNavbar() {
 
                     {/* Right Side Actions */}
                     <div className="flex flex-row items-center gap-3">
-                        {!isAuthenticated ? (
-                            // NOW VISIBLE ON MOBILE: Login and Sign Up buttons
+                        <Show when="signed-out">
                             <div className="flex items-center gap-2 sm:gap-3">
                                 <Link href="/login">
-                                    <span className="text-sm font-medium text-gray-700 hover:text-gray-900 transition hidden sm:block">
+                                    <button className="text-sm font-medium text-gray-700 hover:text-gray-900 transition px-3 py-1.5 rounded-full hover:bg-gray-100 cursor-pointer hidden sm:block">
                                         Login
-                                    </span>
-                                </Link>
-                                <Link href="/signup">
-                                    <button className="bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-primary/90 transition whitespace-nowrap">
-                                        Sign Up
                                     </button>
                                 </Link>
+                                <button
+                                    onClick={openAccountTypeModal}
+                                    className="bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-primary/90 transition whitespace-nowrap shadow-sm cursor-pointer"
+                                >
+                                    Sign Up
+                                </button>
                             </div>
-                        ) : (
+                        </Show>
+                        <Show when="signed-in">
+                            <div className="flex items-center gap-3">
+                                <UserButton />
+                            </div>
+                        </Show>
+
+                        {isAuthenticated && (
                             // Authenticated Menu - Desktop Only (Mobile uses Bottom Nav & Profile Page)
                             <div className="relative hidden lg:block">
                                 <button
@@ -117,7 +127,7 @@ export default function EnhancedNavbar() {
                                     <div>
                                         {user?.avatar ? (
                                             <div className="relative w-8 h-8">
-                                                <Image src={user.avatar} alt="User" fill className="rounded-full object-cover" />
+                                                <Image src={user.avatar} alt="User" fill unoptimized className="rounded-full object-cover" />
                                             </div>
                                         ) : (
                                             <div className="bg-gray-500 rounded-full p-1 text-white">

@@ -1,17 +1,23 @@
 import {
     Home,
-    Star,
-    MapPin,
+    Building,
+    Building2,
+    BedSingle,
+    BedDouble,
+    Hotel,
     Users,
-    Wallet,
+    DoorOpen,
     LayoutGrid,
 } from "lucide-react";
 
 export const categories = [
     { label: "All", icon: LayoutGrid },
     { label: "Self-contained", icon: Home },
-    { label: "Luxury", icon: Star },
-    { label: "Near Campus", icon: MapPin },
-    // { label: "Shared", icon: Users },       // future-proof — add to DB when ready
-    // { label: "Budget", icon: Wallet },      // future-proof — add to DB when ready
+    { label: "Room and Parlour", icon: DoorOpen },
+    { label: "Mini Flat", icon: Building },
+    { label: "1 Bedroom", icon: BedSingle },
+    { label: "2 Bedrooms", icon: BedDouble },
+    { label: "3+ Bedrooms", icon: Building2 },
+    { label: "Hostel", icon: Hotel },
+    { label: "Shared Apartment", icon: Users },
 ];

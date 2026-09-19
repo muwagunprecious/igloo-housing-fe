@@ -15,6 +15,13 @@ export interface AdminStats {
         pending: number;
     };
     properties: number;
+    pendingProperties?: number;
+    approvedProperties?: number;
+    propertyStats?: {
+        total: number;
+        pending: number;
+        approved: number;
+    };
     universities: number;
     messages: number;
     roommateRequests: number;
@@ -29,8 +36,14 @@ export interface AdminUser {
     isVerified: boolean;
     isBlocked: boolean;
     nin?: string;
+    whatsapp?: string;
     verificationFeePaid?: boolean;
     verificationStatus?: string;
+    universityId?: string;
+    university?: {
+        id: string;
+        name: string;
+    };
     createdAt: string;
 }
 
@@ -43,12 +56,19 @@ export interface AdminProperty {
     category: string;
     status: 'PENDING' | 'APPROVED' | 'REJECTED';
     images: string[] | string;
+    video?: string | null;
+    bedrooms?: number;
+    bathrooms?: number;
+    rooms?: number;
+    roommatesAllowed?: boolean;
+    distanceFromSchool?: string;
     createdAt: string;
     agent: {
         id: string;
         fullName: string;
         email: string;
         avatar?: string;
+        whatsapp?: string;
         isVerified: boolean;
     };
     university?: {
@@ -85,13 +105,34 @@ export const useAdminStore = create<AdminStore>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await api.get(`/properties?status=${status}`);
-            const validProperties = response.data.data.map((p: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-                ...p,
-                images: typeof p.images === 'string' ? JSON.parse(p.images) : p.images
-            }));
+            const rawList = Array.isArray(response.data.data) ? response.data.data : [];
+            const validProperties = rawList.map((p: any) => {
+                let images: string[] = [];
+                if (Array.isArray(p.images)) {
+                    images = p.images;
+                } else if (typeof p.images === 'string' && p.images.trim()) {
+                    try {
+                        const parsed = JSON.parse(p.images);
+                        images = Array.isArray(parsed) ? parsed : [p.images];
+                    } catch {
+                        images = [p.images];
+                    }
+                }
+                return {
+                    ...p,
+                    images,
+                    agent: p.agent || {
+                        id: p.agentId || '',
+                        fullName: 'Unknown Agent',
+                        email: 'unknown@igloo.ng',
+                        isVerified: false
+                    }
+                };
+            });
             set({ properties: validProperties, isLoading: false });
         } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
-            set({ error: error.message, isLoading: false });
+            console.error('fetchProperties error:', error);
+            set({ error: error.message, isLoading: false, properties: [] });
         }
     },
 
@@ -101,6 +142,11 @@ export const useAdminStore = create<AdminStore>((set) => ({
             await api.put(`/admin/property/approve/${id}`);
             set((state) => ({
                 properties: state.properties.filter((p) => p.id !== id),
+                stats: state.stats ? {
+                    ...state.stats,
+                    pendingProperties: Math.max(0, (state.stats.pendingProperties ?? 1) - 1),
+                    approvedProperties: (state.stats.approvedProperties ?? 0) + 1,
+                } : null,
                 isLoading: false
             }));
             return true;
@@ -116,6 +162,10 @@ export const useAdminStore = create<AdminStore>((set) => ({
             await api.put(`/admin/property/reject/${id}`, { reason });
             set((state) => ({
                 properties: state.properties.filter((p) => p.id !== id),
+                stats: state.stats ? {
+                    ...state.stats,
+                    pendingProperties: Math.max(0, (state.stats.pendingProperties ?? 1) - 1),
+                } : null,
                 isLoading: false
             }));
             return true;

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type CampusId = "all" | "ibogun" | "sagamu" | "ago";
+export type CampusId = "all" | "ibogun" | "sagamu" | "ago" | "ayetoro";
 
 export interface CampusOption {
     id: CampusId;
@@ -40,6 +40,15 @@ export const CAMPUSES: CampusOption[] = [
         landmarks: "OOUTH, GRA, Sabo, Remoland",
         faculties: "Medicine, Pharmacy, Nursing & Health",
     },
+    {
+        id: "ayetoro",
+        name: "Ayetoro Campus",
+        fullName: "College of Agricultural Sciences",
+        tag: "Agricultural Sciences",
+        location: "Ayetoro, Ogun State",
+        landmarks: "College Road, Sabo, Roundabout, Ayetoro Central",
+        faculties: "Agricultural Economics, Crop & Animal Production",
+    },
 ];
 
 interface CampusStore {
@@ -62,7 +71,7 @@ export const useCampusStore = create<CampusStore>((set) => ({
     initFromStorage: () => {
         if (typeof window === "undefined") return;
         const stored = localStorage.getItem(STORAGE_KEY) as CampusId | null;
-        if (stored && (stored === "ago" || stored === "ibogun" || stored === "sagamu" || stored === "all")) {
+        if (stored && (stored === "ago" || stored === "ibogun" || stored === "sagamu" || stored === "ayetoro" || stored === "all")) {
             set({ selectedCampus: stored, hasChosen: true, isModalOpen: false });
         } else {
             // First time or no selection: open modal automatically!
@@ -128,6 +137,18 @@ export function propertyMatchesCampus(property: any, campusId: CampusId | null):
     if (campusId === "sagamu") {
         const sagamuKeywords = ["sagamu", "shagamu", "health science", "chs"];
         return sagamuKeywords.some((keyword) => textToSearch.includes(keyword));
+    }
+
+    if (campusId === "ayetoro") {
+        const ayetoroKeywords = [
+            "ayetoro",
+            "yewa",
+            "agricultural",
+            "agriculture",
+            "cas",
+            "roundabout",
+        ];
+        return ayetoroKeywords.some((keyword) => textToSearch.includes(keyword));
     }
 
     return true;
