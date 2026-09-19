@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { usePropertyStore, Property } from "@/app/stores/usePropertyStore";
 import { getImageUrl } from "@/app/lib/imageUrl";
 import Link from "next/link";
@@ -13,7 +13,11 @@ import {
     MapPin,
     ArrowRight,
     ChevronRight,
-    Search
+    Search,
+    Check,
+    ArrowDownRight,
+    Sparkles,
+    RotateCcw
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -21,7 +25,8 @@ const QUICK_BUDGETS = [
     { label: "₦150k", value: 150000 },
     { label: "₦200k", value: 200000 },
     { label: "₦250k", value: 250000 },
-    { label: "₦300k", value: 300000 },
+    { label: "₦350k", value: 350000 },
+    { label: "₦500k", value: 500000 },
 ];
 
 const PROPERTY_TYPES = [
@@ -33,7 +38,8 @@ const PROPERTY_TYPES = [
     "2 Bedrooms",
     "3+ Bedrooms",
     "Hostel",
-    "Shared",
+    "Shared Apartment",
+    "Luxury",
 ];
 
 const BEDROOM_OPTIONS = [
@@ -43,23 +49,46 @@ const BEDROOM_OPTIONS = [
     { label: "3+ Bedrooms", value: "3+" },
 ];
 
-export default function BudgetFinderSection() {
-    const { properties } = usePropertyStore();
+interface BudgetFinderSectionProps {
+    onApplyBudget?: (maxBudget: number | null, category?: string | null, bedrooms?: string | null) => void;
+    activeMaxBudget?: number | null;
+}
+
+export default function BudgetFinderSection({ onApplyBudget, activeMaxBudget }: BudgetFinderSectionProps) {
+    const { properties, fetchProperties } = usePropertyStore();
 
     const [isOpen, setIsOpen] = useState(false);
 
     // Filter controls state
-    const [budgetInput, setBudgetInput] = useState<number | string>(150000);
+    const [budgetInput, setBudgetInput] = useState<string>("250000");
     const [selectedType, setSelectedType] = useState<string>("Any type");
     const [selectedBedrooms, setSelectedBedrooms] = useState<string>("any");
 
-    // Applied filter state (when user clicks "Apply filters")
-    const [appliedBudget, setAppliedBudget] = useState<number>(150000);
+    // Applied filter state
+    const [appliedBudget, setAppliedBudget] = useState<number>(250000);
     const [appliedType, setAppliedType] = useState<string>("Any type");
     const [appliedBedrooms, setAppliedBedrooms] = useState<string>("any");
 
+    // Feedback state
+    const [justApplied, setJustApplied] = useState(false);
+
     // Results navigation: "all" | "within" | "near"
     const [activeTab, setActiveTab] = useState<"all" | "within" | "near">("all");
+
+    // Ensure properties are fetched if not yet loaded
+    useEffect(() => {
+        if (!properties || properties.length === 0) {
+            fetchProperties();
+        }
+    }, [properties, fetchProperties]);
+
+    // Sync external active budget if passed
+    useEffect(() => {
+        if (activeMaxBudget && activeMaxBudget > 0) {
+            setBudgetInput(activeMaxBudget.toString());
+            setAppliedBudget(activeMaxBudget);
+        }
+    }, [activeMaxBudget]);
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -73,41 +102,107 @@ export default function BudgetFinderSection() {
         };
     }, [isOpen]);
 
+    // Helper to sanitize numeric input
+    const parseBudget = useCallback((val: string | number): number => {
+        if (typeof val === "number") return isNaN(val) ? 0 : val;
+        const cleaned = val.replace(/[^0-9]/g, "");
+        return cleaned ? parseInt(cleaned, 10) : 0;
+    }, []);
+
     // Apply filters handler
     const handleApplyFilters = () => {
-        const num = Number(budgetInput) || 0;
+        const num = parseBudget(budgetInput) || 250000;
         setAppliedBudget(num);
         setAppliedType(selectedType);
         setAppliedBedrooms(selectedBedrooms);
+
+        // Notify parent page if callback provided
+        if (onApplyBudget) {
+            onApplyBudget(num, selectedType !== "Any type" ? selectedType : null, selectedBedrooms !== "any" ? selectedBedrooms : null);
+        }
+
+        // Show brief confirmation badge
+        setJustApplied(true);
+        setTimeout(() => setJustApplied(false), 2200);
+    };
+
+    // Apply & view on homepage
+    const handleApplyAndViewOnHomepage = () => {
+        const num = parseBudget(budgetInput) || 250000;
+        setAppliedBudget(num);
+        setAppliedType(selectedType);
+        setAppliedBedrooms(selectedBedrooms);
+
+        if (onApplyBudget) {
+            onApplyBudget(num, selectedType !== "Any type" ? selectedType : null, selectedBedrooms !== "any" ? selectedBedrooms : null);
+        }
+
+        setIsOpen(false);
+
+        // Smooth scroll to properties grid on homepage
+        setTimeout(() => {
+            const section = document.getElementById("popular-homes");
+            if (section) {
+                section.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 150);
     };
 
     // Fast quick budget select: updates input and instantly applies
     const handleQuickBudgetSelect = (val: number) => {
-        setBudgetInput(val);
+        setBudgetInput(val.toString());
         setAppliedBudget(val);
+
+        if (onApplyBudget) {
+            onApplyBudget(val, appliedType !== "Any type" ? appliedType : null, appliedBedrooms !== "any" ? appliedBedrooms : null);
+        }
+
+        setJustApplied(true);
+        setTimeout(() => setJustApplied(false), 1500);
     };
 
     // Filter properties based on applied budget, property type, and bedrooms
     const { withinBudget, nearBudget } = useMemo(() => {
+        const currentProps = properties || [];
         if (!appliedBudget || appliedBudget <= 0) {
-            return { withinBudget: [], nearBudget: [] };
+            return { withinBudget: currentProps, nearBudget: [] };
         }
 
-        const filtered = properties.filter((p) => {
+        const filtered = currentProps.filter((p) => {
             // Property Type filter
             if (appliedType !== "Any type") {
-                const pCategory = p.category?.toLowerCase() || "";
-                const matchType = pCategory.includes(appliedType.toLowerCase());
+                const pCategory = (p.category || "").toLowerCase();
+                const pTitle = (p.title || "").toLowerCase();
+                const pDesc = (p.description || "").toLowerCase();
+                const target = appliedType.toLowerCase();
+
+                const matchType =
+                    pCategory.includes(target) ||
+                    pTitle.includes(target) ||
+                    pDesc.includes(target) ||
+                    (target.includes("self") && (pCategory.includes("self") || pTitle.includes("self"))) ||
+                    (target.includes("room and parlour") && (pCategory.includes("parlour") || pTitle.includes("parlor") || pTitle.includes("parlour") || pDesc.includes("parlor"))) ||
+                    (target.includes("flat") && (pCategory.includes("flat") || pTitle.includes("flat")));
+
                 if (!matchType) return false;
             }
 
             // Bedrooms filter
             if (appliedBedrooms !== "any") {
-                const bedCount = p.bedrooms || 1;
+                const bedCount = typeof p.bedrooms === "number" ? p.bedrooms : 0;
+                const roomCount = typeof p.rooms === "number" ? p.rooms : 1;
+
                 if (appliedBedrooms === "3+") {
-                    if (bedCount < 3) return false;
+                    if (bedCount < 3 && roomCount < 3) return false;
                 } else {
-                    if (bedCount !== Number(appliedBedrooms)) return false;
+                    const target = Number(appliedBedrooms);
+                    if (target === 1) {
+                        // 1 bedroom also matches self-contained rooms
+                        const isSingle = bedCount === 1 || bedCount === 0 || roomCount === 1;
+                        if (!isSingle) return false;
+                    } else if (bedCount !== target && roomCount !== target) {
+                        return false;
+                    }
                 }
             }
 
@@ -115,11 +210,11 @@ export default function BudgetFinderSection() {
         });
 
         // Within Budget: price <= appliedBudget
-        const within = filtered.filter((p) => p.price <= appliedBudget);
+        const within = filtered.filter((p) => (p.price || 0) <= appliedBudget);
 
-        // Near Budget: 0.8 * appliedBudget <= price <= appliedBudget * 1.25 (and not strictly identical to within)
+        // Near Budget: appliedBudget < price <= appliedBudget * 1.30
         const near = filtered.filter(
-            (p) => p.price > appliedBudget && p.price <= appliedBudget * 1.25
+            (p) => (p.price || 0) > appliedBudget && (p.price || 0) <= appliedBudget * 1.3
         );
 
         return {
@@ -140,6 +235,25 @@ export default function BudgetFinderSection() {
         return Array.from(setMap.values());
     }, [activeTab, withinBudget, nearBudget]);
 
+    // Live preview count for currently selected form fields
+    const liveMatchCount = useMemo(() => {
+        const inputNum = parseBudget(budgetInput);
+        if (!inputNum) return properties?.length || 0;
+
+        return (properties || []).filter((p) => {
+            if ((p.price || 0) > inputNum * 1.3) return false;
+
+            if (selectedType !== "Any type") {
+                const pCategory = (p.category || "").toLowerCase();
+                const pTitle = (p.title || "").toLowerCase();
+                const target = selectedType.toLowerCase();
+                if (!pCategory.includes(target) && !pTitle.includes(target)) return false;
+            }
+
+            return true;
+        }).length;
+    }, [properties, budgetInput, selectedType, parseBudget]);
+
     return (
         <>
             {/* HOMEPAGE TRIGGER BUTTON */}
@@ -157,8 +271,13 @@ export default function BudgetFinderSection() {
                             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FFF1F2] text-[#FF385C] text-[11px] font-bold uppercase tracking-wider mb-1">
                                 Smart Budget Finder
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 tracking-tight">
-                                Find accommodation within your budget
+                            <h3 className="text-lg font-bold text-gray-900 tracking-tight flex items-center gap-2">
+                                <span>Find accommodation within your budget</span>
+                                {appliedBudget > 0 && activeMaxBudget ? (
+                                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+                                        Up to ₦{appliedBudget.toLocaleString()} active
+                                    </span>
+                                ) : null}
                             </h3>
                             <p className="text-xs sm:text-sm text-gray-500 line-clamp-1 max-w-2xl mt-0.5">
                                 Tell us your housing budget and we&apos;ll show you verified properties within or close to your range.
@@ -166,7 +285,7 @@ export default function BudgetFinderSection() {
                         </div>
                     </div>
 
-                    <div className="flex items-center self-end sm:self-center shrink-0">
+                    <div className="flex items-center self-end sm:self-center shrink-0 gap-2">
                         <span className="text-xs sm:text-sm font-bold text-white bg-[#FF385C] hover:bg-[#E0294B] px-5 py-2.5 rounded-xl flex items-center gap-1.5 transition shadow-xs">
                             <span>Open Budget Finder</span>
                             <ChevronRight size={16} />
@@ -231,19 +350,21 @@ export default function BudgetFinderSection() {
                                         {/* Your Budget */}
                                         <div className="md:col-span-5">
                                             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                                                Your budget
+                                                Your yearly / session budget
                                             </label>
                                             <div className="relative">
                                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-900 font-bold text-sm pointer-events-none">
                                                     ₦
                                                 </span>
                                                 <input
-                                                    type="number"
-                                                    min={0}
-                                                    step={10000}
+                                                    type="text"
+                                                    inputMode="numeric"
                                                     value={budgetInput}
-                                                    onChange={(e) => setBudgetInput(e.target.value)}
-                                                    placeholder="150,000"
+                                                    onChange={(e) => {
+                                                        const clean = e.target.value.replace(/[^0-9]/g, "");
+                                                        setBudgetInput(clean);
+                                                    }}
+                                                    placeholder="250000"
                                                     className="w-full pl-8 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]/20 focus:border-[#FF385C] transition"
                                                 />
                                             </div>
@@ -254,17 +375,17 @@ export default function BudgetFinderSection() {
                                             <span className="block text-xs font-semibold text-gray-700 mb-1.5">
                                                 Quick budget options
                                             </span>
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                                                 {QUICK_BUDGETS.map((qb) => {
-                                                    const isSelected = Number(budgetInput) === qb.value;
+                                                    const isSelected = parseBudget(budgetInput) === qb.value;
                                                     return (
                                                         <button
                                                             key={qb.value}
                                                             type="button"
                                                             onClick={() => handleQuickBudgetSelect(qb.value)}
-                                                            className={`flex-1 py-2 px-2 text-center rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                                                            className={`flex-1 py-2 px-2 text-center rounded-xl text-xs font-bold transition-all cursor-pointer border whitespace-nowrap ${
                                                                 isSelected
-                                                                    ? "bg-[#FFF1F2] text-[#FF385C] border-[#FF385C]/30"
+                                                                    ? "bg-[#FFF1F2] text-[#FF385C] border-[#FF385C]/40 ring-1 ring-[#FF385C]/30"
                                                                     : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
                                                             }`}
                                                         >
@@ -303,7 +424,7 @@ export default function BudgetFinderSection() {
                                         </div>
 
                                         {/* Bedrooms Select */}
-                                        <div className="sm:col-span-4">
+                                        <div className="sm:col-span-3">
                                             <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                                                 Bedrooms
                                             </label>
@@ -327,52 +448,89 @@ export default function BudgetFinderSection() {
                                         </div>
 
                                         {/* Apply Filters Button */}
-                                        <div className="sm:col-span-3">
+                                        <div className="sm:col-span-4 flex items-center gap-2">
                                             <button
                                                 type="button"
                                                 onClick={handleApplyFilters}
-                                                className="w-full py-2.5 px-4 bg-[#FF385C] hover:bg-[#E0294B] text-white rounded-xl text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1"
+                                                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5 ${
+                                                    justApplied
+                                                        ? "bg-emerald-600 text-white"
+                                                        : "bg-[#FF385C] hover:bg-[#E0294B] text-white"
+                                                }`}
                                             >
-                                                Apply filters
+                                                {justApplied ? (
+                                                    <>
+                                                        <Check size={16} />
+                                                        <span>Filters Applied!</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Search size={15} />
+                                                        <span>
+                                                            Apply filters ({liveMatchCount})
+                                                        </span>
+                                                    </>
+                                                )}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* RESULTS NAVIGATION (Segmented Control) */}
-                                <div className="inline-flex items-center p-1 bg-gray-100/80 rounded-xl border border-gray-200/60">
+                                {/* RESULTS NAVIGATION BAR & HOMEPAGE LINK */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                                    <div className="inline-flex items-center p-1 bg-gray-100/80 rounded-xl border border-gray-200/60 self-start">
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab("all")}
+                                            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                                                activeTab === "all"
+                                                    ? "bg-[#FF385C] text-white shadow-xs"
+                                                    : "text-gray-600 hover:text-gray-900"
+                                            }`}
+                                        >
+                                            <span>All Results</span>
+                                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === "all" ? "bg-white/25 text-white" : "bg-gray-200 text-gray-700"}`}>
+                                                {withinBudget.length + nearBudget.length}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab("within")}
+                                            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                                                activeTab === "within"
+                                                    ? "bg-[#FF385C] text-white shadow-xs"
+                                                    : "text-gray-600 hover:text-gray-900"
+                                            }`}
+                                        >
+                                            <span>Within Budget</span>
+                                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === "within" ? "bg-white/25 text-white" : "bg-gray-200 text-gray-700"}`}>
+                                                {withinBudget.length}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab("near")}
+                                            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                                                activeTab === "near"
+                                                    ? "bg-[#FF385C] text-white shadow-xs"
+                                                    : "text-gray-600 hover:text-gray-900"
+                                            }`}
+                                        >
+                                            <span>Near Budget</span>
+                                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === "near" ? "bg-white/25 text-white" : "bg-gray-200 text-gray-700"}`}>
+                                                {nearBudget.length}
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    {/* Action to close and view on homepage */}
                                     <button
                                         type="button"
-                                        onClick={() => setActiveTab("all")}
-                                        className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                                            activeTab === "all"
-                                                ? "bg-[#FF385C] text-white shadow-xs"
-                                                : "text-gray-600 hover:text-gray-900"
-                                        }`}
+                                        onClick={handleApplyAndViewOnHomepage}
+                                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF385C] hover:text-[#E0294B] px-3 py-1.5 rounded-lg hover:bg-[#FFF1F2] transition cursor-pointer self-start sm:self-auto"
                                     >
-                                        All
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab("within")}
-                                        className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                                            activeTab === "within"
-                                                ? "bg-[#FF385C] text-white shadow-xs"
-                                                : "text-gray-600 hover:text-gray-900"
-                                        }`}
-                                    >
-                                        Within budget
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab("near")}
-                                        className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                                            activeTab === "near"
-                                                ? "bg-[#FF385C] text-white shadow-xs"
-                                                : "text-gray-600 hover:text-gray-900"
-                                        }`}
-                                    >
-                                        Near budget
+                                        <span>Show {displayedProperties.length} on Homepage Listings</span>
+                                        <ArrowDownRight size={14} />
                                     </button>
                                 </div>
 
@@ -380,7 +538,6 @@ export default function BudgetFinderSection() {
                                 <div className="space-y-4">
                                     {displayedProperties.length > 0 ? (
                                         displayedProperties.map((property) => {
-                                            // Parse images
                                             let imageList: string[] = [];
                                             try {
                                                 imageList = Array.isArray(property.images)
@@ -392,6 +549,7 @@ export default function BudgetFinderSection() {
                                                 imageList = [];
                                             }
                                             const firstImg = imageList[0] ? getImageUrl(imageList[0]) : "/placeholder-property.jpg";
+                                            const isWithin = (property.price || 0) <= appliedBudget;
 
                                             return (
                                                 <div
@@ -402,11 +560,24 @@ export default function BudgetFinderSection() {
                                                     <div className="relative w-full sm:w-64 aspect-[16/10] sm:aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 shrink-0">
                                                         <Image
                                                             src={firstImg}
-                                                            alt={property.title}
+                                                            alt={property.title || "Property"}
                                                             fill
                                                             unoptimized
                                                             className="object-cover"
                                                         />
+                                                        {/* Badge */}
+                                                        <div className="absolute top-2.5 left-2.5">
+                                                            {isWithin ? (
+                                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-600 text-white shadow-xs">
+                                                                    <Sparkles size={11} />
+                                                                    <span>Within Budget</span>
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-white shadow-xs">
+                                                                    <span>Close Match</span>
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
 
                                                     {/* Center: Property Details */}
@@ -416,13 +587,17 @@ export default function BudgetFinderSection() {
                                                                 ₦{property.price?.toLocaleString() || "0"}
                                                             </span>
                                                             <span className="text-xs sm:text-sm text-gray-500 font-normal">
-                                                                / {property.period || "month"}
+                                                                / {property.period || "session"}
                                                             </span>
                                                         </div>
 
+                                                        <h4 className="text-sm sm:text-base font-bold text-gray-900 mt-1 truncate">
+                                                            {property.title}
+                                                        </h4>
+
                                                         <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 mt-1 font-medium">
                                                             <MapPin size={13} className="text-gray-400 shrink-0" />
-                                                            <span className="truncate">{property.location || property.campus || "Lekki, Lagos"}</span>
+                                                            <span className="truncate">{property.location || property.campus || "Near Campus"}</span>
                                                         </div>
 
                                                         <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-800 mt-1.5">
@@ -435,7 +610,7 @@ export default function BudgetFinderSection() {
 
                                                         <p className="text-xs text-gray-500 line-clamp-2 mt-2 leading-relaxed max-w-xl">
                                                             {property.description ||
-                                                                "Spacious and well-furnished accommodation with 24/7 power, good security and close to campus."}
+                                                                "Spacious and well-furnished accommodation with good security and close to campus."}
                                                         </p>
                                                     </div>
 
@@ -444,7 +619,7 @@ export default function BudgetFinderSection() {
                                                         <Link
                                                             href={`/rooms/${property.id}`}
                                                             onClick={() => setIsOpen(false)}
-                                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-200 hover:border-gray-400 text-xs font-semibold text-gray-700 hover:text-gray-900 transition bg-white"
+                                                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-gray-200 hover:border-[#FF385C] hover:text-[#FF385C] text-xs font-bold text-gray-700 transition bg-white"
                                                         >
                                                             <span>View details</span>
                                                             <ArrowRight size={13} />
@@ -459,25 +634,27 @@ export default function BudgetFinderSection() {
                                                 <Search size={18} />
                                             </div>
                                             <h4 className="text-sm font-bold text-gray-900 mb-1">
-                                                No properties found
+                                                No properties found within ₦{appliedBudget.toLocaleString()}
                                             </h4>
                                             <p className="text-xs text-gray-500 max-w-sm mx-auto mb-4">
-                                                Try adjusting your budget or selecting &ldquo;Any type&rdquo; to view more listings.
+                                                Try increasing your budget or selecting &ldquo;Any type&rdquo; to view more verified student houses.
                                             </p>
                                             <button
                                                 type="button"
                                                 onClick={() => {
-                                                    setBudgetInput(300000);
+                                                    setBudgetInput("500000");
                                                     setSelectedType("Any type");
                                                     setSelectedBedrooms("any");
-                                                    setAppliedBudget(300000);
+                                                    setAppliedBudget(500000);
                                                     setAppliedType("Any type");
                                                     setAppliedBedrooms("any");
                                                     setActiveTab("all");
+                                                    if (onApplyBudget) onApplyBudget(null);
                                                 }}
-                                                className="px-4 py-2 rounded-xl bg-white border border-gray-200 hover:border-gray-300 text-xs font-semibold text-gray-700 transition cursor-pointer"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-gray-200 hover:border-gray-300 text-xs font-semibold text-gray-700 transition cursor-pointer"
                                             >
-                                                Reset search filters
+                                                <RotateCcw size={13} />
+                                                <span>Expand budget to ₦500k</span>
                                             </button>
                                         </div>
                                     )}

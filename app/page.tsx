@@ -20,6 +20,7 @@ export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState<SortOrder>(null);
+  const [appliedMaxBudget, setAppliedMaxBudget] = useState<number | null>(null);
   const { properties, fetchProperties, isLoading, error } = usePropertyStore();
   const { selectedCampus, openCampusModal, setCampus } = useCampusStore();
 
@@ -59,6 +60,10 @@ export default function Home() {
 
     if (selectedCategory !== "All") {
       filtered = filtered.filter((p) => p.category === selectedCategory);
+    }
+
+    if (appliedMaxBudget && appliedMaxBudget > 0) {
+      filtered = filtered.filter((p) => (p.price || 0) <= appliedMaxBudget);
     }
 
     if (sortOrder) {
@@ -161,11 +166,14 @@ export default function Home() {
       </div>
 
       {/* SMART BUDGET FINDER SECTION */}
-      <BudgetFinderSection />
+      <BudgetFinderSection
+        onApplyBudget={(maxBudget) => setAppliedMaxBudget(maxBudget)}
+        activeMaxBudget={appliedMaxBudget}
+      />
 
       {/* Property Grid */}
-      <div className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-10 pb-20">
-        {/* Popular Homes Header with Active Campus Pill */}
+      <div id="popular-homes" className="max-w-[2520px] mx-auto xl:px-20 md:px-10 sm:px-2 px-4 pt-10 pb-20">
+        {/* Popular Homes Header with Active Campus Pill & Budget Pill */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-gray-100">
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 flex items-center gap-3">
@@ -186,8 +194,22 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Active Campus Badge + Change Button */}
+          {/* Active Campus Badge, Budget Pill & Controls */}
           <div className="flex items-center gap-2 flex-wrap">
+            {appliedMaxBudget && appliedMaxBudget > 0 && (
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FFF1F2] border border-[#FF385C]/30 text-[#FF385C] text-xs font-bold shadow-xs">
+                <span>Budget: Up to ₦{appliedMaxBudget.toLocaleString()}</span>
+                <button
+                  type="button"
+                  onClick={() => setAppliedMaxBudget(null)}
+                  className="w-4 h-4 rounded-full bg-[#FF385C] text-white flex items-center justify-center hover:bg-[#E0294B] transition text-[10px] font-black cursor-pointer"
+                  title="Clear budget filter"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             <button
               onClick={openCampusModal}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border-2 border-gray-200 hover:border-primary text-gray-800 text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all group cursor-pointer"
