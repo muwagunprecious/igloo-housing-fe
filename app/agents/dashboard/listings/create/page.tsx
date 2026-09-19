@@ -7,6 +7,7 @@ import { Upload, X, Loader2, Home, AlertCircle, Video, Play, Trash2 } from "luci
 import Image from "next/image";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { categories as categoryData } from "@/app/data/categories";
+import { uploadFilesDirectly } from "@/app/lib/upload";
 
 const PROPERTY_CATEGORIES = categoryData.filter(c => c.label !== "All").map(c => ({
     value: c.label,
@@ -17,6 +18,7 @@ export default function CreateListingPage() {
     const router = useRouter();
     const { user, checkAuth } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
     useEffect(() => {
         if (checkAuth) {
@@ -98,39 +100,53 @@ export default function CreateListingPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (images.length === 0) {
+            alert("Please upload at least one property image before publishing");
+            return;
+        }
+
+        if (video && images.length === 0) {
+            alert("You must upload at least one picture before adding a video");
+            return;
+        }
+
         setIsLoading(true);
+        setUploadStatus("Uploading photos...");
 
         try {
-            const data = new FormData();
-            data.append("title", formData.title);
-            data.append("description", formData.description);
-            data.append("price", formData.price);
-            data.append("location", formData.location);
-            data.append("campus", user?.universityId || "e433530e-7e3d-4a70-b25b-fdc9db5d0600");
-            data.append("category", formData.category);
-            data.append("distanceFromSchool", formData.distanceFromSchool);
-            data.append("bedrooms", formData.bedrooms);
-            data.append("bathrooms", formData.bathrooms);
-            data.append("rooms", formData.rooms);
-            data.append("roommatesAllowed", String(formData.roommatesAllowed));
+            // Step 1: Upload images directly to Supabase Storage (bypasses Vercel 4.5MB limit)
+            const uploadedImageUrls = await uploadFilesDirectly(images, (msg) => setUploadStatus(msg));
 
-            if (video && images.length === 0) {
-                alert("You must upload at least one picture before adding a video");
-                setIsLoading(false);
-                return;
-            }
-
-            images.forEach(image => {
-                data.append("images", image);
-            });
-
+            // Step 2: Upload video tour directly to Supabase if present
+            let uploadedVideoUrl: string | null = null;
             if (video) {
-                data.append("video", video);
+                setUploadStatus("Uploading video walkthrough...");
+                const videoUrls = await uploadFilesDirectly([video], (msg) => setUploadStatus(msg));
+                if (videoUrls.length > 0) {
+                    uploadedVideoUrl = videoUrls[0];
+                }
             }
 
-            await api.post("/properties", data, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
+            // Step 3: Create property listing via clean JSON payload
+            setUploadStatus("Publishing listing details...");
+            const payload = {
+                title: formData.title,
+                description: formData.description,
+                price: formData.price,
+                location: formData.location,
+                campus: user?.universityId || "e433530e-7e3d-4a70-b25b-fdc9db5d0600",
+                category: formData.category,
+                distanceFromSchool: formData.distanceFromSchool,
+                bedrooms: formData.bedrooms,
+                bathrooms: formData.bathrooms,
+                rooms: formData.rooms,
+                roommatesAllowed: formData.roommatesAllowed,
+                images: uploadedImageUrls,
+                video: uploadedVideoUrl,
+            };
+
+            await api.post("/properties", payload);
 
             alert("Property uploaded successfully! It is now pending approval.");
             router.push("/agents/dashboard/listings");
@@ -146,6 +162,7 @@ export default function CreateListingPage() {
             alert(errorMessage);
         } finally {
             setIsLoading(false);
+            setUploadStatus(null);
         }
     };
 
@@ -401,7 +418,7 @@ export default function CreateListingPage() {
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                     >
                         {isLoading && <Loader2 size={18} className="animate-spin" />}
-                        {isLoading ? "Publishing..." : !user?.isVerified ? "Pending Admin Approval" : "Publish Listing"}
+                        {isLoading ? (uploadStatus || "Publishing...") : !user?.isVerified ? "Pending Admin Approval" : "Publish Listing"}
                     </button>
                 </div>
             </form>

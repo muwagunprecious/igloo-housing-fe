@@ -10,6 +10,7 @@ import Button from "@/app/components/common/Button";
 import ImageUploadField from "@/app/components/common/ImageUploadField";
 import { useAuthStore } from "@/app/stores/useAuthStore";
 import { categories } from "@/app/data/categories";
+import { uploadFilesDirectly } from "@/app/lib/upload";
 
 const PROPERTY_CATEGORIES = categories.filter(c => c.label !== "All").map(c => c.label);
 
@@ -37,6 +38,7 @@ export default function AddPropertyPage() {
         roommatesAllowed: false,
     });
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [uploadStatus, setUploadStatus] = useState<string | null>(null);
     const [video, setVideo] = useState<File | null>(null);
     const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
 
@@ -72,34 +74,52 @@ export default function AddPropertyPage() {
             return;
         }
 
-        // Create FormData for file upload
-        const data = new FormData();
-        data.append("title", formData.title);
-        data.append("description", formData.description);
-        data.append("price", formData.price);
-        data.append("location", formData.location);
-        data.append("campus", user?.universityId || "e433530e-7e3d-4a70-b25b-fdc9db5d0600");
-        data.append("category", formData.category);
-        data.append("bedrooms", formData.bedrooms);
-        data.append("bathrooms", formData.bathrooms);
-        data.append("rooms", formData.rooms);
-        data.append("roommatesAllowed", formData.roommatesAllowed.toString());
+        try {
+            // Upload images directly to Supabase Storage (bypasses Vercel 4.5MB limit)
+            const uploadedImageUrls = await uploadFilesDirectly(images, (msg) => setUploadStatus(msg));
 
-        // Append all images
-        images.forEach((image) => {
-            data.append("images", image);
-        });
+            // Upload video if provided
+            let uploadedVideoUrl: string | null = null;
+            if (video) {
+                setUploadStatus("Uploading video walkthrough...");
+                const videoUrls = await uploadFilesDirectly([video], (msg) => setUploadStatus(msg));
+                if (videoUrls.length > 0) {
+                    uploadedVideoUrl = videoUrls[0];
+                }
+            }
 
-        if (video) {
-            data.append("video", video);
-        }
+            setUploadStatus("Publishing property details...");
+            const payload = {
+                title: formData.title,
+                description: formData.description,
+                price: formData.price,
+                location: formData.location,
+                campus: user?.universityId || "e433530e-7e3d-4a70-b25b-fdc9db5d0600",
+                category: formData.category,
+                bedrooms: formData.bedrooms,
+                bathrooms: formData.bathrooms,
+                rooms: formData.rooms,
+                roommatesAllowed: formData.roommatesAllowed.toString(),
+                images: uploadedImageUrls,
+                video: uploadedVideoUrl,
+            };
 
-        const success = await addProperty(data);
-        if (success) {
-            router.push("/agents/properties");
-        } else {
-            const currentErr = useAgentPropertiesStore.getState().error;
-            setSubmitError(currentErr || "Failed to create property. Please try again.");
+            const success = await addProperty(payload);
+            if (success) {
+                router.push("/agents/properties");
+            } else {
+                const currentErr = useAgentPropertiesStore.getState().error;
+                setSubmitError(currentErr || "Failed to create property. Please try again.");
+            }
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            console.error("Direct upload error:", err);
+            const currentErr =
+                err.response?.data?.message ||
+                err.message ||
+                "Failed to upload media. Please try again.";
+            setSubmitError(currentErr);
+        } finally {
+            setUploadStatus(null);
         }
     };
 
@@ -305,7 +325,7 @@ export default function AddPropertyPage() {
                                 </Button>
                             </Link>
                             <Button type="submit" className="flex-1" disabled={isLoading || !user?.isVerified}>
-                                {isLoading ? "Creating..." : "Add Property"}
+                                {isLoading ? (uploadStatus || "Creating...") : !user?.isVerified ? "Pending Admin Approval" : "Add Property"}
                             </Button>
                         </div>
                     </form>

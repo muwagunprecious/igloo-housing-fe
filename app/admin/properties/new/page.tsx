@@ -10,6 +10,7 @@ import Image from "next/image";
 import Button from "@/app/components/common/Button";
 import ImageUploadField from "@/app/components/common/ImageUploadField";
 import { categories } from "@/app/data/categories";
+import { uploadFilesDirectly } from "@/app/lib/upload";
 
 const PROPERTY_CATEGORIES = categories.filter(c => c.label !== "All").map(c => c.label);
 
@@ -46,6 +47,8 @@ export default function AdminAddPropertyPage() {
         u.email.toLowerCase().includes(search.toLowerCase())
     );
 
+    const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError(null);
@@ -60,27 +63,36 @@ export default function AdminAddPropertyPage() {
             return;
         }
 
-        const data = new FormData();
-        data.append("title", formData.title);
-        data.append("description", formData.description);
-        data.append("price", formData.price);
-        data.append("location", formData.location);
-        data.append("category", formData.category);
-        data.append("bedrooms", formData.bedrooms);
-        data.append("bathrooms", formData.bathrooms);
-        data.append("rooms", formData.rooms);
-        data.append("roommatesAllowed", formData.roommatesAllowed.toString());
-        data.append("agentId", formData.agentId);
+        try {
+            const uploadedImageUrls = await uploadFilesDirectly(images, (msg) => setUploadStatus(msg));
 
-        images.forEach((image) => {
-            data.append("images", image);
-        });
+            setUploadStatus("Executing listing deployment...");
+            const payload = {
+                title: formData.title,
+                description: formData.description,
+                price: formData.price,
+                location: formData.location,
+                category: formData.category,
+                bedrooms: formData.bedrooms,
+                bathrooms: formData.bathrooms,
+                rooms: formData.rooms,
+                roommatesAllowed: formData.roommatesAllowed.toString(),
+                agentId: formData.agentId,
+                images: uploadedImageUrls,
+            };
 
-        const success = await addProperty(data);
-        if (success) {
-            router.push("/admin/properties?status=APPROVED");
-        } else {
-            setSubmitError(error || "Failed to create property.");
+            const success = await addProperty(payload);
+            if (success) {
+                router.push("/admin/properties?status=APPROVED");
+            } else {
+                const currentErr = useAgentPropertiesStore.getState().error;
+                setSubmitError(currentErr || "Failed to create property.");
+            }
+        } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            console.error("Admin upload error:", err);
+            setSubmitError(err.response?.data?.message || err.message || "Failed to upload media.");
+        } finally {
+            setUploadStatus(null);
         }
     };
 
@@ -258,7 +270,7 @@ export default function AdminAddPropertyPage() {
                         </div>
 
                         <Button type="submit" className="w-full py-6 rounded-[24px] font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/20 hover:scale-[1.02] active:scale-95 transition-all" disabled={isLoading}>
-                            {isLoading ? "Provisioning..." : "Execute Listing"}
+                            {isLoading ? (uploadStatus || "Provisioning...") : "Execute Listing"}
                         </Button>
                     </div>
                 </div>

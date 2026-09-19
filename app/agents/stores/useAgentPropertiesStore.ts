@@ -28,8 +28,8 @@ interface AgentPropertiesStore {
     isLoading: boolean;
     error: string | null;
     fetchProperties: () => Promise<void>;
-    addProperty: (formData: FormData) => Promise<boolean>;
-    updateProperty: (id: string, formData: FormData) => Promise<boolean>;
+    addProperty: (formData: FormData | Record<string, any>) => Promise<boolean>;
+    updateProperty: (id: string, formData: FormData | Record<string, any>) => Promise<boolean>;
     deleteProperty: (id: string) => Promise<boolean>;
     getProperty: (id: string) => Property | undefined;
 }
@@ -62,13 +62,12 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
         }
     },
 
-    addProperty: async (formData: FormData) => {
+    addProperty: async (data: FormData | Record<string, any>) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.post('/properties', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+            const response = await api.post('/properties', data, {
+                headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' },
             });
             const newProperty = response.data.data || response.data;
             set((state) => ({
@@ -90,13 +89,12 @@ export const useAgentPropertiesStore = create<AgentPropertiesStore>((set, get) =
         }
     },
 
-    updateProperty: async (id: string, formData: FormData) => {
+    updateProperty: async (id: string, data: FormData | Record<string, any>) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.put(`/properties/${id}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+            const response = await api.put(`/properties/${id}`, data, {
+                headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' },
             });
             const updatedProperty = response.data.data || response.data;
             set((state) => ({
