@@ -154,7 +154,7 @@ function SignUpContent() {
                                 </p>
                                 <div className="flex items-center gap-3 mt-3 text-[11px] text-gray-500 font-medium">
                                     <span className="flex items-center gap-1 text-green-700">
-                                        <ShieldCheck size={12} /> NIN + ₦1,000 Verification
+                                        <ShieldCheck size={12} /> NIN + ₦2,000 Verification
                                     </span>
                                     <span>•</span>
                                     <span>Upload listings</span>
@@ -219,7 +219,7 @@ function SignUpContent() {
                             <div>
                                 <strong className="font-bold">Agent Verification Step:</strong>
                                 <p className="text-[11px] text-amber-700 mt-0.5">
-                                    Immediately after creating your Clerk account, you will enter your 11-digit NIN and pay the ₦1,000 verification fee.
+                                    Immediately after creating your Clerk account, you will enter your 11-digit NIN and pay the ₦2,000 verification fee.
                                 </p>
                             </div>
                         </div>

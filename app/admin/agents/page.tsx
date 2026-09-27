@@ -186,7 +186,7 @@ export default function AgentVerificationPage() {
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">₦1,000 Fee</span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">₦2,000 Fee</span>
                                     {agent.verificationFeePaid ? (
                                         <span className="text-[10px] font-black bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Paid ✓</span>
                                     ) : (

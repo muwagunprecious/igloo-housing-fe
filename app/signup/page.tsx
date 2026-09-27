@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -180,7 +180,7 @@ function SignupForm() {
         const handler = PaystackPop.setup({
             key: paystackKey,
             email: email,
-            amount: 100000, // ₦1,000 in kobo
+            amount: 200000, // ₦2,000 in kobo
             currency: "NGN",
             ref: `agent-verify-${registeredUserId}-${Date.now()}`,
             metadata: {
@@ -243,13 +243,13 @@ function SignupForm() {
 
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Agent Verification</h2>
                             <p className="text-gray-600 text-sm mb-6">
-                                Your account is created! To protect students and activate your verified badge, complete your ₦1,000 verification payment.
+                                Your account is created! To protect students and activate your verified badge, complete your ₦2,000 verification payment.
                             </p>
 
                             <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100 text-left">
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="text-sm text-gray-600">Verification Fee</span>
-                                    <span className="font-extrabold text-gray-900">₦1,000</span>
+                                    <span className="font-extrabold text-gray-900">₦2,000</span>
                                 </div>
                                 <div className="flex justify-between items-center text-xs text-gray-400">
                                     <span>One-time fee</span>
@@ -268,7 +268,7 @@ function SignupForm() {
                                 ) : (
                                     <>
                                         <CreditCard size={18} />
-                                        Pay ₦1,000 via Paystack
+                                        Pay ₦2,000 via Paystack
                                     </>
                                 )}
                             </Button>
@@ -480,7 +480,7 @@ function SignupForm() {
                             {isLoading ? (
                                 "Creating Account..."
                             ) : role === "agent" ? (
-                                "Continue to Verification (₦1,000)"
+                                "Continue to Verification (₦2,000)"
                             ) : (
                                 "Create Student Account"
                             )}

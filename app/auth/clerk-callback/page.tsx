@@ -364,7 +364,7 @@ function ClerkCallbackContent() {
         const handler = PaystackPop.setup({
             key: paystackKey,
             email: email,
-            amount: 100000, // ₦1,000 in kobo
+            amount: 200000, // ₦2,000 in kobo
             currency: "NGN",
             ref: `agent-verify-${userId}-${Date.now()}`,
             metadata: {
@@ -602,7 +602,7 @@ function ClerkCallbackContent() {
                 )}
             </AnimatePresence>
 
-            {/* POPUP 2: AGENT ONBOARDING & ₦1,000 PAYSTACK VERIFICATION MODAL */}
+            {/* POPUP 2: AGENT ONBOARDING & ₦2,000 PAYSTACK VERIFICATION MODAL */}
             <AnimatePresence>
                 {showAgentVerification && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[3px] p-3 sm:p-4">
@@ -626,7 +626,7 @@ function ClerkCallbackContent() {
                                     Agent Account Setup
                                 </h2>
                                 <p className="text-xs text-gray-500 mb-5 leading-relaxed max-w-md mx-auto">
-                                    Enter your details so students can reach you. Then verify your 11-digit NIN and complete the ₦1,000 badge fee to list apartments.
+                                    Enter your details so students can reach you. Then verify your 11-digit NIN and complete the ₦2,000 badge fee to list apartments.
                                 </p>
 
                                 {agentError && (
@@ -725,7 +725,7 @@ function ClerkCallbackContent() {
                                     <div className="bg-[#FFF1F2]/70 rounded-2xl p-4 border border-[#FF385C]/20">
                                         <div className="flex justify-between items-center mb-1">
                                             <span className="text-xs font-bold text-gray-700">One-time Verification Fee</span>
-                                            <span className="font-black text-[#FF385C] text-lg">₦1,000</span>
+                                            <span className="font-black text-[#FF385C] text-lg">₦2,000</span>
                                         </div>
                                         <div className="flex justify-between items-center text-[11px] text-gray-500">
                                             <span>Activates Verified Agent Badge</span>
@@ -747,7 +747,7 @@ function ClerkCallbackContent() {
                                     ) : (
                                         <>
                                             <CreditCard size={18} />
-                                            Pay ₦1,000 & Submit Verification
+                                            Pay ₦2,000 & Submit Verification
                                         </>
                                     )}
                                 </Button>

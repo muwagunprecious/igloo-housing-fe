@@ -97,7 +97,7 @@ export default function PendingApprovalPage() {
         const handler = PaystackPop.setup({
             key: paystackKey,
             email: user.email,
-            amount: 100000, // ₦1,000 in kobo
+            amount: 200000, // ₦2,000 in kobo
             currency: "NGN",
             ref: `agent-verify-${user.id}-${Date.now()}`,
             metadata: {
@@ -246,7 +246,7 @@ export default function PendingApprovalPage() {
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between">
-                                            <p className="text-sm font-semibold text-slate-900">Verification Fee (₦1,000)</p>
+                                            <p className="text-sm font-semibold text-slate-900">Verification Fee (₦2,000)</p>
                                             <span className={`text-xs font-medium ${feePaid ? "text-emerald-700" : "text-amber-700"}`}>
                                                 {feePaid ? "Paid" : "Required"}
                                             </span>
@@ -284,11 +284,11 @@ export default function PendingApprovalPage() {
                                             Pay Agent Verification Fee
                                         </h3>
                                         <p className="text-xs text-slate-600 mt-0.5">
-                                            A one-off fee of <strong>₦1,000</strong> is required to submit your profile for admin verification.
+                                            A one-off fee of <strong>₦2,000</strong> is required to submit your profile for admin verification.
                                         </p>
                                     </div>
                                     <div className="text-right shrink-0">
-                                        <span className="text-lg font-bold text-slate-900">₦1,000</span>
+                                        <span className="text-lg font-bold text-slate-900">₦2,000</span>
                                         <span className="block text-[10px] text-slate-400 uppercase tracking-wider">One-time</span>
                                     </div>
                                 </div>
@@ -311,7 +311,7 @@ export default function PendingApprovalPage() {
                                         ) : (
                                             <>
                                                 <CreditCard size={15} />
-                                                <span>Pay ₦1,000 with Paystack</span>
+                                                <span>Pay ₦2,000 with Paystack</span>
                                             </>
                                         )}
                                     </button>
@@ -334,7 +334,7 @@ export default function PendingApprovalPage() {
                                             Payment Received &amp; Profile Under Review
                                         </p>
                                         <p className="mt-1 text-emerald-800">
-                                            Your ₦1,000 screening fee has been confirmed. The administration team has been notified and will verify your campus jurisdiction and National ID. You will be granted immediate access once approved.
+                                            Your ₦2,000 screening fee has been confirmed. The administration team has been notified and will verify your campus jurisdiction and National ID. You will be granted immediate access once approved.
                                         </p>
                                     </div>
                                 </div>

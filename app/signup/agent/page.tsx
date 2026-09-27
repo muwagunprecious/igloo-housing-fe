@@ -121,7 +121,7 @@ function AgentSignupForm() {
         const handler = PaystackPop.setup({
             key: paystackKey,
             email: email,
-            amount: 100000, // â‚¦1,000 in kobo
+            amount: 200000, // ₦2,000 in kobo
             currency: "NGN",
             ref: `agent-verify-${registeredUserId}-${Date.now()}`,
             metadata: {
@@ -187,14 +187,14 @@ function AgentSignupForm() {
                                 <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
                                 <div className="text-sm text-amber-800">
                                     <p className="font-semibold mb-1">Why is this required?</p>
-                                    <p>A one-time â‚¦1,000 fee validates your agent account, ensuring a trusted marketplace for students.</p>
+                                    <p>A one-time ₦2,000 fee validates your agent account, ensuring a trusted marketplace for students.</p>
                                 </div>
                             </div>
 
                             <div className="bg-gray-50 rounded-xl p-4 mb-6">
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="text-sm text-gray-600">Verification Fee</span>
-                                    <span className="font-bold text-gray-900">â‚¦1,000</span>
+                                    <span className="font-bold text-gray-900">₦2,000</span>
                                 </div>
                                 <div className="flex justify-between items-center text-xs text-gray-500">
                                     <span>One-time payment</span>
@@ -215,7 +215,7 @@ function AgentSignupForm() {
                                     <div className="w-[18px] h-[18px] rounded-full border-2 border-green-500 shrink-0 flex items-center justify-center">
                                         <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                                     </div>
-                                    <span className="text-gray-800">Pay â‚¦1,000 verification fee</span>
+                                    <span className="text-gray-800">Pay ₦2,000 verification fee</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-sm opacity-40">
                                     <div className="w-[18px] h-[18px] rounded-full border-2 border-gray-400 shrink-0" />
@@ -234,7 +234,7 @@ function AgentSignupForm() {
                                 ) : (
                                     <>
                                         <CreditCard size={18} />
-                                        Pay â‚¦1,000 Now
+                                        Pay ₦2,000 Now
                                     </>
                                 )}
                             </Button>
@@ -384,7 +384,7 @@ function AgentSignupForm() {
                         {/* Notice */}
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2 text-xs text-blue-800">
                             <AlertCircle size={16} className="shrink-0 mt-0.5 text-blue-500" />
-                            <span>After signing up you will pay a one-time <strong>â‚¦1,000 verification fee</strong> via Paystack, then your account will be reviewed by our admin team before activation.</span>
+                            <span>After signing up you will pay a one-time <strong>₦2,000 verification fee</strong> via Paystack, then your account will be reviewed by our admin team before activation.</span>
                         </div>
 
                         <Button
@@ -392,7 +392,7 @@ function AgentSignupForm() {
                             disabled={isLoading}
                             className="w-full bg-green-600 hover:bg-green-700 text-white"
                         >
-                            {isLoading ? "Creating Account..." : "Continue to Verification â†’"}
+                            {isLoading ? "Creating Account..." : "Continue to Verification →"}
                         </Button>
                     </form>
 
