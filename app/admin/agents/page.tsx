@@ -23,6 +23,7 @@ import Image from "next/image";
 import { getImageUrl } from "@/app/lib/imageUrl";
 import Link from "next/link";
 import api from "@/app/lib/axios";
+import { universities as defaultUniversities } from "@/app/data/universities";
 
 export default function AgentVerificationPage() {
     const { users, isLoading, fetchUsers, verifyAgent, rejectAgent, agentFee, fetchAgentFee, updateAgentFee, createAgent } = useAdminStore();
@@ -41,7 +42,7 @@ export default function AgentVerificationPage() {
     const [isCreatingAgent, setIsCreatingAgent] = useState(false);
     const [createError, setCreateError] = useState("");
     const [createSuccess, setCreateSuccess] = useState("");
-    const [universities, setUniversities] = useState<{ id: string; name: string }[]>([]);
+    const [universities, setUniversities] = useState<{ id: string; name: string }[]>(defaultUniversities);
     const [agentForm, setAgentForm] = useState({
         fullName: "",
         email: "",
@@ -56,8 +57,9 @@ export default function AgentVerificationPage() {
         fetchAgentFee().then((fee) => setFeeInput(String(fee)));
 
         api.get("/university").then((res) => {
-            if (res.data?.success && Array.isArray(res.data.data)) {
-                setUniversities(res.data.data);
+            const list = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : null;
+            if (list && list.length > 0) {
+                setUniversities(list);
             }
         }).catch(() => {});
     }, [fetchUsers, fetchAgentFee]);
@@ -571,7 +573,7 @@ export default function AgentVerificationPage() {
                                 <select
                                     value={agentForm.universityId}
                                     onChange={(e) => setAgentForm({ ...agentForm, universityId: e.target.value })}
-                                    className="w-full bg-gray-50 border border-gray-200 focus:bg-white focus:border-black rounded-xl p-3 text-sm font-semibold cursor-pointer"
+                                    className="w-full bg-gray-50 border border-gray-200 focus:bg-white focus:border-black rounded-xl p-3 text-sm font-semibold cursor-pointer text-gray-900"
                                 >
                                     <option value="">Select Campus...</option>
                                     {universities.map(uni => (

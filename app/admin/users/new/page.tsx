@@ -15,10 +15,12 @@ import {
     AlertCircle,
     Phone,
     BadgeCheck,
-    Fingerprint
+    Fingerprint,
+    ChevronDown
 } from "lucide-react";
 import Link from "next/link";
 import Button from "@/app/components/common/Button";
+import { universities as defaultUniversities } from "@/app/data/universities";
 
 interface University {
     id: string;
@@ -38,7 +40,7 @@ export default function AdminCreateUserPage() {
         nin: "",
     });
 
-    const [universities, setUniversities] = useState<University[]>([]);
+    const [universities, setUniversities] = useState<University[]>(defaultUniversities);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -46,8 +48,15 @@ export default function AdminCreateUserPage() {
     useEffect(() => {
         const fetchUniversities = async () => {
             try {
-                const response = await api.get('/universities');
-                setUniversities(response.data.data);
+                const response = await api.get('/university');
+                const list = Array.isArray(response.data?.data)
+                    ? response.data.data
+                    : Array.isArray(response.data)
+                        ? response.data
+                        : null;
+                if (list && list.length > 0) {
+                    setUniversities(list);
+                }
             } catch (error) {
                 console.error("Error fetching universities:", error);
             }
@@ -231,19 +240,20 @@ export default function AdminCreateUserPage() {
                         </div>
 
                         <div className="group">
-                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-3 ml-2 group-focus-within:text-black transition-colors">Campus Jurisdiction</label>
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 ml-2 group-focus-within:text-black transition-colors">Campus Jurisdiction</label>
                             <div className="relative">
-                                <School className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-black transition-colors" size={20} />
+                                <School className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors pointer-events-none" size={20} />
                                 <select
                                     value={formData.universityId}
                                     onChange={(e) => setFormData({ ...formData, universityId: e.target.value })}
-                                    className="w-full bg-gray-50 border-transparent focus:bg-white focus:border-black/5 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-8 transition-all duration-500 font-black text-sm appearance-none cursor-pointer"
+                                    className="w-full bg-gray-50 border border-gray-100 focus:bg-white focus:border-black/10 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-12 transition-all duration-500 font-black text-sm text-gray-900 appearance-none cursor-pointer"
                                 >
-                                    <option value="">Select University...</option>
+                                    <option value="" className="text-gray-400">Select University...</option>
                                     {universities.map(uni => (
-                                        <option key={uni.id} value={uni.id}>{uni.name}</option>
+                                        <option key={uni.id} value={uni.id} className="text-gray-900 py-1">{uni.name}</option>
                                     ))}
                                 </select>
+                                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
                             </div>
                         </div>
                     </div>
@@ -251,19 +261,20 @@ export default function AdminCreateUserPage() {
 
                 {formData.role === "student" && (
                     <div className="group animate-in slide-in-from-top-4 duration-500">
-                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-3 ml-2 group-focus-within:text-black transition-colors">University Affiliation</label>
+                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 ml-2 group-focus-within:text-black transition-colors">University Affiliation</label>
                         <div className="relative">
-                            <School className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-black transition-colors" size={20} />
+                            <School className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors pointer-events-none" size={20} />
                             <select
                                 value={formData.universityId}
                                 onChange={(e) => setFormData({ ...formData, universityId: e.target.value })}
-                                className="w-full bg-gray-50 border-transparent focus:bg-white focus:border-black/5 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-8 transition-all duration-500 font-black text-sm appearance-none cursor-pointer"
+                                className="w-full bg-gray-50 border border-gray-100 focus:bg-white focus:border-black/10 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-12 transition-all duration-500 font-black text-sm text-gray-900 appearance-none cursor-pointer"
                             >
-                                <option value="">Select University...</option>
+                                <option value="" className="text-gray-400">Select University...</option>
                                 {universities.map(uni => (
-                                    <option key={uni.id} value={uni.id}>{uni.name}</option>
+                                    <option key={uni.id} value={uni.id} className="text-gray-900 py-1">{uni.name}</option>
                                 ))}
                             </select>
+                            <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
                         </div>
                     </div>
                 )}
