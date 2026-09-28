@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import "./globals.css";
 import BottomNav from "./components/layout/BottomNav";
@@ -67,22 +66,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        <ClerkProvider
-          publishableKey={
-            process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-            "pk_test_Y2xvc2UtYmVkYnVnLTYyMzQuY2xlcmsuYWNjb3VudHMuZGV2JA"
-          }
-        >
-          <EnhancedNavbar />
-          <main className="min-h-screen">
-          {children}
-          </main>
-          <Footer />
-          <BottomNav />
-          <ToastContainer />
-          <MyCampusModal />
-          <AccountTypeModal />
-        </ClerkProvider>
+        <EnhancedNavbar />
+        <main className="min-h-screen">
+        {children}
+        </main>
+        <Footer />
+        <BottomNav />
+        <ToastContainer />
+        <MyCampusModal />
+        <AccountTypeModal />
       </body>
     </html>
   );

@@ -8,7 +8,6 @@ import { useAuthStore } from "@/app/stores/useAuthStore";
 import { useCampusStore, CAMPUSES } from "@/app/stores/useCampusStore";
 import Image from "next/image";
 import { igloo } from "@/app/assets";
-import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import { useAccountTypeModal } from "@/app/stores/useAccountTypeModal";
 
 export default function EnhancedNavbar() {
@@ -95,7 +94,7 @@ export default function EnhancedNavbar() {
 
                     {/* Right Side Actions */}
                     <div className="flex flex-row items-center gap-3">
-                        <Show when="signed-out">
+                        {!isAuthenticated ? (
                             <div className="flex items-center gap-2 sm:gap-3">
                                 <Link href="/login">
                                     <button className="text-sm font-medium text-gray-700 hover:text-gray-900 transition px-3 py-1.5 rounded-full hover:bg-gray-100 cursor-pointer hidden sm:block">
@@ -109,14 +108,7 @@ export default function EnhancedNavbar() {
                                     Sign Up
                                 </button>
                             </div>
-                        </Show>
-                        <Show when="signed-in">
-                            <div className="flex items-center gap-3">
-                                <UserButton />
-                            </div>
-                        </Show>
-
-                        {isAuthenticated && (
+                        ) : (
                             // Authenticated Menu - Desktop Only (Mobile uses Bottom Nav & Profile Page)
                             <div className="relative hidden lg:block">
                                 <button

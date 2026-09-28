@@ -17,7 +17,7 @@ export default function AccountTypeModal() {
         if (typeof window !== "undefined") {
             sessionStorage.setItem("igloo_pending_role", role);
         }
-        router.push(`/sign-up?role=${role}`);
+        router.push(`/signup?role=${role}`);
     };
 
     return (

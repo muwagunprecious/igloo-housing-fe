@@ -186,36 +186,11 @@ function LoginForm() {
                         </Button>
                     </form>
 
-                    {/* Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200"></div>
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                            <span className="px-4 bg-white text-gray-400 font-semibold">Or use Clerk</span>
-                        </div>
-                    </div>
-
-                    {/* Continue with Clerk */}
-                    <div>
-                        <Link href="/sign-in" className="w-full">
-                            <button
-                                type="button"
-                                className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-300 rounded-xl hover:bg-gray-50 text-gray-700 font-bold text-sm transition cursor-pointer shadow-xs"
-                            >
-                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 16H9V8H11V16ZM15 16H13V8H15V16Z" fill="#6C47FF"/>
-                                </svg>
-                                Continue with Clerk (Google / Email)
-                            </button>
-                        </Link>
-                    </div>
-
                     {/* Sign Up Link */}
                     <p className="text-center text-sm text-gray-600 mt-6">
                         Don&apos;t have an account?{" "}
                         <Link 
-                            href="/sign-up" 
+                            href="/signup" 
                             className="font-bold hover:underline text-primary"
                         >
                             Sign up

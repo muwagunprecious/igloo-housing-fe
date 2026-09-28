@@ -34,16 +34,6 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'img.clerk.com',
-                pathname: '/**',
-            },
-            {
-                protocol: 'https',
-                hostname: 'images.clerk.dev',
-                pathname: '/**',
-            },
-            {
-                protocol: 'https',
                 hostname: 'lh3.googleusercontent.com',
                 pathname: '/**',
             },
@@ -58,7 +48,26 @@ const nextConfig = {
                 pathname: '/**',
             }
         ]
-    }
+    },
+    async redirects() {
+        return [
+            {
+                source: '/sign-in/:path*',
+                destination: '/login',
+                permanent: true,
+            },
+            {
+                source: '/sign-up/:path*',
+                destination: '/signup',
+                permanent: true,
+            },
+            {
+                source: '/auth/clerk-callback',
+                destination: '/login',
+                permanent: true,
+            },
+        ];
+    },
 };
 
 module.exports = nextConfig;
