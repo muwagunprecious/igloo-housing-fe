@@ -33,6 +33,8 @@ function SignupForm() {
     const roleQuery = searchParams.get("role");
 
     const register = useAuthStore((state) => state.register);
+    const updateUser = useAuthStore((state) => state.updateUser);
+    const user = useAuthStore((state) => state.user);
 
     const [role, setRole] = useState<"student" | "agent">(
         roleQuery === "agent" ? "agent" : "student"
@@ -207,7 +209,12 @@ function SignupForm() {
     const handlePaymentSuccess = async (response: any) => {
         try {
             const ref = response?.reference || response?.trxref;
-            await api.post("/auth/confirm-verification-fee", { reference: ref });
+            await api.post("/auth/confirm-verification-fee", {
+                reference: ref,
+                userId: registeredUserId || user?.id,
+                email: email || user?.email
+            });
+            updateUser({ verificationFeePaid: true });
         } catch (err) {
             console.error("Fee confirmation error:", err);
         } finally {

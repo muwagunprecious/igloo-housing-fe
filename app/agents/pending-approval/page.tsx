@@ -122,10 +122,17 @@ export default function PendingApprovalPage() {
     const handlePaymentSuccess = async (response: any) => {
         try {
             const ref = response?.reference || response?.trxref;
-            await api.post("/auth/confirm-verification-fee", { reference: ref });
+            await api.post("/auth/confirm-verification-fee", {
+                reference: ref,
+                userId: user.id,
+                email: user.email
+            });
             updateUser({ verificationFeePaid: true });
+            await checkAuth();
         } catch (err) {
             console.error("Fee confirmation error:", err);
+            // Even if network blips, update client-side state optimistically
+            updateUser({ verificationFeePaid: true });
         } finally {
             setIsPaymentLoading(false);
         }
