@@ -12,7 +12,10 @@ import {
     Lock,
     School,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
+    Phone,
+    BadgeCheck,
+    Fingerprint
 } from "lucide-react";
 import Link from "next/link";
 import Button from "@/app/components/common/Button";
@@ -29,8 +32,10 @@ export default function AdminCreateUserPage() {
         fullName: "",
         email: "",
         password: "",
-        role: "student" as "student" | "agent" | "admin",
+        role: "agent" as "student" | "agent" | "admin",
         universityId: "",
+        whatsapp: "",
+        nin: "",
     });
 
     const [universities, setUniversities] = useState<University[]>([]);
@@ -64,8 +69,10 @@ export default function AdminCreateUserPage() {
                     fullName: "",
                     email: "",
                     password: "",
-                    role: "student",
+                    role: "agent",
                     universityId: "",
+                    whatsapp: "",
+                    nin: "",
                 });
                 setTimeout(() => router.push("/admin/users"), 2000);
             }
@@ -176,6 +183,71 @@ export default function AdminCreateUserPage() {
                         </div>
                     </div>
                 </div>
+
+                {formData.role === "agent" && (
+                    <div className="space-y-8 animate-in slide-in-from-top-4 duration-500">
+                        {/* Auto-verify notice */}
+                        <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                <BadgeCheck size={24} />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-sm text-emerald-950">Free &amp; Instantly Verified</h4>
+                                <p className="text-xs text-emerald-800 mt-0.5 leading-relaxed">
+                                    Agent accounts created by admin are automatically verified with <strong>₦0 fee</strong>. The agent can immediately log in, access the Agent Dashboard, and start listing student properties.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="group">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-3 ml-2 group-focus-within:text-black transition-colors">WhatsApp / Phone</label>
+                                <div className="relative">
+                                    <Phone className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-black transition-colors" size={20} />
+                                    <input
+                                        type="tel"
+                                        value={formData.whatsapp}
+                                        onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                                        className="w-full bg-gray-50 border-transparent focus:bg-white focus:border-black/5 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-8 transition-all duration-500 font-black text-base placeholder:text-gray-200"
+                                        placeholder="08012345678"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="group">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-3 ml-2 group-focus-within:text-black transition-colors">National ID (NIN - Optional)</label>
+                                <div className="relative">
+                                    <Fingerprint className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-black transition-colors" size={20} />
+                                    <input
+                                        type="text"
+                                        maxLength={11}
+                                        value={formData.nin}
+                                        onChange={(e) => setFormData({ ...formData, nin: e.target.value })}
+                                        className="w-full bg-gray-50 border-transparent focus:bg-white focus:border-black/5 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-8 transition-all duration-500 font-black text-base placeholder:text-gray-200"
+                                        placeholder="11-digit NIN"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="group">
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 mb-3 ml-2 group-focus-within:text-black transition-colors">Campus Jurisdiction</label>
+                            <div className="relative">
+                                <School className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-200 group-focus-within:text-black transition-colors" size={20} />
+                                <select
+                                    value={formData.universityId}
+                                    onChange={(e) => setFormData({ ...formData, universityId: e.target.value })}
+                                    className="w-full bg-gray-50 border-transparent focus:bg-white focus:border-black/5 focus:ring-[12px] focus:ring-black/5 rounded-2xl py-5 pl-16 pr-8 transition-all duration-500 font-black text-sm appearance-none cursor-pointer"
+                                >
+                                    <option value="">Select University...</option>
+                                    {universities.map(uni => (
+                                        <option key={uni.id} value={uni.id}>{uni.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {formData.role === "student" && (
                     <div className="group animate-in slide-in-from-top-4 duration-500">

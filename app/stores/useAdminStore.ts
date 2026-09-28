@@ -91,6 +91,10 @@ interface AdminStore {
     unblockUser: (id: string) => Promise<boolean>;
     verifyAgent: (id: string) => Promise<boolean>;
     rejectAgent: (id: string, reason?: string) => Promise<boolean>;
+    agentFee: number;
+    fetchAgentFee: () => Promise<number>;
+    updateAgentFee: (fee: number) => Promise<boolean>;
+    createAgent: (data: { fullName: string; email: string; password: string; whatsapp?: string; nin?: string; universityId?: string }) => Promise<boolean>;
     deleteProperty: (id: string, reason?: string) => Promise<boolean>;
 }
 
@@ -98,6 +102,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
     properties: [],
     stats: null,
     users: [],
+    agentFee: 2000,
     isLoading: false,
     error: null,
 
@@ -255,6 +260,47 @@ export const useAdminStore = create<AdminStore>((set) => ({
             return false;
         }
     },
+    fetchAgentFee: async () => {
+        try {
+            const response = await api.get('/settings/agent-fee');
+            const fee = response.data?.data?.fee ?? 2000;
+            set({ agentFee: fee });
+            return fee;
+        } catch {
+            return 2000;
+        }
+    },
+
+    updateAgentFee: async (fee: number) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.put('/admin/settings/agent-fee', { fee });
+            set({ agentFee: fee, isLoading: false });
+            return true;
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            set({ error: error.response?.data?.message || error.message, isLoading: false });
+            return false;
+        }
+    },
+
+    createAgent: async (data: { fullName: string; email: string; password: string; whatsapp?: string; nin?: string; universityId?: string }) => {
+        set({ isLoading: true, error: null });
+        try {
+            await api.post('/admin/users/create', {
+                ...data,
+                role: 'AGENT'
+            });
+            // Refresh user list
+            const response = await api.get('/admin/users');
+            const rawUsers = Array.isArray(response.data.data) ? response.data.data : [];
+            set({ users: rawUsers, isLoading: false });
+            return true;
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+            set({ error: error.response?.data?.message || error.message, isLoading: false });
+            return false;
+        }
+    },
+
     deleteProperty: async (id: string, reason?: string) => {
         set({ isLoading: true, error: null });
         try {

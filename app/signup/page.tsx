@@ -62,6 +62,7 @@ function SignupForm() {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [isPaymentLoading, setIsPaymentLoading] = useState(false);
     const [registeredUserId, setRegisteredUserId] = useState("");
+    const [agentFee, setAgentFee] = useState<number>(2000);
 
     useEffect(() => {
         const fetchUniversities = async () => {
@@ -74,7 +75,20 @@ function SignupForm() {
                 console.error("Failed to fetch universities", err);
             }
         };
+
+        const fetchFee = async () => {
+            try {
+                const res = await api.get("/settings/agent-fee");
+                if (res.data?.data?.fee !== undefined) {
+                    setAgentFee(res.data.data.fee);
+                }
+            } catch {
+                // fallback to 2000
+            }
+        };
+
         fetchUniversities();
+        fetchFee();
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -161,6 +175,12 @@ function SignupForm() {
     };
 
     const handlePayVerificationFee = async () => {
+        if (agentFee <= 0) {
+            // Fee waived by admin!
+            await handlePaymentSuccess({ reference: `fee-waived-${Date.now()}` });
+            return;
+        }
+
         setIsPaymentLoading(true);
         try {
             await loadPaystack();
@@ -182,7 +202,7 @@ function SignupForm() {
         const handler = PaystackPop.setup({
             key: paystackKey,
             email: email,
-            amount: 200000, // ₦2,000 in kobo
+            amount: agentFee * 100, // in kobo
             currency: "NGN",
             ref: `agent-verify-${registeredUserId}-${Date.now()}`,
             metadata: {
@@ -250,17 +270,21 @@ function SignupForm() {
 
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Agent Verification</h2>
                             <p className="text-gray-600 text-sm mb-6">
-                                Your account is created! To protect students and activate your verified badge, complete your ₦2,000 verification payment.
+                                {agentFee > 0
+                                    ? `Your account is created! To protect students and activate your verified badge, complete your ₦${agentFee.toLocaleString()} verification payment.`
+                                    : "Your account is created! Verification fees are currently waived by admin."}
                             </p>
 
                             <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100 text-left">
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="text-sm text-gray-600">Verification Fee</span>
-                                    <span className="font-extrabold text-gray-900">₦2,000</span>
+                                    <span className="font-extrabold text-gray-900">
+                                        {agentFee > 0 ? `₦${agentFee.toLocaleString()}` : "Free (₦0)"}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between items-center text-xs text-gray-400">
                                     <span>One-time fee</span>
-                                    <span>Secured via Paystack</span>
+                                    <span>{agentFee > 0 ? "Secured via Paystack" : "Fee Waived"}</span>
                                 </div>
                             </div>
 
@@ -275,7 +299,7 @@ function SignupForm() {
                                 ) : (
                                     <>
                                         <CreditCard size={18} />
-                                        Pay ₦2,000 via Paystack
+                                        {agentFee > 0 ? `Pay ₦${agentFee.toLocaleString()} via Paystack` : "Activate Account (Free)"}
                                     </>
                                 )}
                             </Button>

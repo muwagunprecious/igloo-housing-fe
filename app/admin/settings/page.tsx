@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Settings,
     User,
@@ -9,11 +9,36 @@ import {
     Database,
     Info,
     Smartphone,
-    Languages
+    Languages,
+    CreditCard,
+    CheckCircle2
 } from "lucide-react";
 import Button from "@/app/components/common/Button";
+import { useAdminStore } from "@/app/stores/useAdminStore";
 
 export default function AdminSettingsPage() {
+    const { agentFee, fetchAgentFee, updateAgentFee } = useAdminStore();
+    const [feeInput, setFeeInput] = useState<string>("2000");
+    const [isSavingFee, setIsSavingFee] = useState(false);
+    const [feeSaved, setFeeSaved] = useState(false);
+
+    useEffect(() => {
+        fetchAgentFee().then((val) => setFeeInput(String(val)));
+    }, [fetchAgentFee]);
+
+    const handleSaveFee = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const num = parseInt(feeInput, 10);
+        if (isNaN(num) || num < 0) return;
+        setIsSavingFee(true);
+        const success = await updateAgentFee(num);
+        setIsSavingFee(false);
+        if (success) {
+            setFeeSaved(true);
+            setTimeout(() => setFeeSaved(false), 3000);
+        }
+    };
+
     const [toggles, setToggles] = useState({
         agentVerification: true,
         enableBookings: true,
@@ -59,6 +84,61 @@ export default function AdminSettingsPage() {
 
                 {/* Content Area */}
                 <div className="md:col-span-2 space-y-10">
+                    {/* Agent Verification Fee Card */}
+                    <section className="space-y-6">
+                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                            <CreditCard size={14} />
+                            Agent Pricing & Monetization
+                        </div>
+                        <div className="bg-white border border-gray-100 rounded-[32px] p-8 shadow-sm space-y-6">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <h4 className="font-extrabold text-black text-lg tracking-tight">Agent Verification Fee</h4>
+                                    <p className="text-gray-500 text-xs font-medium mt-1">
+                                        Amount charged via Paystack to new agents upon registration for identity screening.
+                                    </p>
+                                </div>
+                                <div className="px-4 py-2 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-200 text-xs font-bold shrink-0 self-start sm:self-auto">
+                                    Current: ₦{agentFee.toLocaleString()}
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSaveFee} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                                <div className="relative flex-1">
+                                    <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-gray-400 text-base">₦</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="100"
+                                        required
+                                        value={feeInput}
+                                        onChange={(e) => setFeeInput(e.target.value)}
+                                        className="w-full bg-gray-50 border border-gray-200 focus:bg-white focus:border-black rounded-2xl py-4 pl-12 pr-4 font-black text-base text-gray-900 transition-all"
+                                        placeholder="e.g. 2000"
+                                    />
+                                </div>
+                                <Button
+                                    type="submit"
+                                    disabled={isSavingFee}
+                                    className="py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-widest whitespace-nowrap cursor-pointer shadow-sm hover:scale-[1.02] active:scale-95 transition-all"
+                                >
+                                    {isSavingFee ? "Saving..." : feeSaved ? "Saved!" : "Update Fee"}
+                                </Button>
+                            </form>
+
+                            {feeSaved && (
+                                <div className="flex items-center gap-2 p-3 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-xl border border-emerald-200 animate-in fade-in">
+                                    <CheckCircle2 size={16} />
+                                    <span>Agent verification fee has been updated to ₦{Number(feeInput).toLocaleString()}. All new registrations will reflect this fee.</span>
+                                </div>
+                            )}
+
+                            <p className="text-[11px] text-gray-400">
+                                💡 Tip: Set to <strong>0</strong> to waive verification fees completely for all self-registering agents. Admin-created agent accounts are always 100% free and instantly verified regardless of this setting.
+                            </p>
+                        </div>
+                    </section>
+
                     <section className="space-y-6">
                         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary">
                             <Info size={14} />
