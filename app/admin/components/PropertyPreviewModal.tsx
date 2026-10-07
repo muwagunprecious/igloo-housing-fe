@@ -64,6 +64,7 @@ export default function PropertyPreviewModal({
     }
 
     const hasVideo = !!property.video && typeof property.video === "string" && property.video.trim().length > 0;
+    const effectiveTab = images.length === 0 && hasVideo ? "video" : activeTab;
     const isPending = property.status === "PENDING";
     const videoUrl = hasVideo ? getImageUrl(property.video) : null;
 
@@ -162,30 +163,32 @@ export default function PropertyPreviewModal({
                         {hasVideo && (
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setActiveTab("photos")}
-                                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition ${
-                                            activeTab === "photos"
-                                                ? "bg-black text-white shadow-md"
-                                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                        }`}
-                                    >
-                                        <ImageIcon size={16} />
-                                        Photos ({images.length})
-                                    </button>
+                                    {images.length > 0 && (
+                                        <button
+                                            onClick={() => setActiveTab("photos")}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition ${
+                                                effectiveTab === "photos"
+                                                    ? "bg-black text-white shadow-md"
+                                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                            }`}
+                                        >
+                                            <ImageIcon size={16} />
+                                            Photos ({images.length})
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => setActiveTab("video")}
                                         className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition ${
-                                            activeTab === "video"
+                                            effectiveTab === "video"
                                                 ? "bg-black text-white shadow-md"
                                                 : "bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200"
                                         }`}
                                     >
                                         <Video size={16} className="text-purple-600 animate-pulse" />
-                                        Video Tour Available
+                                        Video Tour {images.length === 0 ? "(Listing Video)" : "Available"}
                                     </button>
                                 </div>
-                                {activeTab === "video" && videoUrl && (
+                                {effectiveTab === "video" && videoUrl && (
                                     <a
                                         href={videoUrl}
                                         target="_blank"
@@ -199,7 +202,7 @@ export default function PropertyPreviewModal({
                             </div>
                         )}
 
-                        {activeTab === "photos" ? (
+                        {effectiveTab === "photos" ? (
                             <div>
                                 {/* Main Image View */}
                                 <div className="relative w-full h-80 sm:h-[460px] bg-gray-900 rounded-[28px] overflow-hidden group">

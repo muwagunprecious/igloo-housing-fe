@@ -2,10 +2,11 @@
 
 import { useAgentPropertiesStore } from "../stores/useAgentPropertiesStore";
 import AgentSidebar from "../components/AgentSidebar";
-import { Home, Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Home, Plus, Edit, Trash2, Eye, Video } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/app/components/common/Button";
+import { getImageUrl } from "@/app/lib/imageUrl";
 
 export default function AgentPropertiesPage() {
     const properties = useAgentPropertiesStore((state) => state.properties);
@@ -62,13 +63,39 @@ export default function AgentPropertiesPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {properties.map((property) => (
                                 <div key={property.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-card-hover transition">
-                                    <div className="relative h-48">
-                                        <Image
-                                            src={property.images[0]}
-                                            alt={property.title}
-                                            fill
-                                            className="object-cover"
-                                        />
+                                    <div className="relative h-48 bg-slate-900">
+                                        {Array.isArray(property.images) && property.images.length > 0 ? (
+                                            <Image
+                                                src={getImageUrl(property.images[0])}
+                                                alt={property.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : property.video ? (
+                                            <div className="relative w-full h-full flex items-center justify-center">
+                                                <video
+                                                    src={getImageUrl(property.video)}
+                                                    className="object-cover w-full h-full opacity-85"
+                                                    muted
+                                                    playsInline
+                                                />
+                                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
+                                                    <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center shadow-lg">
+                                                        <Video size={18} />
+                                                    </div>
+                                                </div>
+                                                <div className="absolute bottom-3 left-3 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1 shadow">
+                                                    <Video size={12} /> Video Tour
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <Image
+                                                src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                                alt={property.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        )}
                                         <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold ${property.status === "Available"
                                             ? 'bg-green-500 text-white'
                                             : 'bg-blue-500 text-white'

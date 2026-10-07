@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/app/lib/axios";
-import { Plus, Edit2, Trash2, Home, MapPin } from "lucide-react";
+import { Plus, Edit2, Trash2, Home, MapPin, Video } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getImageUrl } from "@/app/lib/imageUrl";
@@ -104,11 +104,28 @@ export default function MyListingsPage() {
 
                         return (
                             <div key={property.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
-                                <div className="relative h-48 bg-gray-200">
+                                <div className="relative h-48 bg-slate-900">
                                     {images.length > 0 ? (
                                         <Image src={getImageUrl(mainImage)} alt={property.title} fill className="object-cover" />
+                                    ) : property.video ? (
+                                        <div className="relative w-full h-full flex items-center justify-center">
+                                            <video
+                                                src={getImageUrl(property.video)}
+                                                className="object-cover w-full h-full opacity-85"
+                                                muted
+                                                playsInline
+                                            />
+                                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                                <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center shadow-md">
+                                                    <Video size={18} />
+                                                </div>
+                                            </div>
+                                            <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1 shadow">
+                                                <Video size={11} /> Video Tour
+                                            </div>
+                                        </div>
                                     ) : (
-                                        <div className="flex items-center justify-center h-full text-gray-400">No Image</div>
+                                        <div className="flex items-center justify-center h-full text-gray-400">No Media</div>
                                     )}
                                     <div className="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-semibold text-gray-700">
                                         {property.category}

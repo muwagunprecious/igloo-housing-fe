@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/app/lib/axios";
-import { Plus, Home, Eye, CheckCircle2, XCircle, Trash2, Edit2, MapPin, RefreshCw } from "lucide-react";
+import { Plus, Home, Eye, CheckCircle2, XCircle, Trash2, Edit2, MapPin, RefreshCw, Video } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getImageUrl } from "@/app/lib/imageUrl";
@@ -142,11 +142,28 @@ export default function AgentDashboard() {
 
                             return (
                                 <div key={property.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md transition">
-                                    <div className="relative h-44 bg-gray-100">
+                                    <div className="relative h-44 bg-slate-900">
                                         {mainImage ? (
                                             <Image src={getImageUrl(mainImage)} alt={property.title} fill className="object-cover" />
+                                        ) : property.video ? (
+                                            <div className="relative w-full h-full flex items-center justify-center">
+                                                <video
+                                                    src={getImageUrl(property.video)}
+                                                    className="object-cover w-full h-full opacity-85"
+                                                    muted
+                                                    playsInline
+                                                />
+                                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                                    <div className="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center shadow-md">
+                                                        <Video size={18} />
+                                                    </div>
+                                                </div>
+                                                <div className="absolute bottom-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1 shadow">
+                                                    <Video size={11} /> Video Tour
+                                                </div>
+                                            </div>
                                         ) : (
-                                            <div className="flex items-center justify-center h-full text-gray-400 text-xs">No Image</div>
+                                            <div className="flex items-center justify-center h-full text-gray-400 text-xs">No Media</div>
                                         )}
                                         <div className="absolute top-3 left-3">
                                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${

@@ -64,13 +64,8 @@ export default function AddPropertyPage() {
         e.preventDefault();
         setSubmitError(null);
 
-        if (images.length === 0) {
-            setSubmitError("Please upload at least one property image");
-            return;
-        }
-
-        if (video && images.length === 0) {
-            setSubmitError("You must upload at least one picture before adding a video");
+        if (images.length === 0 && !video) {
+            setSubmitError("Please upload at least one property picture or a video walkthrough");
             return;
         }
 
@@ -274,9 +269,28 @@ export default function AddPropertyPage() {
                             </div>
                         </div>
 
+                        {/* Media Upload Notice */}
+                        <div className="bg-blue-50/70 border border-blue-200/80 rounded-2xl p-4 flex items-start gap-3">
+                            <div className="p-2 bg-blue-100 text-blue-700 rounded-xl shrink-0 mt-0.5">
+                                <Video size={18} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-sm text-blue-900">Flexible Media Upload</h3>
+                                <p className="text-xs text-blue-700 mt-0.5">
+                                    Images are optional: you can upload <strong>pictures only</strong>, a <strong>video only</strong>, or <strong>both pictures and video</strong>. At least one (picture or video) is required.
+                                </p>
+                            </div>
+                        </div>
+
                         {/* Images */}
                         <div className="bg-white border border-gray-200 rounded-2xl p-6">
-                            <h2 className="font-semibold text-lg mb-4">Property Images *</h2>
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 className="font-semibold text-lg">Property Images (Optional)</h2>
+                                    <p className="text-xs text-gray-500">Optional if you choose to upload a video walkthrough</p>
+                                </div>
+                                <span className="text-xs text-gray-400">Up to 50 photos</span>
+                            </div>
                             <ImageUploadField
                                 images={images}
                                 onImagesChange={setImages}
@@ -287,7 +301,10 @@ export default function AddPropertyPage() {
                         {/* Video */}
                         <div className="bg-white border border-gray-200 rounded-2xl p-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="font-semibold text-lg">Property Video (Optional)</h2>
+                                <div>
+                                    <h2 className="font-semibold text-lg">Property Video (Optional)</h2>
+                                    <p className="text-xs text-gray-500">Optional if you choose to upload photos</p>
+                                </div>
                                 <span className="text-xs text-gray-500 italic">Max size: 100MB</span>
                             </div>
                             {videoPreviewUrl ? (

@@ -159,57 +159,86 @@ export default function PropertyDetails() {
 
     return (
         <div className="relative bg-white min-h-screen pb-24 md:pb-12">
-            {/* MOBILE ONLY: Full-width Swipable Image Carousel */}
-            <div className="block md:hidden relative w-full h-[380px] bg-gray-150 overflow-hidden">
-                <div 
-                    onScroll={(e) => {
-                        const scrollLeft = e.currentTarget.scrollLeft;
-                        const width = e.currentTarget.clientWidth;
-                        const index = Math.round(scrollLeft / width);
-                        setCurrentImageIndex(index);
-                    }}
-                    className="flex w-full h-full overflow-x-auto snap-x snap-mandatory hide-scrollbar"
-                    style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
-                >
-                    {images.map((img, idx) => (
-                        <div
-                            key={idx}
-                            className="w-full h-full flex-shrink-0 snap-start snap-always relative cursor-pointer"
-                            onClick={() => openLightbox(idx)}
+            {/* MOBILE ONLY: Swipable Carousel or Video Hero */}
+            {imageList.length === 0 && property.video ? (
+                <div className="block md:hidden relative w-full h-[360px] bg-black">
+                    <video
+                        src={getImageUrl(property.video)}
+                        controls
+                        className="w-full h-full object-contain"
+                    />
+                    <div className="absolute top-4 left-4 z-30">
+                        <button
+                            onClick={() => router.back()}
+                            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition"
                         >
-                            <Image src={img} alt={`Apartment image ${idx + 1}`} fill className="object-cover" />
-                        </div>
-                    ))}
+                            <ArrowLeft size={18} />
+                        </button>
+                    </div>
+                    <div className="absolute top-4 right-4 z-30 flex items-center gap-3">
+                        <button 
+                            onClick={handleShare}
+                            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition"
+                        >
+                            <Share size={18} />
+                        </button>
+                        <button className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition">
+                            <Heart size={18} />
+                        </button>
+                    </div>
                 </div>
-
-                {/* Floating Back Button */}
-                <div className="absolute top-4 left-4 z-30">
-                    <button
-                        onClick={() => router.back()}
-                        className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition"
+            ) : (
+                <div className="block md:hidden relative w-full h-[380px] bg-gray-150 overflow-hidden">
+                    <div 
+                        onScroll={(e) => {
+                            const scrollLeft = e.currentTarget.scrollLeft;
+                            const width = e.currentTarget.clientWidth;
+                            const index = Math.round(scrollLeft / width);
+                            setCurrentImageIndex(index);
+                        }}
+                        className="flex w-full h-full overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+                        style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
                     >
-                        <ArrowLeft size={18} />
-                    </button>
-                </div>
+                        {images.map((img, idx) => (
+                            <div
+                                key={idx}
+                                className="w-full h-full flex-shrink-0 snap-start snap-always relative cursor-pointer"
+                                onClick={() => openLightbox(idx)}
+                            >
+                                <Image src={img} alt={`Apartment image ${idx + 1}`} fill className="object-cover" />
+                            </div>
+                        ))}
+                    </div>
 
-                {/* Floating Action Buttons */}
-                <div className="absolute top-4 right-4 z-30 flex items-center gap-3">
-                    <button 
-                        onClick={handleShare}
-                        className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition"
-                    >
-                        <Share size={18} />
-                    </button>
-                    <button className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition">
-                        <Heart size={18} />
-                    </button>
-                </div>
+                    {/* Floating Back Button */}
+                    <div className="absolute top-4 left-4 z-30">
+                        <button
+                            onClick={() => router.back()}
+                            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                    </div>
 
-                {/* Image counter */}
-                <div className="absolute bottom-12 right-6 z-30 px-3 py-1 bg-black/60 backdrop-blur-xs rounded-md text-white text-xs font-semibold">
-                    {currentImageIndex + 1} / {images.length}
+                    {/* Floating Action Buttons */}
+                    <div className="absolute top-4 right-4 z-30 flex items-center gap-3">
+                        <button 
+                            onClick={handleShare}
+                            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition"
+                        >
+                            <Share size={18} />
+                        </button>
+                        <button className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-gray-100 flex items-center justify-center text-gray-700 shadow-md hover:bg-gray-50 active:scale-95 transition">
+                            <Heart size={18} />
+                        </button>
+                    </div>
+
+                    {/* Image counter */}
+                    <div className="absolute bottom-12 right-6 z-30 px-3 py-1 bg-black/60 backdrop-blur-xs rounded-md text-white text-xs font-semibold">
+                        {currentImageIndex + 1} / {images.length}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Main Content Container */}
             <div className="max-w-[1120px] mx-auto xl:px-20 md:px-10 sm:px-4 px-4 relative z-20">
@@ -356,31 +385,45 @@ export default function PropertyDetails() {
                     )}
                 </div>
 
-                {/* DESKTOP ONLY Image Grid */}
-                <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 relative">
-                    <div className="col-span-2 row-span-2 relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(0)}>
-                        <Image src={images[0]} alt="Main" fill className="object-cover" />
+                {/* DESKTOP Image Grid or Video Hero */}
+                {imageList.length === 0 && property.video ? (
+                    <div className="hidden md:block h-[460px] rounded-2xl overflow-hidden mb-12 relative bg-black shadow-lg">
+                        <video
+                            src={getImageUrl(property.video)}
+                            controls
+                            className="w-full h-full object-contain"
+                        />
+                        <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-white text-xs font-bold tracking-widest uppercase flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                            Virtual Video Tour
+                        </div>
                     </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(1)}>
-                        <Image src={images[1] || images[0]} alt="Image 2" fill className="object-cover" />
+                ) : (
+                    <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 relative">
+                        <div className="col-span-2 row-span-2 relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(0)}>
+                            <Image src={images[0]} alt="Main" fill className="object-cover" />
+                        </div>
+                        <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(1)}>
+                            <Image src={images[1] || images[0]} alt="Image 2" fill className="object-cover" />
+                        </div>
+                        <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(2)}>
+                            <Image src={images[2] || images[0]} alt="Image 3" fill className="object-cover" />
+                        </div>
+                        <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(3)}>
+                            <Image src={images[3] || images[0]} alt="Image 4" fill className="object-cover" />
+                        </div>
+                        <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(4)}>
+                            <Image src={images[0]} alt="Image 5" fill className="object-cover" />
+                            <button
+                                onClick={(e) => { e.stopPropagation(); openLightbox(0); }}
+                                className="absolute bottom-4 right-4 bg-white border border-black px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition shadow-sm flex items-center gap-2 z-10"
+                            >
+                                <Camera size={16} />
+                                Show all photos
+                            </button>
+                        </div>
                     </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(2)}>
-                        <Image src={images[2] || images[0]} alt="Image 3" fill className="object-cover" />
-                    </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(3)}>
-                        <Image src={images[3] || images[0]} alt="Image 4" fill className="object-cover" />
-                    </div>
-                    <div className="relative cursor-pointer hover:opacity-95 transition" onClick={() => openLightbox(4)}>
-                        <Image src={images[0]} alt="Image 5" fill className="object-cover" />
-                        <button
-                            onClick={(e) => { e.stopPropagation(); openLightbox(0); }}
-                            className="absolute bottom-4 right-4 bg-white border border-black px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-100 transition shadow-sm flex items-center gap-2 z-10"
-                        >
-                            <Camera size={16} />
-                            Show all photos
-                        </button>
-                    </div>
-                </div>
+                )}
 
                 {/* Content Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -452,7 +495,7 @@ export default function PropertyDetails() {
                                         src={getImageUrl(property.video)}
                                         controls
                                         className="w-full h-full"
-                                        poster={images[0]}
+                                        poster={imageList.length > 0 ? images[0] : undefined}
                                     />
                                     <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-white text-xs font-bold tracking-widest uppercase flex items-center gap-2">
                                         <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />

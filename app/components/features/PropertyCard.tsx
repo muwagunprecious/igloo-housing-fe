@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, Video } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFavoritesStore } from "@/app/stores/useFavoritesStore";
@@ -11,7 +11,8 @@ import { getImageUrl } from "@/app/lib/imageUrl";
 
 interface PropertyProps {
     id: string;
-    images: string[];
+    images?: string[];
+    video?: string;
     location: string | {
         lat?: number;
         lng?: number;
@@ -36,16 +37,19 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
     const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
     const addView = useViewHistoryStore((state) => state.addView);
 
+    const imagesList = Array.isArray(property.images) ? property.images : [];
+    const hasImages = imagesList.length > 0;
+
     const nextImage = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!property?.images?.length) return;
-        setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+        if (!hasImages) return;
+        setCurrentImageIndex((prev) => (prev + 1) % imagesList.length);
     };
 
     const prevImage = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!property?.images?.length) return;
-        setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+        if (!hasImages) return;
+        setCurrentImageIndex((prev) => (prev - 1 + imagesList.length) % imagesList.length);
     };
 
     const handleFavoriteClick = (e: React.MouseEvent) => {
@@ -73,12 +77,39 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
             onMouseLeave={() => setIsHovered(false)}
         >
             <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-200">
-                <Image
-                    src={getImageUrl(property.images[currentImageIndex])}
-                    alt={property.title}
-                    fill
-                    className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
-                />
+                {hasImages ? (
+                    <Image
+                        src={getImageUrl(imagesList[currentImageIndex])}
+                        alt={property.title}
+                        fill
+                        className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                ) : property.video ? (
+                    <div className="relative w-full h-full bg-slate-900 flex items-center justify-center">
+                        <video
+                            src={getImageUrl(property.video)}
+                            className="object-cover h-full w-full opacity-90 group-hover:scale-105 transition-transform duration-300"
+                            muted
+                            playsInline
+                            loop
+                        />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                            <div className="w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center backdrop-blur-xs shadow-md">
+                                <Video size={18} />
+                            </div>
+                        </div>
+                        <div className="absolute top-3 left-3 bg-blue-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                            <Video size={11} /> Video Tour
+                        </div>
+                    </div>
+                ) : (
+                    <Image
+                        src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt={property.title}
+                        fill
+                        className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                )}
 
                 {/* Heart Button */}
                 <button
@@ -94,7 +125,7 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
                 </button>
 
                 {/* Carousel Navigation */}
-                {isHovered && property.images.length > 1 && (
+                {isHovered && hasImages && imagesList.length > 1 && (
                     <>
                         <button
                             onClick={prevImage}
@@ -112,9 +143,9 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
                 )}
 
                 {/* Dots Indicator */}
-                {isHovered && property.images.length > 1 && (
+                {isHovered && hasImages && imagesList.length > 1 && (
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                        {property.images.map((_, idx) => (
+                        {imagesList.map((_, idx) => (
                             <div
                                 key={idx}
                                 className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}

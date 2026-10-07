@@ -101,18 +101,13 @@ export default function CreateListingPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (images.length === 0) {
-            alert("Please upload at least one property image before publishing");
-            return;
-        }
-
-        if (video && images.length === 0) {
-            alert("You must upload at least one picture before adding a video");
+        if (images.length === 0 && !video) {
+            alert("Please upload at least one property picture or video before publishing");
             return;
         }
 
         setIsLoading(true);
-        setUploadStatus("Uploading photos...");
+        setUploadStatus(images.length > 0 ? "Uploading photos..." : "Uploading video...");
 
         try {
             // Step 1: Upload images directly to Supabase Storage (bypasses Vercel 4.5MB limit)
@@ -189,8 +184,25 @@ export default function CreateListingPage() {
             <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 min-w-0">
                 {/* Media Upload */}
                 <div className="space-y-6">
+                    <div className="bg-blue-50/70 border border-blue-200/80 rounded-2xl p-4 flex items-start gap-3">
+                        <div className="p-2 bg-blue-100 text-blue-700 rounded-xl shrink-0 mt-0.5">
+                            <Video size={18} />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-sm text-blue-900">Flexible Media Upload</h3>
+                            <p className="text-xs text-blue-700 mt-0.5">
+                                Pictures are optional: you can upload <strong>pictures only</strong>, a <strong>video only</strong>, or <strong>both</strong>. At least one (picture or video) is required.
+                            </p>
+                        </div>
+                    </div>
+
                     <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-gray-900">Property Images</h2>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-900">Property Images (Optional)</h2>
+                                <p className="text-xs text-gray-500">Optional if you choose to upload a video walkthrough</p>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                             {previewUrls.map((url, index) => (
                                 <div key={index} className="relative aspect-square rounded-lg overflow-hidden group border border-gray-100 shadow-sm">
@@ -214,7 +226,10 @@ export default function CreateListingPage() {
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-gray-900">Property Video (Optional)</h2>
+                            <div>
+                                <h2 className="text-lg font-semibold text-gray-900">Property Video (Optional)</h2>
+                                <p className="text-xs text-gray-500">Optional if you choose to upload photos</p>
+                            </div>
                             <span className="text-xs text-gray-500 font-normal italic">Max size: 100MB</span>
                         </div>
 
