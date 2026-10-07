@@ -37,8 +37,12 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
     const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
     const addView = useViewHistoryStore((state) => state.addView);
 
-    const imagesList = Array.isArray(property.images) ? property.images : [];
+    const imagesList = Array.isArray(property.images)
+        ? property.images.filter((img) => typeof img === "string" && img.trim().length > 0 && !img.includes("placeholder-property.jpg"))
+        : [];
     const hasImages = imagesList.length > 0;
+    const hasVideo = !!property.video && typeof property.video === "string" && property.video.trim().length > 0;
+    const videoUrl = hasVideo ? getImageUrl(property.video) : null;
 
     const nextImage = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -78,22 +82,38 @@ export default function PropertyCard({ property }: { property: PropertyProps }) 
         >
             <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-200">
                 {hasImages ? (
-                    <Image
-                        src={getImageUrl(imagesList[currentImageIndex])}
-                        alt={property.title}
-                        fill
-                        className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
-                    />
-                ) : property.video ? (
-                    <div className="relative w-full h-full bg-slate-900 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                        <Image
+                            src={getImageUrl(imagesList[currentImageIndex])}
+                            alt={property.title}
+                            fill
+                            className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {hasVideo && (
+                            <div className="absolute top-3 left-3 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs uppercase tracking-wider flex items-center gap-1 shadow-sm pointer-events-none z-10">
+                                <Video size={11} className="text-primary" /> Video
+                            </div>
+                        )}
+                    </div>
+                ) : hasVideo && videoUrl ? (
+                    <div className="relative w-full h-full bg-slate-900 flex items-center justify-center overflow-hidden">
                         <video
-                            src={getImageUrl(property.video)}
-                            className="object-cover h-full w-full opacity-90 group-hover:scale-105 transition-transform duration-300"
+                            src={`${videoUrl}#t=0.001`}
+                            className="object-cover h-full w-full opacity-90 group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+                            autoPlay
                             muted
                             playsInline
                             loop
+                            preload="metadata"
+                            onLoadedMetadata={(e) => {
+                                try {
+                                    if (e.currentTarget.currentTime === 0) {
+                                        e.currentTarget.currentTime = 0.001;
+                                    }
+                                } catch {}
+                            }}
                         />
-                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none group-hover:opacity-75 transition-opacity">
                             <div className="w-10 h-10 rounded-full bg-black/70 text-white flex items-center justify-center backdrop-blur-xs shadow-md">
                                 <Video size={18} />
                             </div>

@@ -253,10 +253,8 @@ export default function Home() {
             const mappedProperty = {
               id: property.id,
               title: property.title,
-              images:
-                imageList.length > 0
-                  ? imageList.map((img) => getImageUrl(img))
-                  : ["/placeholder-property.jpg"],
+              images: imageList,
+              video: property.video || undefined,
               location: {
                 lat: 0,
                 lng: 0,

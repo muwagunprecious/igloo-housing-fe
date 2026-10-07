@@ -17,7 +17,8 @@ import {
     Check,
     ArrowDownRight,
     Sparkles,
-    RotateCcw
+    RotateCcw,
+    Video
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -548,7 +549,9 @@ export default function BudgetFinderSection({ onApplyBudget, activeMaxBudget }: 
                                             } catch {
                                                 imageList = [];
                                             }
-                                            const firstImg = imageList[0] ? getImageUrl(imageList[0]) : "/placeholder-property.jpg";
+                                            const hasImgs = imageList.length > 0;
+                                            const hasVid = !!property.video && typeof property.video === "string" && property.video.trim().length > 0;
+                                            const vidUrl = hasVid ? getImageUrl(property.video) : null;
                                             const isWithin = (property.price || 0) <= appliedBudget;
 
                                             return (
@@ -556,15 +559,42 @@ export default function BudgetFinderSection({ onApplyBudget, activeMaxBudget }: 
                                                     key={property.id}
                                                     className="p-4 rounded-2xl border border-gray-200 bg-white hover:border-gray-300 transition flex flex-col sm:flex-row gap-5 items-center justify-between"
                                                 >
-                                                    {/* Left: Property Image */}
+                                                    {/* Left: Property Media */}
                                                     <div className="relative w-full sm:w-64 aspect-[16/10] sm:aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 shrink-0">
-                                                        <Image
-                                                            src={firstImg}
-                                                            alt={property.title || "Property"}
-                                                            fill
-                                                            unoptimized
-                                                            className="object-cover"
-                                                        />
+                                                        {hasImgs ? (
+                                                            <Image
+                                                                src={getImageUrl(imageList[0])}
+                                                                alt={property.title || "Property"}
+                                                                fill
+                                                                unoptimized
+                                                                className="object-cover"
+                                                            />
+                                                        ) : hasVid && vidUrl ? (
+                                                            <div className="relative w-full h-full bg-slate-900 flex items-center justify-center">
+                                                                <video
+                                                                    src={`${vidUrl}#t=0.001`}
+                                                                    autoPlay
+                                                                    muted
+                                                                    playsInline
+                                                                    loop
+                                                                    preload="metadata"
+                                                                    className="object-cover w-full h-full opacity-90"
+                                                                />
+                                                                <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                                                    <div className="w-8 h-8 rounded-full bg-black/70 text-white flex items-center justify-center shadow-md">
+                                                                        <Video size={14} />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <Image
+                                                                src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                                                alt={property.title || "Property"}
+                                                                fill
+                                                                unoptimized
+                                                                className="object-cover"
+                                                            />
+                                                        )}
                                                         {/* Badge */}
                                                         <div className="absolute top-2.5 left-2.5">
                                                             {isWithin ? (
